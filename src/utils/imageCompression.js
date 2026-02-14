@@ -40,3 +40,25 @@ export function validateImage(file) {
 
   return { valid: true, error: null };
 }
+
+export function validateMedia(file) {
+  const validImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic'];
+  const validVideoTypes = ['video/mp4', 'video/quicktime', 'video/webm'];
+
+  const isImage = validImageTypes.includes(file.type);
+  const isVideo = validVideoTypes.includes(file.type);
+
+  if (!isImage && !isVideo) {
+    return { valid: false, error: 'Unsupported file type. Use JPEG, PNG, WebP, MP4, MOV, or WebM.' };
+  }
+
+  if (isImage && file.size > 10 * 1024 * 1024) {
+    return { valid: false, error: 'Image too large. Maximum 10MB.' };
+  }
+
+  if (isVideo && file.size > 50 * 1024 * 1024) {
+    return { valid: false, error: 'Video too large. Maximum 50MB.' };
+  }
+
+  return { valid: true, error: null };
+}

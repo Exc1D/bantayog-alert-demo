@@ -1,7 +1,4 @@
-import { useState } from 'react';
-import { SEVERITY_LEVELS, MAX_PHOTOS } from '../../utils/constants';
-import { validateImage } from '../../utils/imageCompression';
-import { useToast } from '../Common/Toast';
+import { SEVERITY_LEVELS } from '../../utils/constants';
 
 const SEVERITY_STYLES = {
   critical: {
@@ -18,67 +15,13 @@ const SEVERITY_STYLES = {
   }
 };
 
-export default function ReportForm({ disasterType, formData, onChange, photos, onPhotosChange }) {
-  const { addToast } = useToast();
-  const [previewUrls, setPreviewUrls] = useState([]);
-
+export default function ReportForm({ formData, onChange }) {
   const handleFieldChange = (name, value) => {
     onChange({ ...formData, [name]: value });
   };
 
-  const handlePhotoAdd = (e) => {
-    const files = Array.from(e.target.files);
-
-    if (photos.length + files.length > MAX_PHOTOS) {
-      addToast(`Maximum ${MAX_PHOTOS} photos allowed`, 'warning');
-      return;
-    }
-
-    const validFiles = [];
-    for (const file of files) {
-      const validation = validateImage(file);
-      if (!validation.valid) {
-        addToast(validation.error, 'error');
-        continue;
-      }
-      validFiles.push(file);
-    }
-
-    const newPhotos = [...photos, ...validFiles];
-    onPhotosChange(newPhotos);
-
-    const newPreviews = validFiles.map(file => URL.createObjectURL(file));
-    setPreviewUrls(prev => [...prev, ...newPreviews]);
-  };
-
-  const handlePhotoRemove = (index) => {
-    const newPhotos = photos.filter((_, i) => i !== index);
-    onPhotosChange(newPhotos);
-
-    URL.revokeObjectURL(previewUrls[index]);
-    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleTagToggle = (tag) => {
-    const tags = formData.tags || [];
-    if (tags.includes(tag)) {
-      handleFieldChange('tags', tags.filter(t => t !== tag));
-    } else {
-      handleFieldChange('tags', [...tags, tag]);
-    }
-  };
-
   return (
     <div className="space-y-4">
-      {/* Selected Type Display */}
-      <div className="bg-stone-50 border border-stone-200 rounded-lg p-3 flex items-center gap-3">
-        <span className="text-2xl">{disasterType.icon}</span>
-        <div className="min-w-0">
-          <p className="font-bold text-sm">{disasterType.label}</p>
-          <p className="text-xs text-textLight truncate">{disasterType.description}</p>
-        </div>
-      </div>
-
       {/* Severity */}
       <div>
         <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
@@ -142,72 +85,6 @@ export default function ReportForm({ disasterType, formData, onChange, photos, o
             className="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white"
           />
         </div>
-      </div>
-
-      {/* Tags */}
-      {disasterType.tags.length > 0 && (
-        <div>
-          <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">Tags (select all that apply)</label>
-          <div className="flex flex-wrap gap-1.5">
-            {disasterType.tags.map(tag => (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => handleTagToggle(tag)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  (formData.tags || []).includes(tag)
-                    ? 'bg-accent text-white'
-                    : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200'
-                }`}
-              >
-                #{tag}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Photos */}
-      <div>
-        <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
-          Evidence Photos (up to {MAX_PHOTOS})
-        </label>
-        <label className="flex items-center justify-center gap-2 w-full border-2 border-dashed border-stone-300 rounded-lg p-3 cursor-pointer hover:border-accent/50 hover:bg-accent/5 transition-colors">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#78716c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <polyline points="21 15 16 10 5 21" />
-          </svg>
-          <span className="text-sm text-textLight font-medium">Add photos</span>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handlePhotoAdd}
-            className="hidden"
-          />
-        </label>
-
-        {previewUrls.length > 0 && (
-          <div className="grid grid-cols-3 gap-2 mt-3">
-            {previewUrls.map((url, i) => (
-              <div key={i} className="relative group">
-                <img
-                  src={url}
-                  alt={`Preview ${i + 1}`}
-                  className="w-full h-20 object-cover rounded-lg border border-stone-200"
-                />
-                <button
-                  type="button"
-                  onClick={() => handlePhotoRemove(i)}
-                  className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity"
-                >
-                  &times;
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );

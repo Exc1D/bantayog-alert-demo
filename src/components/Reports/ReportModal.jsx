@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
-import DisasterTypeSelector from './DisasterTypeSelector';
+import ReportTypeSelector from './ReportTypeSelector';
+import EvidenceCapture from './EvidenceCapture';
 import ReportForm from './ReportForm';
 import ReportSubmission from './ReportSubmission';
 import { useGeolocation } from '../../hooks/useGeolocation';
@@ -10,11 +11,17 @@ import { useToast } from '../Common/Toast';
 import { submitReport } from '../../hooks/useReports';
 import { detectMunicipality } from '../../utils/geoFencing';
 
+const STEP_TITLES = {
+  1: 'REPORT INCIDENT',
+  2: 'PROVIDE EVIDENCE',
+  3: 'REPORT DETAILS',
+};
+
 export default function ReportModal({ isOpen, onClose }) {
   const [step, setStep] = useState(1);
-  const [selectedType, setSelectedType] = useState(null);
+  const [reportType, setReportType] = useState(null); // 'emergency' | 'situation'
+  const [evidenceFiles, setEvidenceFiles] = useState([]);
   const [formData, setFormData] = useState({});
-  const [photos, setPhotos] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { location, loading: geoLoading } = useGeolocation();
@@ -26,17 +33,23 @@ export default function ReportModal({ isOpen, onClose }) {
     : null;
 
   const handleTypeSelect = (type) => {
-    setSelectedType(type);
-    setFormData({ severity: '', description: '', tags: [] });
-    setPhotos([]);
+    setReportType(type);
     setStep(2);
   };
 
+  const handleEvidenceContinue = () => {
+    setFormData({ severity: '', description: '' });
+    setStep(3);
+  };
+
   const handleBack = () => {
-    setStep(1);
-    setSelectedType(null);
-    setFormData({});
-    setPhotos([]);
+    if (step === 2) {
+      setStep(1);
+      setReportType(null);
+      setEvidenceFiles([]);
+    } else if (step === 3) {
+      setStep(2);
+    }
   };
 
   const handleSubmit = async () => {
@@ -66,14 +79,15 @@ export default function ReportModal({ isOpen, onClose }) {
           accuracy: location.accuracy
         },
         disaster: {
-          type: selectedType.id,
+          type: 'pending',
           severity: formData.severity,
           description: formData.description,
-          tags: formData.tags || []
-        }
+          tags: []
+        },
+        reportType,
       };
 
-      await submitReport(reportData, photos, user);
+      await submitReport(reportData, evidenceFiles, user);
 
       addToast('Report submitted successfully.', 'success');
       handleClose();
@@ -87,9 +101,9 @@ export default function ReportModal({ isOpen, onClose }) {
 
   const handleClose = () => {
     setStep(1);
-    setSelectedType(null);
+    setReportType(null);
+    setEvidenceFiles([]);
     setFormData({});
-    setPhotos([]);
     onClose();
   };
 
@@ -97,23 +111,43 @@ export default function ReportModal({ isOpen, onClose }) {
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title={step === 1 ? 'REPORT HAZARD' : `Report: ${selectedType?.label}`}
+      title={STEP_TITLES[step]}
     >
       {step === 1 && (
-        <DisasterTypeSelector
-          selectedType={selectedType}
-          onSelect={handleTypeSelect}
-        />
+        <ReportTypeSelector onSelect={handleTypeSelect} />
       )}
 
-      {step === 2 && selectedType && (
+      {step === 2 && (
+        <div className="space-y-4">
+          <EvidenceCapture
+            files={evidenceFiles}
+            onFilesChange={setEvidenceFiles}
+          />
+
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="secondary"
+              onClick={handleBack}
+              className="flex-1"
+            >
+              Back
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleEvidenceContinue}
+              className="flex-1"
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {step === 3 && (
         <div className="space-y-4">
           <ReportForm
-            disasterType={selectedType}
             formData={formData}
             onChange={setFormData}
-            photos={photos}
-            onPhotosChange={setPhotos}
           />
 
           <ReportSubmission

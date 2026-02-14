@@ -92,7 +92,7 @@ export function useReports(filters = {}) {
   return { reports, loading, error, loadMore, hasMore };
 }
 
-export async function submitReport(reportData, photos, user) {
+export async function submitReport(reportData, evidenceFiles, user) {
   try {
     // Detect municipality (sync, run first)
     const municipality = detectMunicipality(
@@ -100,11 +100,15 @@ export async function submitReport(reportData, photos, user) {
       reportData.location.lng
     ) || reportData.location.municipality || 'Unknown';
 
-    // Upload photos and fetch weather in parallel
-    const [uploadResults, weatherContext] = await Promise.all([
-      // Parallel photo uploads
+    // Separate images and videos
+    const imageFiles = evidenceFiles.filter(f => f.type.startsWith('image/'));
+    const videoFiles = evidenceFiles.filter(f => f.type.startsWith('video/'));
+
+    // Upload media and fetch weather in parallel
+    const [imageResults, videoUrls, weatherContext] = await Promise.all([
+      // Parallel image uploads (compress + thumbnail)
       Promise.all(
-        photos.map(async (photo, index) => {
+        imageFiles.map(async (photo, index) => {
           const [compressed, thumbnail] = await Promise.all([
             compressImage(photo),
             createThumbnail(photo)
@@ -127,6 +131,15 @@ export async function submitReport(reportData, photos, user) {
           return { photoUrl, thumbUrl };
         })
       ),
+      // Parallel video uploads (no compression)
+      Promise.all(
+        videoFiles.map(async (video, index) => {
+          const ts = Date.now() + index;
+          const videoRef = ref(storage, `reports/videos/${ts}_${video.name}`);
+          await uploadBytes(videoRef, video);
+          return getDownloadURL(videoRef);
+        })
+      ),
       // Weather fetch alongside uploads
       fetchCurrentWeather(
         reportData.location.lat,
@@ -137,12 +150,13 @@ export async function submitReport(reportData, photos, user) {
       })
     ]);
 
-    const photoUrls = uploadResults.map(r => r.photoUrl);
-    const thumbnailUrls = uploadResults.map(r => r.thumbUrl);
+    const photoUrls = imageResults.map(r => r.photoUrl);
+    const thumbnailUrls = imageResults.map(r => r.thumbUrl);
 
     // Build report document
     const report = {
       timestamp: serverTimestamp(),
+      reportType: reportData.reportType || 'situation',
       location: {
         lat: reportData.location.lat,
         lng: reportData.location.lng,
@@ -159,7 +173,7 @@ export async function submitReport(reportData, photos, user) {
       },
       media: {
         photos: photoUrls,
-        videos: [],
+        videos: videoUrls,
         thumbnails: thumbnailUrls
       },
       reporter: {
