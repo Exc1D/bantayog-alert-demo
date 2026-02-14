@@ -155,8 +155,7 @@ export async function submitReport(reportData, photos, user) {
         type: reportData.disaster.type,
         severity: reportData.disaster.severity,
         description: reportData.disaster.description,
-        tags: reportData.disaster.tags || [],
-        ...reportData.disaster.extraFields
+        tags: reportData.disaster.tags || []
       },
       media: {
         photos: photoUrls,
