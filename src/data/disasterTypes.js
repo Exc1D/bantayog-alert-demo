@@ -86,6 +86,14 @@ export const DISASTER_TYPES = [
     color: '#6b7280',
     description: 'Uncategorized emergencies',
     tags: ['urgent', 'needs-attention']
+  },
+  {
+    id: 'pending',
+    label: 'Unclassified',
+    icon: '\u{1F4CB}',
+    color: '#9ca3af',
+    description: 'Awaiting classification by admin',
+    tags: []
   }
 ];
 

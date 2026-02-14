@@ -62,7 +62,8 @@ export const MARKER_COLORS = {
   infrastructure: '#64748b',
   environmental: '#10b981',
   security: '#f59e0b',
-  other: '#6b7280'
+  other: '#6b7280',
+  pending: '#9ca3af'
 };
 
 export const DISASTER_ICONS = {
@@ -76,11 +77,14 @@ export const DISASTER_ICONS = {
   infrastructure: '\u{1F6A7}',
   environmental: '\u{1F33F}',
   security: '\u{1F6A8}',
-  other: '\u26A0\uFE0F'
+  other: '\u26A0\uFE0F',
+  pending: '\u{1F4CB}'
 };
 
 export const MAX_PHOTOS = 5;
 export const MAX_PHOTO_SIZE_MB = 5;
+export const MAX_EVIDENCE = 5;
+export const MAX_VIDEO_SIZE_MB = 50;
 export const IMAGE_COMPRESSION_OPTIONS = {
   maxSizeMB: 1,
   maxWidthOrHeight: 1920,
