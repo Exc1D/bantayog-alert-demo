@@ -56,23 +56,20 @@ export default function ReportModal({ isOpen, onClose }) {
     setIsSubmitting(true);
 
     try {
-      const { severity, description, tags, barangay, street, ...extraFields } = formData;
-
       const reportData = {
         location: {
           lat: location.lat,
           lng: location.lng,
           municipality: municipality || 'Unknown',
-          barangay: barangay || '',
-          street: street || '',
+          barangay: formData.barangay || '',
+          street: formData.street || '',
           accuracy: location.accuracy
         },
         disaster: {
           type: selectedType.id,
-          severity,
-          description,
-          tags: tags || [],
-          extraFields
+          severity: formData.severity,
+          description: formData.description,
+          tags: formData.tags || []
         }
       };
 
