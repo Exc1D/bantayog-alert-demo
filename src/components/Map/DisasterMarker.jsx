@@ -8,12 +8,25 @@ import { formatTimeAgo } from '../../utils/timeUtils';
 // Cache marker icons to avoid recreating DOM elements
 const iconCache = new Map();
 
-function getMarkerIcon(type, severity, status) {
-  const cacheKey = `${type}-${severity}-${status}`;
+function getMarkerIcon(type, severity, status, reportType) {
+  const cacheKey = `${type}-${severity}-${status}-${reportType}`;
   if (iconCache.has(cacheKey)) return iconCache.get(cacheKey);
 
+  // Use report type icons for pending reports that have a reportType
+  let icon;
+  if (type === 'pending' && reportType) {
+    if (reportType === 'emergency') {
+      icon = '\u26A0\uFE0F'; // Warning emoji
+    } else if (reportType === 'situation') {
+      icon = '\u2139\uFE0F'; // Information emoji
+    } else {
+      icon = DISASTER_ICONS.other;
+    }
+  } else {
+    icon = DISASTER_ICONS[type] || DISASTER_ICONS.other;
+  }
+
   const color = MARKER_COLORS[type] || MARKER_COLORS.other;
-  const icon = DISASTER_ICONS[type] || DISASTER_ICONS.other;
   const opacity = status === 'verified' || status === 'resolved' ? 1 : 0.7;
   const borderColor = status === 'resolved' ? '#16a34a' : severity === 'critical' ? '#dc2626' : '#ffffff';
   const size = severity === 'critical' ? 44 : 38;
@@ -63,8 +76,8 @@ const statusStyles = {
 export default memo(function DisasterMarker({ report, onClick }) {
   const disasterType = getDisasterType(report.disaster?.type);
   const icon = useMemo(
-    () => getMarkerIcon(report.disaster?.type, report.disaster?.severity, report.verification?.status),
-    [report.disaster?.type, report.disaster?.severity, report.verification?.status]
+    () => getMarkerIcon(report.disaster?.type, report.disaster?.severity, report.verification?.status, report.reportType),
+    [report.disaster?.type, report.disaster?.severity, report.verification?.status, report.reportType]
   );
 
   const eventHandlers = useMemo(() => ({

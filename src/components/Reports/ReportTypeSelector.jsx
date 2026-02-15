@@ -10,7 +10,7 @@ export default function ReportTypeSelector({ onSelect }) {
           onClick={() => onSelect('emergency')}
           className="flex items-center gap-4 p-4 rounded-xl border-2 border-red-200 bg-red-50 hover:border-red-400 hover:bg-red-100 transition-all active:scale-[0.98]"
         >
-          <span className="text-3xl">🚨</span>
+          <span className="text-3xl">⚠️</span>
           <div className="text-left">
             <p className="font-bold text-red-800 text-base">Emergency</p>
             <p className="text-xs text-red-600 mt-0.5">
@@ -24,7 +24,7 @@ export default function ReportTypeSelector({ onSelect }) {
           onClick={() => onSelect('situation')}
           className="flex items-center gap-4 p-4 rounded-xl border-2 border-amber-200 bg-amber-50 hover:border-amber-400 hover:bg-amber-100 transition-all active:scale-[0.98]"
         >
-          <span className="text-3xl">⚠️</span>
+          <span className="text-3xl">ℹ</span>
           <div className="text-left">
             <p className="font-bold text-amber-800 text-base">Situation</p>
             <p className="text-xs text-amber-600 mt-0.5">
