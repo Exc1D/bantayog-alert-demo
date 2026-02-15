@@ -36,13 +36,14 @@ export const MUNICIPALITY_COORDS = {
   'Vinzons': { lat: 14.1833, lng: 122.9167 }
 };
 
-export const SEVERITY_LEVELS = ['minor', 'moderate', 'critical'];
-
 export const SEVERITY_COLORS = {
   minor: { bg: 'bg-green-100', text: 'text-green-800', border: 'border-green-500' },
   moderate: { bg: 'bg-yellow-100', text: 'text-yellow-800', border: 'border-yellow-500' },
-  critical: { bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-500' }
+  critical: { bg: 'bg-red-100', text: 'text-red-800', border: 'border-red-500' },
+  default: { bg: 'bg-gray-100', text: 'text-gray-800', border: 'border-gray-500' }
 };
+
+export const SEVERITY_LEVELS = Object.keys(SEVERITY_COLORS).filter(k => k !== 'default');
 
 export const STATUS_COLORS = {
   pending: { bg: 'bg-gray-100', text: 'text-gray-800' },
