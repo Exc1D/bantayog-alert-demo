@@ -38,7 +38,6 @@ export function ToastProvider({ children }) {
               key={toast.id}
               className={`${config.bg} text-white px-4 py-3 rounded-lg shadow-dark flex items-center gap-2.5 min-w-[280px] max-w-[360px] pointer-events-auto animate-slide-up`}
             >
-              <span className="text-base">{config.icon}</span>
               <span className="text-sm font-medium flex-1">{toast.message}</span>
               <button
                 onClick={() => removeToast(toast.id)}

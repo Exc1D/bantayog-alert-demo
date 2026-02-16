@@ -173,7 +173,7 @@ export default memo(function FeedPost({ report, onViewMap }) {
       {status === 'resolved' && report.verification?.resolution && (
         <div className="bg-emerald-50 p-3.5 border-t border-emerald-200">
           <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-2">
-            Resolution Evidence
+            Update
           </p>
           {report.verification.resolution.evidencePhotos?.length > 0 && (
             <div className="grid grid-cols-3 gap-2 mb-2">

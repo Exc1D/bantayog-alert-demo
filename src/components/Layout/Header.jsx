@@ -14,14 +14,14 @@ export default function Header() {
   );
 
   const getRoleBadge = () => {
-    if (isSuperAdmin) return 'PDRRMO';
-    if (isAdmin) return 'DRRMO';
+    if (isSuperAdmin) return 'CNPIO';
+    if (isAdmin) return 'MUNICIPAL ADMIN';
     if (user) return 'CITIZEN';
     return 'GUEST';
   };
 
   const getRoleBadgeColor = () => {
-    if (isSuperAdmin) return 'bg-purple-500/90';
+    if (isSuperAdmin) return 'bg-green-500/90';
     if (isAdmin) return 'bg-blue-500/90';
     return 'bg-white/15';
   };
@@ -39,7 +39,7 @@ export default function Header() {
         </div>
         <div className="leading-none">
           <h1 className="text-[15px] font-extrabold tracking-wide text-white">
-            BANTAYOG
+            BANTAYOG ALERT
           </h1>
           <p className="text-[9px] font-medium text-white/40 tracking-widest uppercase">
             Camarines Norte

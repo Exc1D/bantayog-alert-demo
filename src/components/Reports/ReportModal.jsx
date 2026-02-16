@@ -54,11 +54,11 @@ export default function ReportModal({ isOpen, onClose }) {
 
   const handleSubmit = async () => {
     if (!formData.severity) {
-      addToast('Please select a severity level', 'warning');
+      addToast('What is the alert status?', 'warning');
       return;
     }
     if (!formData.description || formData.description.trim().length < 10) {
-      addToast('Please provide a description (at least 10 characters)', 'warning');
+      addToast('What is happening? (at least 10 characters)', 'warning');
       return;
     }
     if (!location) {
