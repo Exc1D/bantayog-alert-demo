@@ -17,14 +17,17 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('map');
   const [showReportModal, setShowReportModal] = useState(false);
 
-  const handleViewMap = (report) => {
+  const handleViewMap = () => {
     setActiveTab('map');
   };
+
+  const handleOpenReportModal = () => setShowReportModal(true);
+  const noop = () => {};
 
   const renderTab = () => {
     switch (activeTab) {
       case 'map':
-        return <MapTab onViewReport={(report) => {}} />;
+        return <MapTab onViewReport={noop} />;
       case 'feed':
         return <FeedTab onViewMap={handleViewMap} />;
       case 'weather':
@@ -32,7 +35,7 @@ function AppContent() {
       case 'profile':
         return <ProfileTab />;
       default:
-        return <MapTab onViewReport={(report) => {}} />;
+        return <MapTab onViewReport={noop} />;
     }
   };
 
@@ -53,7 +56,7 @@ function AppContent() {
 
       {/* Emergency Report Button */}
       <button
-        onClick={() => setShowReportModal(true)}
+        onClick={handleOpenReportModal}
         className="fixed bottom-6 right-4 z-50 flex items-center gap-2 report-btn-glow text-white rounded-full emergency-pulse transition-all duration-200 px-5 py-3.5 sm:px-6"
         title="Report a Hazard"
       >

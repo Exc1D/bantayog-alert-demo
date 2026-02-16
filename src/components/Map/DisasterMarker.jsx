@@ -1,9 +1,10 @@
-import { memo, useMemo, useCallback } from 'react';
+import { memo, useMemo } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { getDisasterType } from '../../data/disasterTypes';
 import { MARKER_COLORS, DISASTER_ICONS } from '../../utils/constants';
 import { formatTimeAgo } from '../../utils/timeUtils';
+import { sanitizeMediaUrl } from '../../utils/mediaSafety';
 
 // Cache marker icons to avoid recreating DOM elements
 const iconCache = new Map();
@@ -85,7 +86,7 @@ export default memo(function DisasterMarker({ report, onClick }) {
   }), [onClick, report]);
 
   // Prefer thumbnail over full photo for popup preview
-  const popupImage = report.media?.thumbnails?.[0] || report.media?.photos?.[0];
+  const popupImage = sanitizeMediaUrl(report.media?.thumbnails?.[0]) || sanitizeMediaUrl(report.media?.photos?.[0]);
 
   return (
     <Marker
