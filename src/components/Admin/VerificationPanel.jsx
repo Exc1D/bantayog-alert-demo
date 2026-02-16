@@ -5,6 +5,7 @@ import { useAuthContext } from '../../contexts/AuthContext';
 import { verifyReport, rejectReport, deleteReport } from '../../hooks/useReports';
 import { useToast } from '../Common/Toast';
 import Button from '../Common/Button';
+import { getSafeMediaUrls } from '../../utils/mediaSafety';
 
 const SEV_STYLES = {
   critical: 'bg-red-600 text-white',
@@ -100,9 +101,9 @@ export default function VerificationPanel({ report, onDone }) {
         <div>
           <p className="text-xs font-bold text-textLight uppercase tracking-wider mb-2">Attached Photos</p>
           <div className="grid grid-cols-3 gap-2">
-            {report.media.photos.map((photo, i) => (
+            {getSafeMediaUrls(report.media.photos).map((photo, i) => (
               <img
-                key={i}
+                key={`${photo}-${i}`}
                 src={photo}
                 alt={`Report photo ${i + 1}`}
                 className="w-full h-20 object-cover rounded-lg border border-stone-200 cursor-pointer hover:opacity-80"

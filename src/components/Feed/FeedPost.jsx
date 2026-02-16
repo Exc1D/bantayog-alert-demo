@@ -1,8 +1,8 @@
 import { useState, memo } from 'react';
 import { getDisasterType } from '../../data/disasterTypes';
 import { formatTimeAgo } from '../../utils/timeUtils';
-import { SEVERITY_COLORS, STATUS_COLORS } from '../../utils/constants';
 import EngagementButtons from './EngagementButtons';
+import { getSafeMediaUrls } from '../../utils/mediaSafety';
 
 function SeverityBadge({ severity }) {
   const styles = {
@@ -42,7 +42,7 @@ export default memo(function FeedPost({ report, onViewMap }) {
   const [imageIndex, setImageIndex] = useState(0);
 
   const disasterType = getDisasterType(report.disaster?.type);
-  const photos = report.media?.photos || [];
+  const photos = getSafeMediaUrls(report.media?.photos);
   const severity = report.disaster?.severity || 'minor';
   const status = report.verification?.status || 'pending';
   const isCritical = severity === 'critical' && status !== 'resolved';
@@ -177,9 +177,9 @@ export default memo(function FeedPost({ report, onViewMap }) {
           </p>
           {report.verification.resolution.evidencePhotos?.length > 0 && (
             <div className="grid grid-cols-3 gap-2 mb-2">
-              {report.verification.resolution.evidencePhotos.map((photo, i) => (
+              {getSafeMediaUrls(report.verification.resolution.evidencePhotos).map((photo, i) => (
                 <img
-                  key={i}
+                  key={`${photo}-${i}`}
                   src={photo}
                   alt={`Evidence ${i + 1}`}
                   className="w-full h-16 object-cover rounded-lg border border-emerald-200"
