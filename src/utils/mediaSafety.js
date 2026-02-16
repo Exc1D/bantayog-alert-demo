@@ -1,4 +1,4 @@
-const ALLOWED_MEDIA_PROTOCOLS = new Set(['https:', 'http:', 'blob:']);
+const ALLOWED_MEDIA_PROTOCOLS = new Set(['https:', 'blob:']);
 
 /**
  * Prevents unsafe URL schemes from being used in image sources.

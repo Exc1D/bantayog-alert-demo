@@ -23,6 +23,19 @@ import { fetchCurrentWeather } from '../utils/weatherAPI';
 import { detectMunicipality } from '../utils/geoFencing';
 import { FEED_PAGE_SIZE } from '../utils/constants';
 
+const ADMIN_ROLES = ['superadmin_provincial'];
+
+function isAdminRole(role = '') {
+  return ADMIN_ROLES.includes(role) || role.startsWith('admin_');
+}
+
+function safeFileName(name = '') {
+  return name
+    .replace(/[^a-zA-Z0-9._-]/g, '_')
+    .replace(/_+/g, '_')
+    .slice(0, 120);
+}
+
 export function useReports(filters = {}) {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +72,7 @@ export function useReports(filters = {}) {
   const loadMore = useCallback(async () => {
     if (!lastDoc || !hasMore) return;
 
-    let q = query(
+    const q = query(
       collection(db, 'reports'),
       orderBy('timestamp', 'desc'),
       startAfter(lastDoc),
@@ -78,6 +91,10 @@ export function useReports(filters = {}) {
 }
 
 export async function submitReport(reportData, evidenceFiles, user) {
+  if (!user?.uid) {
+    throw new Error('Authentication required to submit reports. Please sign in and try again.');
+  }
+
   // Detect municipality (sync, run first)
   const municipality = detectMunicipality(
     reportData.location.lat,
@@ -98,8 +115,9 @@ export async function submitReport(reportData, evidenceFiles, user) {
         ]);
 
         const ts = Date.now() + index;
-        const photoRef = ref(storage, `reports/${ts}_${photo.name}`);
-        const thumbRef = ref(storage, `reports/thumbs/${ts}_${photo.name}`);
+        const safeName = safeFileName(photo.name);
+        const photoRef = ref(storage, `reports/${ts}_${safeName}`);
+        const thumbRef = ref(storage, `reports/thumbs/${ts}_${safeName}`);
 
         await Promise.all([
           uploadBytes(photoRef, compressed),
@@ -123,7 +141,8 @@ export async function submitReport(reportData, evidenceFiles, user) {
     videoFiles.map(async (video, index) => {
       try {
         const ts = Date.now() + index;
-        const videoRef = ref(storage, `reports/videos/${ts}_${video.name}`);
+        const safeName = safeFileName(video.name);
+        const videoRef = ref(storage, `reports/videos/${ts}_${safeName}`);
         await uploadBytes(videoRef, video);
         return await getDownloadURL(videoRef);
       } catch (err) {
@@ -180,9 +199,9 @@ export async function submitReport(reportData, evidenceFiles, user) {
       thumbnails: thumbnailUrls
     },
     reporter: {
-      userId: user?.uid || 'anonymous',
-      name: user?.displayName || 'Anonymous',
-      isAnonymous: !user,
+      userId: user.uid,
+      name: user.displayName || 'Anonymous',
+      isAnonymous: user.isAnonymous ?? false,
       isVerifiedUser: false
     },
     verification: {
@@ -215,6 +234,8 @@ export async function submitReport(reportData, evidenceFiles, user) {
 }
 
 export async function upvoteReport(reportId, userId) {
+  if (!userId) throw new Error('Authentication required to upvote.');
+
   const reportRef = doc(db, 'reports', reportId);
   await updateDoc(reportRef, {
     'engagement.upvotes': increment(1),
@@ -223,6 +244,8 @@ export async function upvoteReport(reportId, userId) {
 }
 
 export async function removeUpvote(reportId, userId) {
+  if (!userId) throw new Error('Authentication required to remove upvote.');
+
   const reportRef = doc(db, 'reports', reportId);
   await updateDoc(reportRef, {
     'engagement.upvotes': increment(-1),
@@ -231,6 +254,10 @@ export async function removeUpvote(reportId, userId) {
 }
 
 export async function verifyReport(reportId, adminId, adminRole, notes = '', disasterType = null) {
+  if (!adminId || !isAdminRole(adminRole)) {
+    throw new Error('Admin privileges required to verify reports.');
+  }
+
   const reportRef = doc(db, 'reports', reportId);
   const updateData = {
     'verification.status': 'verified',
@@ -248,6 +275,10 @@ export async function verifyReport(reportId, adminId, adminRole, notes = '', dis
 }
 
 export async function rejectReport(reportId, adminId, adminRole, notes = '') {
+  if (!adminId || !isAdminRole(adminRole)) {
+    throw new Error('Admin privileges required to reject reports.');
+  }
+
   const reportRef = doc(db, 'reports', reportId);
   await updateDoc(reportRef, {
     'verification.status': 'rejected',
@@ -258,12 +289,17 @@ export async function rejectReport(reportId, adminId, adminRole, notes = '') {
   });
 }
 
-export async function resolveReport(reportId, adminId, evidencePhotos, actionsTaken, resolutionNotes = '', resourcesUsed = '') {
+export async function resolveReport(reportId, adminId, evidencePhotos, actionsTaken, resolutionNotes = '', resourcesUsed = '', adminRole = '') {
+  if (!adminId || !isAdminRole(adminRole)) {
+    throw new Error('Admin privileges required to resolve reports.');
+  }
+
   // Upload evidence photos in parallel
   const evidenceUrls = await Promise.all(
     evidencePhotos.map(async (photo, index) => {
       const compressed = await compressImage(photo);
-      const photoRef = ref(storage, `evidence/${Date.now() + index}_${photo.name}`);
+      const safeName = safeFileName(photo.name);
+      const photoRef = ref(storage, `evidence/${Date.now() + index}_${safeName}`);
       await uploadBytes(photoRef, compressed);
       return getDownloadURL(photoRef);
     })
@@ -281,7 +317,11 @@ export async function resolveReport(reportId, adminId, evidencePhotos, actionsTa
   });
 }
 
-export async function deleteReport(reportId) {
+export async function deleteReport(reportId, adminRole = '') {
+  if (!isAdminRole(adminRole)) {
+    throw new Error('Admin privileges required to delete reports.');
+  }
+
   const reportRef = doc(db, 'reports', reportId);
   await deleteDoc(reportRef);
 }

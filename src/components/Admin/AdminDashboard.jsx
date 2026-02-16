@@ -99,7 +99,7 @@ export default function AdminDashboard() {
   const handleDeleteReport = async (reportId) => {
     setDeleting(true);
     try {
-      await deleteReport(reportId);
+      await deleteReport(reportId, userProfile?.role || '');
       addToast('Report deleted permanently', 'success');
     } catch (error) {
       addToast('Failed to delete report', 'error');
