@@ -50,7 +50,7 @@ function LocationButton() {
   };
 
   return (
-    <div className="leaflet-bottom leaflet-right z-[1000]" style={{ marginBottom: '8px', marginRight: '10px' }}>
+    <div className="leaflet-bottom leaflet-left z-[1000]" style={{ marginBottom: '10px', marginLeft: '10px' }}>
       <button
         ref={buttonRef}
         onClick={handleLocate}
@@ -99,7 +99,7 @@ export default function LeafletMap({ reports = [], onReportClick }) {
         className="w-full h-full"
         zoomControl={false}
       >
-        <ZoomControl position="bottomright" />
+        <ZoomControl position="bottomleft" />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
