@@ -85,7 +85,7 @@ export default function EvidenceCapture({ files, onFilesChange, onContinue }) {
       <input
         ref={cameraInputRef}
         type="file"
-        accept="image/*,video/*"
+        accept="image/*"
         capture="environment"
         onChange={handleFiles}
         className="hidden"
