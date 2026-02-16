@@ -4,8 +4,8 @@ export default function MapControls({ filters, onFilterChange, reportCount }) {
   const selectClass = "text-[11px] font-medium border border-white/20 rounded-lg px-2 py-1.5 bg-white/10 text-white focus:ring-2 focus:ring-accent/50 focus:border-accent appearance-none";
 
   return (
-    <div className="absolute top-3 left-3 right-3 z-[1000] pointer-events-none">
-      <div className="bg-primary/90 backdrop-blur-sm rounded-xl shadow-dark p-2.5 pointer-events-auto">
+    <div className="absolute top-3 left-3 z-[1000] pointer-events-none">
+      <div className="bg-primary/90 backdrop-blur-sm rounded-xl shadow-dark p-2.5 pointer-events-auto w-fit">
         <div className="flex flex-wrap gap-2 items-center">
           <select
             value={filters.municipality || 'all'}
