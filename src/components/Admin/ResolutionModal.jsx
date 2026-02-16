@@ -15,7 +15,7 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
   const [resourcesUsed, setResourcesUsed] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const { user } = useAuthContext();
+  const { user, userProfile } = useAuthContext();
   const { addToast } = useToast();
 
   if (!report) return null;
@@ -41,7 +41,8 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
         evidencePhotos,
         actionsTaken,
         resolutionNotes,
-        resourcesUsed
+        resourcesUsed,
+        userProfile?.role || ""
       );
 
       addToast('Report marked as resolved!', 'success');

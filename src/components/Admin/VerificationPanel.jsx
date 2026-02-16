@@ -66,7 +66,7 @@ export default function VerificationPanel({ report, onDone }) {
   const handleDelete = async () => {
     setProcessing(true);
     try {
-      await deleteReport(report.id);
+      await deleteReport(report.id, userProfile?.role || '');
       addToast('Report deleted permanently', 'success');
       onDone();
     } catch (error) {

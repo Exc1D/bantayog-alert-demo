@@ -1,16 +1,50 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function userRole() {
+      return isSignedIn() && userDoc().exists() ? userDoc().data.role : '';
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        userRole() == 'superadmin_provincial' ||
+        userRole().matches('^admin_.*')
+      );
+    }
+
+    function isReportOwner() {
+      return isSignedIn() && resource.data.reporter.userId == request.auth.uid;
+    }
+
     match /reports/{reportId} {
       allow read: if true;
-      allow create: if true;
-      allow update: if request.auth != null;
-      allow delete: if request.auth != null;
+
+      // Report submissions must come from authenticated users (including Firebase anonymous auth)
+      allow create: if isSignedIn()
+        && request.resource.data.reporter.userId == request.auth.uid
+        && request.resource.data.verification.status == 'pending';
+
+      // Admins can fully moderate reports.
+      // Report owners can only update their own engagement data.
+      allow update: if isAdmin()
+        || (isReportOwner()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['engagement'])
+        );
+
+      allow delete: if isAdmin();
     }
     
     match /users/{userId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if isSignedIn() && request.auth.uid == userId;
     }
   }
 }
