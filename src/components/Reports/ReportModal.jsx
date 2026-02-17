@@ -9,7 +9,7 @@ import { useGeolocation } from '../../hooks/useGeolocation';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useToast } from '../Common/Toast';
 import { submitReport } from '../../hooks/useReports';
-import { detectMunicipality } from '../../utils/geoFencing';
+import { resolveMunicipality } from '../../utils/geoFencing';
 
 const STEP_TITLES = {
   1: 'REPORT INCIDENT',
@@ -29,7 +29,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
   const { addToast } = useToast();
 
   const municipality = location
-    ? detectMunicipality(location.lat, location.lng)
+    ? resolveMunicipality(location.lat, location.lng).municipality
     : null;
 
   const handleTypeSelect = (type) => {

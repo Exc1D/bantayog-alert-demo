@@ -20,7 +20,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage, serverTimestamp } from '../utils/firebaseConfig';
 import { compressImage, createThumbnail } from '../utils/imageCompression';
 import { fetchCurrentWeather } from '../utils/weatherAPI';
-import { detectMunicipality } from '../utils/geoFencing';
+import { resolveMunicipality } from '../utils/geoFencing';
 import { FEED_PAGE_SIZE } from '../utils/constants';
 
 const ADMIN_ROLES = ['superadmin_provincial'];
@@ -96,7 +96,7 @@ export async function submitReport(reportData, evidenceFiles, user) {
   }
 
   // Detect municipality (sync, run first)
-  const municipality = detectMunicipality(
+  const { municipality, method: municipalityDetectionMethod } = resolveMunicipality(
     reportData.location.lat,
     reportData.location.lng,
     { barangay: reportData.location.barangay }
@@ -186,7 +186,8 @@ export async function submitReport(reportData, evidenceFiles, user) {
       municipality: municipality,
       barangay: reportData.location.barangay || '',
       street: reportData.location.street || '',
-      accuracy: reportData.location.accuracy || 0
+      accuracy: reportData.location.accuracy || 0,
+      municipalityDetectionMethod
     },
     disaster: {
       type: reportData.disaster.type,

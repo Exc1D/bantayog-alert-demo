@@ -54,7 +54,7 @@ export function isInCamarinesNorte(lat, lng) {
 }
 
 export function getNearestMunicipality(lat, lng) {
-  if (!lat || !lng) return null;
+  if (!hasValidCoordinates(lat, lng)) return null;
 
   const pt = point([lng, lat]);
   let nearest = null;
@@ -71,4 +71,21 @@ export function getNearestMunicipality(lat, lng) {
   }
 
   return nearest;
+}
+
+export function resolveMunicipality(lat, lng, fallbackMunicipality = null) {
+  const exactMatch = detectMunicipality(lat, lng);
+  if (exactMatch) {
+    return { municipality: exactMatch, method: 'polygon_match' };
+  }
+
+  const nearest = getNearestMunicipality(lat, lng);
+  if (nearest) {
+    return { municipality: nearest, method: 'nearest_centroid' };
+  }
+
+  return {
+    municipality: fallbackMunicipality || 'Unknown',
+    method: fallbackMunicipality ? 'fallback_input' : 'unknown'
+  };
 }
