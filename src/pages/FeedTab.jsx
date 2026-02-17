@@ -24,7 +24,7 @@ function getEffectiveTimestamp(report) {
   return getFirestoreMs(report.timestamp) ?? 0;
 }
 
-export default function FeedTab({ onViewMap }) {
+export default function FeedTab({ onViewMap, onRequireSignUp }) {
   const { reports, loading, loadMore, hasMore, filters, updateFilters } = useReportsContext();
 
   const feedReports = useMemo(() => {
@@ -54,6 +54,7 @@ export default function FeedTab({ onViewMap }) {
         hasMore={hasMore}
         loadMore={loadMore}
         onViewMap={onViewMap}
+        onRequireSignUp={onRequireSignUp}
       />
     </div>
   );

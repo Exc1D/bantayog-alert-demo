@@ -37,7 +37,7 @@ const SEVERITY_BORDER = {
   minor: 'severity-border-minor'
 };
 
-export default memo(function FeedPost({ report, onViewMap }) {
+export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
   const [showComments, setShowComments] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
 
@@ -202,6 +202,7 @@ export default memo(function FeedPost({ report, onViewMap }) {
         report={report}
         onViewMap={onViewMap}
         onToggleComments={() => setShowComments(!showComments)}
+        onRequireSignUp={onRequireSignUp}
       />
 
       {showComments && (

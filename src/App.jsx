@@ -6,6 +6,7 @@ import LoadingSpinner from './components/Common/LoadingSpinner';
 import { AuthProvider } from './contexts/AuthContext';
 import { ReportsProvider } from './contexts/ReportsContext';
 import { ToastProvider } from './components/Common/Toast';
+import SignUpPromptModal from './components/Common/SignUpPromptModal';
 
 const MapTab = lazy(() => import('./pages/MapTab'));
 const FeedTab = lazy(() => import('./pages/FeedTab'));
@@ -16,9 +17,23 @@ const ReportModal = lazy(() => import('./components/Reports/ReportModal'));
 function AppContent() {
   const [activeTab, setActiveTab] = useState('map');
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showSignUpPrompt, setShowSignUpPrompt] = useState(false);
 
   const handleViewMap = () => {
     setActiveTab('map');
+  };
+
+  const openSignUpPrompt = () => {
+    setShowSignUpPrompt(true);
+  };
+
+  const handleSignUpNow = () => {
+    setShowSignUpPrompt(false);
+    setActiveTab('profile');
+  };
+
+  const handleOpenProfileTab = () => {
+    setActiveTab('profile');
   };
 
   const handleOpenReportModal = () => setShowReportModal(true);
@@ -29,7 +44,7 @@ function AppContent() {
       case 'map':
         return <MapTab onViewReport={noop} />;
       case 'feed':
-        return <FeedTab onViewMap={handleViewMap} />;
+        return <FeedTab onViewMap={handleViewMap} onRequireSignUp={openSignUpPrompt} />;
       case 'weather':
         return <WeatherTab />;
       case 'profile':
@@ -41,7 +56,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-bg flex flex-col">
-      <Header />
+      <Header onProfileClick={handleOpenProfileTab} />
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
       <main className="flex-1">
@@ -74,9 +89,16 @@ function AppContent() {
           <ReportModal
             isOpen={showReportModal}
             onClose={() => setShowReportModal(false)}
+            onAnonymousReportSubmitted={openSignUpPrompt}
           />
         </Suspense>
       )}
+
+      <SignUpPromptModal
+        isOpen={showSignUpPrompt}
+        onClose={() => setShowSignUpPrompt(false)}
+        onSignUpNow={handleSignUpNow}
+      />
     </div>
   );
 }

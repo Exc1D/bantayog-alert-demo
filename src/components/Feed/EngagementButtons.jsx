@@ -3,16 +3,24 @@ import { useAuthContext } from '../../contexts/AuthContext';
 import { upvoteReport, removeUpvote } from '../../hooks/useReports';
 import { useToast } from '../Common/Toast';
 
-export default function EngagementButtons({ report, onViewMap, onToggleComments }) {
+export default function EngagementButtons({ report, onViewMap, onToggleComments, onRequireSignUp }) {
   const { user } = useAuthContext();
   const { addToast } = useToast();
   const [isUpvoting, setIsUpvoting] = useState(false);
 
   const hasUpvoted = report.engagement?.upvotedBy?.includes(user?.uid);
 
+  const requireRegisteredUser = () => {
+    if (!user || user.isAnonymous) {
+      addToast('Please sign up to use upvotes and comments.', 'info');
+      onRequireSignUp?.();
+      return false;
+    }
+    return true;
+  };
+
   const handleUpvote = async () => {
-    if (!user) {
-      addToast('Please sign in to upvote', 'warning');
+    if (!requireRegisteredUser()) {
       return;
     }
 
@@ -32,6 +40,14 @@ export default function EngagementButtons({ report, onViewMap, onToggleComments 
     }
   };
 
+  const handleComments = () => {
+    if (!requireRegisteredUser()) {
+      return;
+    }
+
+    onToggleComments?.();
+  };
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -49,7 +65,7 @@ export default function EngagementButtons({ report, onViewMap, onToggleComments 
     }
   };
 
-  const btnClass = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors";
+  const btnClass = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors';
 
   return (
     <div className="px-2 py-2 border-t border-stone-100 flex justify-around">
@@ -69,7 +85,7 @@ export default function EngagementButtons({ report, onViewMap, onToggleComments 
       </button>
 
       <button
-        onClick={onToggleComments}
+        onClick={handleComments}
         className={`${btnClass} hover:bg-stone-50 text-textLight`}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

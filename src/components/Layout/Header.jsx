@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useReportsContext } from '../../contexts/ReportsContext';
 
-export default function Header() {
+export default function Header({ onProfileClick }) {
   const { user, userProfile, isAdmin, isSuperAdmin } = useAuthContext();
   const { reports } = useReportsContext();
 
@@ -25,6 +25,9 @@ export default function Header() {
     if (isAdmin) return 'bg-blue-500/90';
     return 'bg-white/15';
   };
+
+  const avatarUrl = userProfile?.photoURL || user?.photoURL;
+  const avatarInitial = (userProfile?.name || user?.displayName || 'U')[0].toUpperCase();
 
   return (
     <header className="sticky top-0 z-50 h-[56px] bg-primary text-white flex items-center justify-between px-4 shadow-dark">
@@ -63,19 +66,21 @@ export default function Header() {
           {getRoleBadge()}
         </span>
 
-        {user && !user.isAnonymous && (
-          userProfile?.photoURL || user.photoURL ? (
+        <button
+          onClick={onProfileClick}
+          className="w-8 h-8 rounded-full border border-white/20 overflow-hidden bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
+          title="Open profile"
+        >
+          {avatarUrl ? (
             <img
-              src={userProfile?.photoURL || user.photoURL}
+              src={avatarUrl}
               alt="Profile"
-              className="w-7 h-7 rounded-full object-cover border border-white/20"
+              className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-7 h-7 bg-white/10 border border-white/15 rounded-full flex items-center justify-center text-xs font-bold text-white/80">
-              {(userProfile?.name || user.displayName || 'U')[0].toUpperCase()}
-            </div>
-          )
-        )}
+            <span className="text-xs font-bold text-white/90">{avatarInitial}</span>
+          )}
+        </button>
       </div>
     </header>
   );
