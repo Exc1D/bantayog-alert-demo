@@ -1,126 +1,177 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { point } from '@turf/helpers';
-import centroid from '@turf/centroid';
-import distance from '@turf/distance';
-import fs from 'node:fs';
+import { MUNICIPALITY_COORDS } from '../src/utils/constants.js';
 
-const boundaries = JSON.parse(fs.readFileSync(new URL('../src/data/camarines-norte-boundaries.json', import.meta.url), 'utf8'));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const boundaries = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '../src/data/camarines-norte-boundaries.json'), 'utf8')
+);
+
 const features = boundaries.features;
 
-function bbox(feature) {
-  const coords = feature.geometry.coordinates[0];
-  let minLng = Infinity;
-  let minLat = Infinity;
-  let maxLng = -Infinity;
-  let maxLat = -Infinity;
-
-  for (const [lng, lat] of coords) {
-    if (lng < minLng) minLng = lng;
-    if (lat < minLat) minLat = lat;
-    if (lng > maxLng) maxLng = lng;
-    if (lat > maxLat) maxLat = lat;
-  }
-
-  return { minLng, minLat, maxLng, maxLat };
-}
-
-function bboxIntersects(a, b) {
-  return !(
-    a.maxLng < b.minLng ||
-    a.minLng > b.maxLng ||
-    a.maxLat < b.minLat ||
-    a.minLat > b.maxLat
-  );
-}
-
-function polygonHasPointInsideFeature(featureA, featureB) {
-  const ring = featureA.geometry.coordinates[0];
-  return ring.some(([lng, lat]) => booleanPointInPolygon(point([lng, lat]), featureB));
-}
-
-const EXPECTED_MUNICIPALITIES = [
-  'Basud',
-  'Capalonga',
-  'Daet',
-  'Jose Panganiban',
-  'Labo',
-  'Mercedes',
-  'Paracale',
-  'San Lorenzo Ruiz',
-  'San Vicente',
-  'Santa Elena',
-  'Talisay',
-  'Vinzons'
-];
-
-console.log('== Municipality boundary audit ==');
-console.log(`Feature count: ${features.length}`);
-
-const names = features.map((f) => f.properties.name).sort();
-const expectedSorted = [...EXPECTED_MUNICIPALITIES].sort();
-const missing = expectedSorted.filter((name) => !names.includes(name));
-const unexpected = names.filter((name) => !expectedSorted.includes(name));
-
-console.log(`Missing municipalities: ${missing.length ? missing.join(', ') : 'none'}`);
-console.log(`Unexpected municipalities: ${unexpected.length ? unexpected.join(', ') : 'none'}`);
-
-const overlaps = [];
-for (let i = 0; i < features.length; i += 1) {
-  for (let j = i + 1; j < features.length; j += 1) {
-    const a = features[i];
-    const b = features[j];
-    if (!bboxIntersects(bbox(a), bbox(b))) continue;
-
-    const overlapByVertices =
-      polygonHasPointInsideFeature(a, b) ||
-      polygonHasPointInsideFeature(b, a) ||
-      booleanPointInPolygon(centroid(a), b) ||
-      booleanPointInPolygon(centroid(b), a);
-
-    if (overlapByVertices) {
-      overlaps.push(`${a.properties.name} ↔ ${b.properties.name}`);
-    }
-  }
-}
-
-console.log(`Potential overlaps detected: ${overlaps.length}`);
-overlaps.forEach((pair) => console.log(`  - ${pair}`));
-
-const allCoords = features.flatMap((f) => f.geometry.coordinates[0]);
-const lngValues = allCoords.map(([lng]) => lng);
-const latValues = allCoords.map(([, lat]) => lat);
-const provinceSpan = {
-  lng: Math.max(...lngValues) - Math.min(...lngValues),
-  lat: Math.max(...latValues) - Math.min(...latValues)
+const BARANGAY_MUNICIPALITY_OVERRIDES = {
+  maslog: 'San Lorenzo Ruiz'
 };
 
-console.log(`Overall extent span: ${provinceSpan.lng.toFixed(3)}° lng × ${provinceSpan.lat.toFixed(3)}° lat`);
+function normalizeBarangay(value) {
+  return String(value || '').trim().toLowerCase();
+}
 
-const centroids = features.map((f) => ({
-  name: f.properties.name,
-  point: centroid(f)
-}));
+function detectMunicipality(lat, lng, options = {}) {
+  const pt = point([lng, lat]);
+  const matches = [];
 
-let nearestPair = null;
-let farthestPair = null;
-for (let i = 0; i < centroids.length; i += 1) {
-  for (let j = i + 1; j < centroids.length; j += 1) {
-    const d = distance(centroids[i].point, centroids[j].point, { units: 'kilometers' });
-    const pair = `${centroids[i].name} ↔ ${centroids[j].name}`;
-
-    if (!nearestPair || d < nearestPair.distanceKm) {
-      nearestPair = { pair, distanceKm: d };
+  for (const feature of features) {
+    if (booleanPointInPolygon(pt, feature)) {
+      matches.push(feature.properties.name);
     }
+  }
 
-    if (!farthestPair || d > farthestPair.distanceKm) {
-      farthestPair = { pair, distanceKm: d };
+  if (!matches.length) return null;
+  if (matches.length === 1) return matches[0];
+
+  const override = BARANGAY_MUNICIPALITY_OVERRIDES[normalizeBarangay(options.barangay)];
+  if (override && matches.includes(override)) return override;
+
+  let nearest = matches[0];
+  let minDistance = Infinity;
+  for (const municipality of matches) {
+    const coords = MUNICIPALITY_COORDS[municipality];
+    if (!coords) continue;
+    const dist = Math.hypot(lng - coords.lng, lat - coords.lat);
+    if (dist < minDistance) {
+      minDistance = dist;
+      nearest = municipality;
+    }
+  }
+
+  return nearest;
+}
+
+function polygonArea(points) {
+  let area = 0;
+  for (let i = 0; i < points.length - 1; i += 1) {
+    const [x1, y1] = points[i];
+    const [x2, y2] = points[i + 1];
+    area += x1 * y2 - x2 * y1;
+  }
+  return Math.abs(area) / 2;
+}
+
+const allLng = [];
+const allLat = [];
+for (const f of features) {
+  for (const ring of f.geometry.coordinates) {
+    for (const [lng, lat] of ring) {
+      allLng.push(lng);
+      allLat.push(lat);
     }
   }
 }
 
-console.log(`Nearest centroid pair: ${nearestPair.pair} (${nearestPair.distanceKm.toFixed(2)} km)`);
-console.log(`Farthest centroid pair: ${farthestPair.pair} (${farthestPair.distanceKm.toFixed(2)} km)`);
+const bbox = {
+  minLng: Math.min(...allLng),
+  maxLng: Math.max(...allLng),
+  minLat: Math.min(...allLat),
+  maxLat: Math.max(...allLat)
+};
 
-console.log('\nInterpretation:');
-console.log('- If many overlaps are listed, report-to-municipality sorting can be ambiguous.');
-console.log('- Very large centroid distances within one province may indicate simplified/non-authoritative polygons.');
+const gridSize = 260;
+let overlapPoints = 0;
+let uncoveredPoints = 0;
+let coveredPoints = 0;
+let total = 0;
+const pairOverlaps = new Map();
+
+for (let xi = 0; xi < gridSize; xi += 1) {
+  const lng = bbox.minLng + ((bbox.maxLng - bbox.minLng) * xi) / (gridSize - 1);
+  for (let yi = 0; yi < gridSize; yi += 1) {
+    const lat = bbox.minLat + ((bbox.maxLat - bbox.minLat) * yi) / (gridSize - 1);
+    total += 1;
+    const pt = point([lng, lat]);
+    const matches = [];
+
+    for (const feature of features) {
+      if (booleanPointInPolygon(pt, feature)) matches.push(feature.properties.name);
+    }
+
+    if (matches.length === 0) uncoveredPoints += 1;
+    else coveredPoints += 1;
+
+    if (matches.length > 1) {
+      overlapPoints += 1;
+      for (let i = 0; i < matches.length; i += 1) {
+        for (let j = i + 1; j < matches.length; j += 1) {
+          const key = [matches[i], matches[j]].sort().join(' | ');
+          pairOverlaps.set(key, (pairOverlaps.get(key) || 0) + 1);
+        }
+      }
+    }
+  }
+}
+
+const coordChecks = Object.entries(MUNICIPALITY_COORDS).map(([name, coord]) => {
+  const detected = detectMunicipality(coord.lat, coord.lng);
+  return {
+    municipality: name,
+    detected,
+    matched: detected === name,
+    lat: coord.lat,
+    lng: coord.lng
+  };
+});
+
+const geometryChecks = features.map((feature) => {
+  const ring = feature.geometry.coordinates[0];
+  const first = ring[0];
+  const last = ring[ring.length - 1];
+  return {
+    municipality: feature.properties.name,
+    closed: first[0] === last[0] && first[1] === last[1],
+    vertices: ring.length,
+    planarAreaDeg2: polygonArea(ring)
+  };
+});
+
+
+const overlapTieBreakCheck = {
+  description: 'Overlap tie-break with barangay=Maslog should resolve to San Lorenzo Ruiz',
+  input: { lat: 14.035, lng: 122.89, barangay: 'Maslog' },
+  overlappingMatches: features
+    .filter((feature) => booleanPointInPolygon(point([122.89, 14.035]), feature))
+    .map((feature) => feature.properties.name)
+};
+
+overlapTieBreakCheck.detectedWithoutBarangay = detectMunicipality(
+  overlapTieBreakCheck.input.lat,
+  overlapTieBreakCheck.input.lng
+);
+overlapTieBreakCheck.detectedWithBarangay = detectMunicipality(
+  overlapTieBreakCheck.input.lat,
+  overlapTieBreakCheck.input.lng,
+  { barangay: overlapTieBreakCheck.input.barangay }
+);
+
+const sortedPairOverlaps = [...pairOverlaps.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 20)
+  .map(([pair, count]) => ({ pair, count }));
+
+console.log(JSON.stringify({
+  featureCount: features.length,
+  bbox,
+  gridSize,
+  samplePoints: total,
+  coverageRatio: coveredPoints / total,
+  uncoveredRatio: uncoveredPoints / total,
+  overlapRatio: overlapPoints / total,
+  centroidMatchCount: coordChecks.filter((c) => c.matched).length,
+  coordChecks,
+  geometryChecks,
+  topOverlapPairs: sortedPairOverlaps,
+  overlapTieBreakCheck
+}, null, 2));

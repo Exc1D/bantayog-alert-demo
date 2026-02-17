@@ -99,8 +99,8 @@ export async function submitReport(reportData, evidenceFiles, user) {
   const { municipality, method: municipalityDetectionMethod } = resolveMunicipality(
     reportData.location.lat,
     reportData.location.lng,
-    reportData.location.municipality
-  );
+    { barangay: reportData.location.barangay }
+  ) || reportData.location.municipality || 'Unknown';
 
   // Separate images and videos
   const imageFiles = evidenceFiles.filter(f => f.type.startsWith('image/'));
