@@ -17,7 +17,7 @@ const STEP_TITLES = {
   3: 'REPORT DETAILS',
 };
 
-export default function ReportModal({ isOpen, onClose }) {
+export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitted }) {
   const [step, setStep] = useState(1);
   const [reportType, setReportType] = useState(null); // 'emergency' | 'situation'
   const [evidenceFiles, setEvidenceFiles] = useState([]);
@@ -25,7 +25,7 @@ export default function ReportModal({ isOpen, onClose }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { location, loading: geoLoading } = useGeolocation();
-  const { user } = useAuthContext();
+  const { user, signInAsGuest } = useAuthContext();
   const { addToast } = useToast();
 
   const municipality = location
@@ -69,6 +69,8 @@ export default function ReportModal({ isOpen, onClose }) {
     setIsSubmitting(true);
 
     try {
+      const activeUser = user || await signInAsGuest();
+
       const reportData = {
         location: {
           lat: location.lat,
@@ -87,7 +89,7 @@ export default function ReportModal({ isOpen, onClose }) {
         reportType,
       };
 
-      const { skippedFiles } = await submitReport(reportData, evidenceFiles, user);
+      const { skippedFiles } = await submitReport(reportData, evidenceFiles, activeUser);
 
       if (skippedFiles > 0) {
         addToast(
@@ -97,6 +99,13 @@ export default function ReportModal({ isOpen, onClose }) {
       } else {
         addToast('Report submitted successfully.', 'success');
       }
+
+      if (activeUser?.isAnonymous && onAnonymousReportSubmitted) {
+        window.setTimeout(() => {
+          onAnonymousReportSubmitted();
+        }, 10000);
+      }
+
       handleClose();
     } catch (error) {
       const msg = error?.message || error?.code || 'Unknown error';

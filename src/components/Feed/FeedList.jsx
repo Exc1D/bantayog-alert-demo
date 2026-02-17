@@ -1,7 +1,7 @@
 import FeedPost from './FeedPost';
 import LoadingSpinner from '../Common/LoadingSpinner';
 
-export default function FeedList({ reports, loading, hasMore, loadMore, onViewMap }) {
+export default function FeedList({ reports, loading, hasMore, loadMore, onViewMap, onRequireSignUp }) {
   if (loading && reports.length === 0) {
     return <LoadingSpinner text="Loading reports..." />;
   }
@@ -26,7 +26,12 @@ export default function FeedList({ reports, loading, hasMore, loadMore, onViewMa
   return (
     <div>
       {reports.map((report) => (
-        <FeedPost key={report.id} report={report} onViewMap={onViewMap} />
+        <FeedPost
+          key={report.id}
+          report={report}
+          onViewMap={onViewMap}
+          onRequireSignUp={onRequireSignUp}
+        />
       ))}
 
       {hasMore && (
