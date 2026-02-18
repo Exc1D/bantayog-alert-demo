@@ -3,6 +3,9 @@ import Header from './components/Layout/Header';
 import TabNavigation from './components/Layout/TabNavigation';
 import Footer from './components/Layout/Footer';
 import LoadingSpinner from './components/Common/LoadingSpinner';
+import ErrorBoundary from './components/Common/ErrorBoundary';
+import MapErrorBoundary from './components/Map/MapErrorBoundary';
+import ReportFormErrorBoundary from './components/Reports/ReportFormErrorBoundary';
 import { AuthProvider } from './contexts/AuthContext';
 import { ReportsProvider } from './contexts/ReportsContext';
 import { ToastProvider } from './components/Common/Toast';
@@ -42,7 +45,11 @@ function AppContent() {
   const renderTab = () => {
     switch (activeTab) {
       case 'map':
-        return <MapTab onViewReport={noop} />;
+        return (
+          <MapErrorBoundary>
+            <MapTab onViewReport={noop} />
+          </MapErrorBoundary>
+        );
       case 'feed':
         return <FeedTab onViewMap={handleViewMap} onRequireSignUp={openSignUpPrompt} />;
       case 'weather':
@@ -50,7 +57,11 @@ function AppContent() {
       case 'profile':
         return <ProfileTab />;
       default:
-        return <MapTab onViewReport={noop} />;
+        return (
+          <MapErrorBoundary>
+            <MapTab onViewReport={noop} />
+          </MapErrorBoundary>
+        );
     }
   };
 
@@ -86,11 +97,13 @@ function AppContent() {
       {/* Report Modal */}
       {showReportModal && (
         <Suspense fallback={null}>
-          <ReportModal
-            isOpen={showReportModal}
-            onClose={() => setShowReportModal(false)}
-            onAnonymousReportSubmitted={openSignUpPrompt}
-          />
+          <ReportFormErrorBoundary>
+            <ReportModal
+              isOpen={showReportModal}
+              onClose={() => setShowReportModal(false)}
+              onAnonymousReportSubmitted={openSignUpPrompt}
+            />
+          </ReportFormErrorBoundary>
         </Suspense>
       )}
 
@@ -105,12 +118,14 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ToastProvider>
-      <AuthProvider>
-        <ReportsProvider>
-          <AppContent />
-        </ReportsProvider>
-      </AuthProvider>
-    </ToastProvider>
+    <ErrorBoundary>
+      <ToastProvider>
+        <AuthProvider>
+          <ReportsProvider>
+            <AppContent />
+          </ReportsProvider>
+        </AuthProvider>
+      </ToastProvider>
+    </ErrorBoundary>
   );
 }

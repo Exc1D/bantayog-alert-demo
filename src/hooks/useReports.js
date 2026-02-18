@@ -22,6 +22,7 @@ import { compressImage, createThumbnail } from '../utils/imageCompression';
 import { fetchCurrentWeather } from '../utils/weatherAPI';
 import { resolveMunicipality } from '../utils/geoFencing';
 import { FEED_PAGE_SIZE } from '../utils/constants';
+import { checkLimit, recordAction, formatResetTime } from '../utils/rateLimiter';
 
 const ADMIN_ROLES = ['superadmin_provincial'];
 
@@ -94,6 +95,18 @@ export async function submitReport(reportData, evidenceFiles, user) {
   if (!user?.uid) {
     throw new Error('Authentication required to submit reports. Please sign in and try again.');
   }
+
+  const rateLimitStatus = checkLimit('report_submission');
+  if (!rateLimitStatus.allowed) {
+    const error = new Error(
+      `Rate limit exceeded. Please wait ${formatResetTime(rateLimitStatus.resetTime)} before submitting another report.`
+    );
+    error.code = 'rate_limited';
+    error.resetTime = rateLimitStatus.resetTime;
+    throw error;
+  }
+
+  recordAction('report_submission');
 
   // Detect municipality (sync, run first)
   const resolved = resolveMunicipality(
@@ -328,4 +341,8 @@ export async function deleteReport(reportId, adminRole = '') {
 
   const reportRef = doc(db, 'reports', reportId);
   await deleteDoc(reportRef);
+}
+
+export function getReportSubmissionRateLimit() {
+  return checkLimit('report_submission');
 }

@@ -18,13 +18,51 @@ service cloud.firestore {
       );
     }
 
+    // Input validation functions for sanitization
+    function isValidString(value, maxLength) {
+      return value is string 
+        && value.size() <= maxLength
+        && !value.matches('.*<script.*')
+        && !value.matches('.*javascript:.*')
+        && !value.matches('.*on\\w+\\s*=.*');
+    }
+
+    function isValidDescription(data) {
+      let desc = data.disaster.description;
+      return isValidString(desc, 2000) && desc.size() >= 10;
+    }
+
+    function isValidLocation(data) {
+      let barangay = data.location.barangay;
+      let street = data.location.street;
+      return (barangay == null || barangay == '' || isValidString(barangay, 100))
+        && (street == null || street == '' || isValidString(street, 100));
+    }
+
+    function isValidSeverity(value) {
+      return value in ['critical', 'moderate', 'minor'];
+    }
+
+    function isValidResolutionData(data) {
+      let actions = data.verification.resolution.actionsTaken;
+      let notes = data.verification.resolution.resolutionNotes;
+      let resources = data.verification.resolution.resourcesUsed;
+      return isValidString(actions, 2000) && actions.size() >= 10
+        && (notes == null || notes == '' || isValidString(notes, 1000))
+        && (resources == null || resources == '' || isValidString(resources, 500));
+    }
+
     match /reports/{reportId} {
       allow read: if true;
 
       // Report submissions must come from authenticated users (including Firebase anonymous auth)
+      // Input sanitization is applied client-side, server validates basic constraints
       allow create: if isSignedIn()
         && request.resource.data.reporter.userId == request.auth.uid
-        && request.resource.data.verification.status == 'pending';
+        && request.resource.data.verification.status == 'pending'
+        && isValidDescription(request.resource.data)
+        && isValidLocation(request.resource.data)
+        && isValidSeverity(request.resource.data.disaster.severity);
 
       // Admins can fully moderate reports.
       // Any signed-in user can update only engagement data (upvotes).
@@ -45,7 +83,13 @@ service cloud.firestore {
     
     match /users/{userId} {
       allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
-      allow write: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn() && request.auth.uid == userId
+        && request.resource.data.keys().hasAll(['userId', 'displayName', 'municipality', 'role'])
+        && request.resource.data.role == 'user'
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && request.auth.uid == userId
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'userId']);
+      allow delete: if false;
     }
   }
 }

@@ -1,4 +1,5 @@
 import { SEVERITY_LEVELS } from '../../utils/constants';
+import { useSanitization } from '../../hooks/useSanitization';
 
 const SEVERITY_STYLES = {
   critical: {
@@ -16,9 +17,16 @@ const SEVERITY_STYLES = {
 };
 
 export default function ReportForm({ formData, onChange }) {
+  const { sanitize, getFieldState } = useSanitization({ maxLength: 2000 });
+
   const handleFieldChange = (name, value) => {
-    onChange({ ...formData, [name]: value });
+    const sanitizedValue = sanitize(name, value, 'text');
+    onChange({ ...formData, [name]: sanitizedValue });
   };
+
+  const descriptionState = getFieldState('description');
+  const barangayState = getFieldState('barangay');
+  const streetState = getFieldState('street');
 
   return (
     <div className="space-y-4">
@@ -57,10 +65,15 @@ export default function ReportForm({ formData, onChange }) {
           value={formData.description || ''}
           onChange={(e) => handleFieldChange('description', e.target.value)}
           placeholder="Describe what you see: location details, severity, and any immediate dangers..."
-          className="w-full border border-stone-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none bg-white"
+          className={`w-full border rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none bg-white ${
+            descriptionState.warning ? 'border-amber-400' : 'border-stone-300'
+          }`}
           rows="3"
           required
         />
+        {descriptionState.warning && (
+          <p className="text-xs text-amber-600 mt-1">{descriptionState.warning}</p>
+        )}
       </div>
 
       {/* Location Details */}
@@ -72,7 +85,9 @@ export default function ReportForm({ formData, onChange }) {
             value={formData.barangay || ''}
             onChange={(e) => handleFieldChange('barangay', e.target.value)}
             placeholder="Optional"
-            className="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white"
+            className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white ${
+              barangayState.warning ? 'border-amber-400' : 'border-stone-300'
+            }`}
           />
         </div>
         <div>
@@ -82,7 +97,9 @@ export default function ReportForm({ formData, onChange }) {
             value={formData.street || ''}
             onChange={(e) => handleFieldChange('street', e.target.value)}
             placeholder="Optional"
-            className="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white"
+            className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white ${
+              streetState.warning ? 'border-amber-400' : 'border-stone-300'
+            }`}
           />
         </div>
       </div>

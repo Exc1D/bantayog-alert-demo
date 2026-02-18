@@ -6,7 +6,7 @@ service firebase.storage {
     }
 
     function isAllowedImage() {
-      return request.resource.contentType.matches('image/.*');
+      return request.resource.contentType.matches('image/(jpeg|png|gif|webp)');
     }
 
     function isAllowedVideo() {

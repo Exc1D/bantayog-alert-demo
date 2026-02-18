@@ -7,6 +7,7 @@ import { useAuthContext } from '../../contexts/AuthContext';
 import { useToast } from '../Common/Toast';
 import { formatDate } from '../../utils/timeUtils';
 import { getDisasterType } from '../../data/disasterTypes';
+import { sanitizeText, truncateText, containsXSS } from '../../utils/sanitization';
 
 export default function ResolutionModal({ isOpen, onClose, report }) {
   const [evidencePhotos, setEvidencePhotos] = useState([]);
@@ -23,13 +24,22 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
   const disasterType = getDisasterType(report.disaster?.type);
 
   const handleSubmit = async () => {
+    const sanitizedActions = sanitizeText(actionsTaken);
+    const sanitizedNotes = sanitizeText(resolutionNotes);
+    const sanitizedResources = sanitizeText(resourcesUsed);
+    
     if (evidencePhotos.length === 0) {
       addToast('At least 1 evidence photo is required', 'warning');
       return;
     }
 
-    if (!actionsTaken || actionsTaken.trim().length < 10) {
+    if (!sanitizedActions || sanitizedActions.trim().length < 10) {
       addToast('Please describe what actions were taken (at least 10 characters)', 'warning');
+      return;
+    }
+    
+    if (containsXSS(actionsTaken) || containsXSS(resolutionNotes) || containsXSS(resourcesUsed)) {
+      addToast('Invalid characters detected in input', 'warning');
       return;
     }
 
@@ -39,9 +49,9 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
         report.id,
         user.uid,
         evidencePhotos,
-        actionsTaken,
-        resolutionNotes,
-        resourcesUsed,
+        truncateText(sanitizedActions, 2000),
+        truncateText(sanitizedNotes, 1000),
+        truncateText(sanitizedResources, 500),
         userProfile?.role || ""
       );
 

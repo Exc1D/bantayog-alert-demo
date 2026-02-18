@@ -1,0 +1,113 @@
+name: Firebase Preview Deployment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  pull-requests: write
+  checks: write
+  contents: read
+
+jobs:
+  preview:
+    name: Create Preview Channel
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    environment: preview
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@13
+
+      - name: Create Firebase Hosting preview
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        id: preview
+        run: |
+          CHANNEL_ID="pr-${{ github.event.pull_request.number }}"
+          OUTPUT=$(firebase hosting:channel:deploy "$CHANNEL_ID" --token "$FIREBASE_TOKEN" --expires 7d 2>&1)
+          echo "$OUTPUT"
+          
+          PROJECT_ID=$(cat .firebaserc | jq -r '.projects.default')
+          PREVIEW_URL=$(echo "$OUTPUT" | grep -oP 'https://[^[:space:]]+\.web\.app' | head -1 || echo "https://$CHANNEL_ID--$PROJECT_ID.web.app")
+          
+          echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+          echo "channel_id=$CHANNEL_ID" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR with preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes('Preview Deployment')
+            );
+            
+            const body = `## 🔍 Preview Deployment\n\nA preview deployment has been created for this PR.\n\n**Preview URL:** ${{ steps.preview.outputs.preview_url }}\n**Expires:** 7 days\n\n---\n*This preview will be automatically cleaned up when the PR is closed.*`;
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+  cleanup:
+    name: Cleanup Preview Channel
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@13
+
+      - name: Delete Firebase Hosting preview channel
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          CHANNEL_ID="pr-${{ github.event.pull_request.number }}"
+          firebase hosting:channel:delete "$CHANNEL_ID" --token "$FIREBASE_TOKEN" -f || true
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '## 🧹 Preview Cleaned Up\n\nThe preview deployment for this PR has been removed.'
+            });

@@ -5,12 +5,15 @@ import ReportTypeSelector from './ReportTypeSelector';
 import EvidenceCapture from './EvidenceCapture';
 import ReportForm from './ReportForm';
 import ReportSubmission from './ReportSubmission';
+import RateLimitIndicator from '../Common/RateLimitIndicator';
 import { useGeolocation } from '../../hooks/useGeolocation';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useToast } from '../Common/Toast';
 import { submitReport } from '../../hooks/useReports';
 import { resolveMunicipality } from '../../utils/geoFencing';
 import { MUNICIPALITY_COORDS } from '../../utils/constants';
+import { useRateLimit } from '../../hooks/useRateLimit';
+import { sanitizeText, truncateText, containsXSS } from '../../utils/sanitization';
 
 const STEP_TITLES = {
   1: 'REPORT INCIDENT',
@@ -29,6 +32,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
   const { location, error: geoError, loading: geoLoading, refresh: refreshLocation, isInApp } = useGeolocation();
   const { user, signInAsGuest } = useAuthContext();
   const { addToast } = useToast();
+  const rateLimit = useRateLimit('report_submission');
 
   const municipality = location
     ? resolveMunicipality(location.lat, location.lng).municipality
@@ -65,12 +69,20 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
   };
 
   const handleSubmit = async () => {
+    const sanitizedDescription = sanitizeText(formData.description);
+    const sanitizedBarangay = sanitizeText(formData.barangay);
+    const sanitizedStreet = sanitizeText(formData.street);
+    
     if (!formData.severity) {
       addToast('What is the alert status?', 'warning');
       return;
     }
-    if (!formData.description || formData.description.trim().length < 10) {
+    if (!sanitizedDescription || sanitizedDescription.trim().length < 10) {
       addToast('What is happening? (at least 10 characters)', 'warning');
+      return;
+    }
+    if (containsXSS(formData.description) || containsXSS(formData.barangay) || containsXSS(formData.street)) {
+      addToast('Invalid characters detected in input', 'warning');
       return;
     }
     if (!effectiveLocation) {
@@ -91,20 +103,22 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
           lat: effectiveLocation.lat,
           lng: effectiveLocation.lng,
           municipality: municipality || 'Unknown',
-          barangay: formData.barangay || '',
-          street: formData.street || '',
+          barangay: truncateText(sanitizedBarangay, 100),
+          street: truncateText(sanitizedStreet, 100),
           accuracy: effectiveLocation.accuracy ?? 0
         },
         disaster: {
           type: 'pending',
           severity: formData.severity,
-          description: formData.description,
+          description: truncateText(sanitizedDescription, 2000),
           tags: []
         },
         reportType,
       };
 
       const { skippedFiles } = await submitReport(reportData, evidenceFiles, activeUser);
+      
+      rateLimit.recordAction();
 
       if (skippedFiles > 0) {
         addToast(
@@ -123,8 +137,13 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
 
       handleClose();
     } catch (error) {
-      const msg = error?.message || error?.code || 'Unknown error';
-      addToast(`Failed to submit report: ${msg}`, 'error');
+      if (error.code === 'rate_limited') {
+        rateLimit.refresh();
+        addToast(error.message, 'error');
+      } else {
+        const msg = error?.message || error?.code || 'Unknown error';
+        addToast(`Failed to submit report: ${msg}`, 'error');
+      }
       console.error('Submit error:', error);
     } finally {
       setIsSubmitting(false);
@@ -183,6 +202,15 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
             onChange={setFormData}
           />
 
+          <RateLimitIndicator
+            remainingAttempts={rateLimit.remainingAttempts}
+            maxAttempts={rateLimit.maxAttempts}
+            resetTime={rateLimit.resetTime}
+            message={rateLimit.message}
+            isAllowed={rateLimit.isAllowed}
+            showWhenAllowed={true}
+          />
+
           <ReportSubmission
             location={location}
             municipality={municipality}
@@ -208,7 +236,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
               variant="primary"
               onClick={handleSubmit}
               loading={isSubmitting}
-              disabled={isSubmitting || !formData.severity || !formData.description || !effectiveLocation}
+              disabled={isSubmitting || !formData.severity || !formData.description || !effectiveLocation || !rateLimit.isAllowed}
               className="flex-1"
             >
               Submit Report
