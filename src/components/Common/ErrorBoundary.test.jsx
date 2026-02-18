@@ -104,9 +104,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('renders custom fallback component', () => {
-    const CustomFallback = ({ error }) => (
-      <div>Custom error: {error.message}</div>
-    );
+    const CustomFallback = ({ error }) => <div>Custom error: {error.message}</div>;
 
     render(
       <ErrorBoundary fallback={CustomFallback}>
@@ -156,42 +154,34 @@ describe('ErrorBoundary', () => {
 
 describe('ErrorFallback', () => {
   it('renders with error message', () => {
-    render(
-      <ErrorFallback error={{ message: 'Test error' }} />
-    );
+    render(<ErrorFallback error={{ message: 'Test error' }} />);
 
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
   });
 
   it('renders retry button when onRetry provided', () => {
-    render(
-      <ErrorFallback error={{ message: 'Test error' }} onRetry={() => {}} />
-    );
+    render(<ErrorFallback error={{ message: 'Test error' }} onRetry={() => {}} />);
 
     expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
   });
 
   it('does not render retry button when onRetry not provided', () => {
-    render(
-      <ErrorFallback error={{ message: 'Test error' }} />
-    );
+    render(<ErrorFallback error={{ message: 'Test error' }} />);
 
     expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument();
   });
 
   it('renders go home button when onGoHome provided', () => {
-    render(
-      <ErrorFallback error={{ message: 'Test error' }} onGoHome={() => {}} />
-    );
+    render(<ErrorFallback error={{ message: 'Test error' }} onGoHome={() => {}} />);
 
     expect(screen.getByRole('button', { name: /go home/i })).toBeInTheDocument();
   });
 
   it('shows error details when showDetails is true', () => {
     render(
-      <ErrorFallback 
-        error={{ message: 'Test error', stack: 'Error stack trace' }} 
-        showDetails={true} 
+      <ErrorFallback
+        error={{ message: 'Test error', stack: 'Error stack trace' }}
+        showDetails={true}
       />
     );
 
@@ -201,9 +191,7 @@ describe('ErrorFallback', () => {
   it('calls onRetry when Try Again is clicked', () => {
     const handleRetry = vi.fn();
 
-    render(
-      <ErrorFallback error={{ message: 'Test error' }} onRetry={handleRetry} />
-    );
+    render(<ErrorFallback error={{ message: 'Test error' }} onRetry={handleRetry} />);
 
     fireEvent.click(screen.getByRole('button', { name: /try again/i }));
     expect(handleRetry).toHaveBeenCalled();
@@ -212,9 +200,7 @@ describe('ErrorFallback', () => {
   it('calls onGoHome when Go Home is clicked', () => {
     const handleGoHome = vi.fn();
 
-    render(
-      <ErrorFallback error={{ message: 'Test error' }} onGoHome={handleGoHome} />
-    );
+    render(<ErrorFallback error={{ message: 'Test error' }} onGoHome={handleGoHome} />);
 
     fireEvent.click(screen.getByRole('button', { name: /go home/i }));
     expect(handleGoHome).toHaveBeenCalled();

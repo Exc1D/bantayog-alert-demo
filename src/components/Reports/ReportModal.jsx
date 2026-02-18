@@ -29,7 +29,13 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [manualMunicipality, setManualMunicipality] = useState('');
 
-  const { location, error: geoError, loading: geoLoading, refresh: refreshLocation, isInApp } = useGeolocation();
+  const {
+    location,
+    error: geoError,
+    loading: geoLoading,
+    refresh: refreshLocation,
+    isInApp,
+  } = useGeolocation();
   const { user, signInAsGuest } = useAuthContext();
   const { addToast } = useToast();
   const rateLimit = useRateLimit('report_submission');
@@ -39,14 +45,15 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
     : manualMunicipality || null;
 
   // Build an effective location from GPS or manual selection
-  const effectiveLocation = location || (manualMunicipality && MUNICIPALITY_COORDS[manualMunicipality]
-    ? {
-        lat: MUNICIPALITY_COORDS[manualMunicipality].lat,
-        lng: MUNICIPALITY_COORDS[manualMunicipality].lng,
-        accuracy: null, // manual — no GPS accuracy
-      }
-    : null
-  );
+  const effectiveLocation =
+    location ||
+    (manualMunicipality && MUNICIPALITY_COORDS[manualMunicipality]
+      ? {
+          lat: MUNICIPALITY_COORDS[manualMunicipality].lat,
+          lng: MUNICIPALITY_COORDS[manualMunicipality].lng,
+          accuracy: null, // manual — no GPS accuracy
+        }
+      : null);
 
   const handleTypeSelect = (type) => {
     setReportType(type);
@@ -72,7 +79,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
     const sanitizedDescription = sanitizeText(formData.description);
     const sanitizedBarangay = sanitizeText(formData.barangay);
     const sanitizedStreet = sanitizeText(formData.street);
-    
+
     if (!formData.severity) {
       addToast('What is the alert status?', 'warning');
       return;
@@ -81,7 +88,11 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
       addToast('What is happening? (at least 10 characters)', 'warning');
       return;
     }
-    if (containsXSS(formData.description) || containsXSS(formData.barangay) || containsXSS(formData.street)) {
+    if (
+      containsXSS(formData.description) ||
+      containsXSS(formData.barangay) ||
+      containsXSS(formData.street)
+    ) {
       addToast('Invalid characters detected in input', 'warning');
       return;
     }
@@ -96,7 +107,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
     setIsSubmitting(true);
 
     try {
-      const activeUser = user || await signInAsGuest();
+      const activeUser = user || (await signInAsGuest());
 
       const reportData = {
         location: {
@@ -105,19 +116,19 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
           municipality: municipality || 'Unknown',
           barangay: truncateText(sanitizedBarangay, 100),
           street: truncateText(sanitizedStreet, 100),
-          accuracy: effectiveLocation.accuracy ?? 0
+          accuracy: effectiveLocation.accuracy ?? 0,
         },
         disaster: {
           type: 'pending',
           severity: formData.severity,
           description: truncateText(sanitizedDescription, 2000),
-          tags: []
+          tags: [],
         },
         reportType,
       };
 
       const { skippedFiles } = await submitReport(reportData, evidenceFiles, activeUser);
-      
+
       rateLimit.recordAction();
 
       if (skippedFiles > 0) {
@@ -160,35 +171,18 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title={STEP_TITLES[step]}
-    >
-      {step === 1 && (
-        <ReportTypeSelector onSelect={handleTypeSelect} />
-      )}
+    <Modal isOpen={isOpen} onClose={handleClose} title={STEP_TITLES[step]}>
+      {step === 1 && <ReportTypeSelector onSelect={handleTypeSelect} />}
 
       {step === 2 && (
         <div className="space-y-4">
-          <EvidenceCapture
-            files={evidenceFiles}
-            onFilesChange={setEvidenceFiles}
-          />
+          <EvidenceCapture files={evidenceFiles} onFilesChange={setEvidenceFiles} />
 
           <div className="flex gap-3 pt-2">
-            <Button
-              variant="secondary"
-              onClick={handleBack}
-              className="flex-1"
-            >
+            <Button variant="secondary" onClick={handleBack} className="flex-1">
               Back
             </Button>
-            <Button
-              variant="primary"
-              onClick={handleEvidenceContinue}
-              className="flex-1"
-            >
+            <Button variant="primary" onClick={handleEvidenceContinue} className="flex-1">
               Continue
             </Button>
           </div>
@@ -197,10 +191,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
 
       {step === 3 && (
         <div className="space-y-4">
-          <ReportForm
-            formData={formData}
-            onChange={setFormData}
-          />
+          <ReportForm formData={formData} onChange={setFormData} />
 
           <RateLimitIndicator
             remainingAttempts={rateLimit.remainingAttempts}
@@ -236,7 +227,13 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
               variant="primary"
               onClick={handleSubmit}
               loading={isSubmitting}
-              disabled={isSubmitting || !formData.severity || !formData.description || !effectiveLocation || !rateLimit.isAllowed}
+              disabled={
+                isSubmitting ||
+                !formData.severity ||
+                !formData.description ||
+                !effectiveLocation ||
+                !rateLimit.isAllowed
+              }
               className="flex-1"
             >
               Submit Report

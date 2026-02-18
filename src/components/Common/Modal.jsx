@@ -17,13 +17,12 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
   return (
     <div className="fixed inset-0 z-[55] flex items-end sm:items-center justify-center sm:p-4">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 modal-backdrop"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 modal-backdrop" onClick={onClose} />
 
       {/* Modal Content */}
-      <div className={`relative bg-white ${maxWidth} w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-xl shadow-dark animate-slide-up`}>
+      <div
+        className={`relative bg-white ${maxWidth} w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-xl shadow-dark animate-slide-up`}
+      >
         {/* Header */}
         {title && (
           <div className="sticky top-0 bg-primary text-white px-5 py-3.5 flex items-center justify-between rounded-t-2xl sm:rounded-t-xl z-10">
@@ -38,9 +37,7 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
         )}
 
         {/* Body */}
-        <div className="p-5">
-          {children}
-        </div>
+        <div className="p-5">{children}</div>
       </div>
     </div>
   );

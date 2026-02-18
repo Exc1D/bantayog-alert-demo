@@ -11,7 +11,7 @@ const TYPE_COLORS = {
   infrastructure: 'border-slate-500 bg-slate-50',
   environmental: 'border-emerald-500 bg-emerald-50',
   security: 'border-amber-500 bg-amber-50',
-  other: 'border-gray-400 bg-gray-50'
+  other: 'border-gray-400 bg-gray-50',
 };
 
 export default function DisasterTypeSelector({ selectedType, onSelect }) {
@@ -36,7 +36,9 @@ export default function DisasterTypeSelector({ selectedType, onSelect }) {
               }`}
             >
               <span className="text-2xl mb-1">{type.icon}</span>
-              <span className="text-[11px] font-semibold text-center leading-tight text-text">{type.label}</span>
+              <span className="text-[11px] font-semibold text-center leading-tight text-text">
+                {type.label}
+              </span>
             </button>
           );
         })}

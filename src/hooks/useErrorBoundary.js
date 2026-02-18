@@ -9,22 +9,28 @@ export default function useErrorBoundary() {
     }
   }, []);
 
-  const captureError = useCallback((error) => {
-    if (error instanceof Error) {
-      showBoundary(error);
-    } else {
-      showBoundary(new Error(String(error)));
-    }
-  }, [showBoundary]);
+  const captureError = useCallback(
+    (error) => {
+      if (error instanceof Error) {
+        showBoundary(error);
+      } else {
+        showBoundary(new Error(String(error)));
+      }
+    },
+    [showBoundary]
+  );
 
-  const captureAsyncError = useCallback(async (promise) => {
-    try {
-      return await promise;
-    } catch (error) {
-      captureError(error);
-      throw error;
-    }
-  }, [captureError]);
+  const captureAsyncError = useCallback(
+    async (promise) => {
+      try {
+        return await promise;
+      } catch (error) {
+        captureError(error);
+        throw error;
+      }
+    },
+    [captureError]
+  );
 
   return {
     showBoundary,
@@ -32,6 +38,6 @@ export default function useErrorBoundary() {
     captureAsyncError,
     setErrorBoundaryHandler: useCallback((handler) => {
       errorBoundaryRef.current = handler;
-    }, [])
+    }, []),
   };
 }

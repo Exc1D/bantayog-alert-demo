@@ -7,15 +7,12 @@ export default function MapTab({ onViewReport }) {
 
   // Filter out resolved reports — resolved pins should not appear on the map
   const mapReports = useMemo(() => {
-    return reports.filter(report => report.verification?.status !== 'resolved');
+    return reports.filter((report) => report.verification?.status !== 'resolved');
   }, [reports]);
 
   return (
     <div className="h-[calc(100vh-112px)] isolate">
-      <LeafletMap
-        reports={mapReports}
-        onReportClick={onViewReport}
-      />
+      <LeafletMap reports={mapReports} onReportClick={onViewReport} />
     </div>
   );
 }

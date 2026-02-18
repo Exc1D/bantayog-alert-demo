@@ -7,9 +7,10 @@ export default function Header({ onProfileClick }) {
   const { reports } = useReportsContext();
 
   const activeCount = useMemo(
-    () => reports.filter(
-      r => r.verification?.status === 'pending' || r.verification?.status === 'verified'
-    ).length,
+    () =>
+      reports.filter(
+        (r) => r.verification?.status === 'pending' || r.verification?.status === 'verified'
+      ).length,
     [reports]
   );
 
@@ -34,16 +35,23 @@ export default function Header({ onProfileClick }) {
       {/* Left: Brand */}
       <div className="flex items-center gap-2.5">
         <div className="w-8 h-8 bg-accent/20 border border-accent/30 rounded-lg flex items-center justify-center">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e63946" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#e63946"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
             <line x1="12" y1="9" x2="12" y2="13" />
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
         </div>
         <div className="leading-none">
-          <h1 className="text-[15px] font-extrabold tracking-wide text-white">
-            BANTAYOG ALERT
-          </h1>
+          <h1 className="text-[15px] font-extrabold tracking-wide text-white">BANTAYOG ALERT</h1>
           <p className="text-[9px] font-medium text-white/40 tracking-widest uppercase">
             Camarines Norte
           </p>
@@ -62,7 +70,9 @@ export default function Header({ onProfileClick }) {
           </div>
         )}
 
-        <span className={`${getRoleBadgeColor()} text-white text-[10px] font-bold px-2 py-1 rounded tracking-wide`}>
+        <span
+          className={`${getRoleBadgeColor()} text-white text-[10px] font-bold px-2 py-1 rounded tracking-wide`}
+        >
           {getRoleBadge()}
         </span>
 
@@ -72,11 +82,7 @@ export default function Header({ onProfileClick }) {
           title="Open profile"
         >
           {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
+            <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
           ) : (
             <span className="text-xs font-bold text-white/90">{avatarInitial}</span>
           )}

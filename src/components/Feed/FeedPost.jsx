@@ -8,10 +8,12 @@ function SeverityBadge({ severity }) {
   const styles = {
     critical: 'bg-red-600 text-white',
     moderate: 'bg-amber-500 text-white',
-    minor: 'bg-emerald-600 text-white'
+    minor: 'bg-emerald-600 text-white',
   };
   return (
-    <span className={`${styles[severity] || styles.minor} px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide`}>
+    <span
+      className={`${styles[severity] || styles.minor} px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide`}
+    >
       {severity}
     </span>
   );
@@ -22,10 +24,12 @@ function StatusBadge({ status }) {
     pending: 'bg-stone-200 text-stone-700',
     verified: 'bg-blue-100 text-blue-700',
     rejected: 'bg-red-100 text-red-700',
-    resolved: 'bg-emerald-100 text-emerald-700'
+    resolved: 'bg-emerald-100 text-emerald-700',
   };
   return (
-    <span className={`${styles[status] || styles.pending} px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide`}>
+    <span
+      className={`${styles[status] || styles.pending} px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide`}
+    >
       {status}
     </span>
   );
@@ -34,7 +38,7 @@ function StatusBadge({ status }) {
 const SEVERITY_BORDER = {
   critical: 'severity-border-critical',
   moderate: 'severity-border-moderate',
-  minor: 'severity-border-minor'
+  minor: 'severity-border-minor',
 };
 
 export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
@@ -48,7 +52,9 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
   const isCritical = severity === 'critical' && status !== 'resolved';
 
   return (
-    <div className={`bg-white rounded-xl mb-3 shadow-card overflow-hidden hover:shadow-card-hover transition-shadow ${SEVERITY_BORDER[severity] || ''} ${isCritical ? 'critical-glow' : ''} status-stripe-${status}`}>
+    <div
+      className={`bg-white rounded-xl mb-3 shadow-card overflow-hidden hover:shadow-card-hover transition-shadow ${SEVERITY_BORDER[severity] || ''} ${isCritical ? 'critical-glow' : ''} status-stripe-${status}`}
+    >
       {/* Resolved Banner */}
       {status === 'resolved' && (
         <div className="bg-emerald-600 text-white py-1.5 text-center text-[10px] font-bold uppercase tracking-widest">
@@ -62,16 +68,32 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-lg">{disasterType.icon}</span>
-              <span className="font-bold text-sm uppercase tracking-wide truncate">{disasterType.label}</span>
+              <span className="font-bold text-sm uppercase tracking-wide truncate">
+                {disasterType.label}
+              </span>
               {status === 'verified' && (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#2563eb" stroke="white" strokeWidth="2">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="#2563eb"
+                  stroke="white"
+                  strokeWidth="2"
+                >
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="9 12 11.5 14.5 16 10" />
                 </svg>
               )}
             </div>
             <div className="text-xs text-textLight mt-1 flex items-center gap-1">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
                 <circle cx="12" cy="10" r="3" />
               </svg>
@@ -152,8 +174,11 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
         {/* Tags */}
         {report.disaster?.tags?.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2.5">
-            {report.disaster.tags.map(tag => (
-              <span key={tag} className="bg-stone-100 text-stone-500 text-[10px] px-2 py-0.5 rounded-full font-medium">
+            {report.disaster.tags.map((tag) => (
+              <span
+                key={tag}
+                className="bg-stone-100 text-stone-500 text-[10px] px-2 py-0.5 rounded-full font-medium"
+              >
                 #{tag}
               </span>
             ))}
@@ -163,8 +188,11 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
         {/* Weather Context */}
         {report.weatherContext && (
           <div className="bg-stone-50 border border-stone-200 rounded-lg p-2 mt-2.5 text-[11px] text-textLight">
-            <span className="font-semibold">Weather:</span> {report.weatherContext.condition}, {report.weatherContext.temperature}&deg;C
-            {report.weatherContext.windSpeed ? ` &bull; Wind: ${report.weatherContext.windSpeed}kph` : ''}
+            <span className="font-semibold">Weather:</span> {report.weatherContext.condition},{' '}
+            {report.weatherContext.temperature}&deg;C
+            {report.weatherContext.windSpeed
+              ? ` &bull; Wind: ${report.weatherContext.windSpeed}kph`
+              : ''}
           </div>
         )}
       </div>
@@ -189,10 +217,14 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
             </div>
           )}
           {report.verification.resolution.actionsTaken && (
-            <p className="text-xs text-emerald-800">{report.verification.resolution.actionsTaken}</p>
+            <p className="text-xs text-emerald-800">
+              {report.verification.resolution.actionsTaken}
+            </p>
           )}
           {report.verification.resolution.resolutionNotes && (
-            <p className="text-[11px] text-emerald-600 mt-1">{report.verification.resolution.resolutionNotes}</p>
+            <p className="text-[11px] text-emerald-600 mt-1">
+              {report.verification.resolution.resolutionNotes}
+            </p>
           )}
         </div>
       )}

@@ -33,7 +33,7 @@ export function useWeather(municipality) {
       setLoading(true);
       const [weatherData, forecastData] = await Promise.all([
         fetchCurrentWeather(coords.lat, coords.lng),
-        fetchForecast(coords.lat, coords.lng)
+        fetchForecast(coords.lat, coords.lng),
       ]);
 
       setWeather(weatherData);
@@ -43,7 +43,7 @@ export function useWeather(municipality) {
       weatherCache.set(municipality, {
         weather: weatherData,
         forecast: forecastData,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       setError(null);
@@ -86,7 +86,7 @@ export function useAllMunicipalitiesWeather() {
           weatherCache.set(name, {
             weather,
             forecast: [],
-            timestamp: Date.now()
+            timestamp: Date.now(),
           });
         } catch {
           results[name] = null;

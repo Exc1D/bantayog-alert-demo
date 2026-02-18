@@ -10,11 +10,11 @@ import { getSafeMediaUrls } from '../../utils/mediaSafety';
 const SEV_STYLES = {
   critical: 'bg-red-600 text-white',
   moderate: 'bg-amber-500 text-white',
-  minor: 'bg-emerald-600 text-white'
+  minor: 'bg-emerald-600 text-white',
 };
 
 // Disaster types available for classification (exclude 'pending')
-const CLASSIFIABLE_TYPES = DISASTER_TYPES.filter(t => t.id !== 'pending');
+const CLASSIFIABLE_TYPES = DISASTER_TYPES.filter((t) => t.id !== 'pending');
 
 export default function VerificationPanel({ report, onDone }) {
   const [notes, setNotes] = useState('');
@@ -40,7 +40,10 @@ export default function VerificationPanel({ report, onDone }) {
       addToast('Report verified and classified successfully', 'success');
       onDone();
     } catch (error) {
-      addToast(`Failed to verify report: ${error?.message || error?.code || 'Unknown error'}`, 'error');
+      addToast(
+        `Failed to verify report: ${error?.message || error?.code || 'Unknown error'}`,
+        'error'
+      );
     } finally {
       setProcessing(false);
     }
@@ -57,7 +60,10 @@ export default function VerificationPanel({ report, onDone }) {
       addToast('Report rejected', 'info');
       onDone();
     } catch (error) {
-      addToast(`Failed to reject report: ${error?.message || error?.code || 'Unknown error'}`, 'error');
+      addToast(
+        `Failed to reject report: ${error?.message || error?.code || 'Unknown error'}`,
+        'error'
+      );
     } finally {
       setProcessing(false);
     }
@@ -70,7 +76,10 @@ export default function VerificationPanel({ report, onDone }) {
       addToast('Report deleted permanently', 'success');
       onDone();
     } catch (error) {
-      addToast(`Failed to delete report: ${error?.message || error?.code || 'Unknown error'}`, 'error');
+      addToast(
+        `Failed to delete report: ${error?.message || error?.code || 'Unknown error'}`,
+        'error'
+      );
     } finally {
       setProcessing(false);
       setShowDeleteConfirm(false);
@@ -84,14 +93,26 @@ export default function VerificationPanel({ report, onDone }) {
         <div className="flex items-center gap-2 mb-2">
           <span className="text-lg">{disasterType.icon}</span>
           <h3 className="font-bold text-sm uppercase tracking-wide">{disasterType.label}</h3>
-          <span className={`${sevStyle} px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide ml-auto`}>
+          <span
+            className={`${sevStyle} px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide ml-auto`}
+          >
             {report.disaster?.severity}
           </span>
         </div>
         <div className="text-xs space-y-1 text-textLight">
-          <p><span className="font-semibold text-text">Location:</span> {report.location?.municipality}{report.location?.street ? `, ${report.location.street}` : ''}</p>
-          <p><span className="font-semibold text-text">Reporter:</span> {report.reporter?.name || 'Anonymous'}</p>
-          <p><span className="font-semibold text-text">Reported:</span> {formatTimeAgo(report.timestamp)}</p>
+          <p>
+            <span className="font-semibold text-text">Location:</span>{' '}
+            {report.location?.municipality}
+            {report.location?.street ? `, ${report.location.street}` : ''}
+          </p>
+          <p>
+            <span className="font-semibold text-text">Reporter:</span>{' '}
+            {report.reporter?.name || 'Anonymous'}
+          </p>
+          <p>
+            <span className="font-semibold text-text">Reported:</span>{' '}
+            {formatTimeAgo(report.timestamp)}
+          </p>
         </div>
         <p className="text-sm mt-2">{report.disaster?.description}</p>
       </div>
@@ -99,7 +120,9 @@ export default function VerificationPanel({ report, onDone }) {
       {/* Photos */}
       {report.media?.photos?.length > 0 && (
         <div>
-          <p className="text-xs font-bold text-textLight uppercase tracking-wider mb-2">Attached Photos</p>
+          <p className="text-xs font-bold text-textLight uppercase tracking-wider mb-2">
+            Attached Photos
+          </p>
           <div className="grid grid-cols-3 gap-2">
             {getSafeMediaUrls(report.media.photos).map((photo, i) => (
               <img
@@ -124,7 +147,7 @@ export default function VerificationPanel({ report, onDone }) {
           className="w-full border border-stone-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white"
         >
           <option value="">-- Select hazard type --</option>
-          {CLASSIFIABLE_TYPES.map(type => (
+          {CLASSIFIABLE_TYPES.map((type) => (
             <option key={type.id} value={type.id}>
               {type.icon} {type.label} — {type.description}
             </option>
@@ -154,12 +177,7 @@ export default function VerificationPanel({ report, onDone }) {
 
       {/* Action Buttons */}
       <div className="flex gap-3">
-        <Button
-          variant="danger"
-          onClick={handleReject}
-          loading={processing}
-          className="flex-1"
-        >
+        <Button variant="danger" onClick={handleReject} loading={processing} className="flex-1">
           Reject
         </Button>
         <Button

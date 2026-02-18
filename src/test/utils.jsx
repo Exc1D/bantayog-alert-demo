@@ -7,9 +7,7 @@ const AllProviders = ({ children }) => {
   return (
     <ToastProvider>
       <AuthProvider>
-        <ReportsProvider>
-          {children}
-        </ReportsProvider>
+        <ReportsProvider>{children}</ReportsProvider>
       </AuthProvider>
     </ToastProvider>
   );

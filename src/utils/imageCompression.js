@@ -12,9 +12,7 @@ export async function compressImage(file) {
 }
 
 export async function compressMultipleImages(files) {
-  const compressed = await Promise.all(
-    Array.from(files).map(file => compressImage(file))
-  );
+  const compressed = await Promise.all(Array.from(files).map((file) => compressImage(file)));
   return compressed;
 }
 
@@ -22,7 +20,7 @@ export function createThumbnail(file) {
   return imageCompression(file, {
     maxSizeMB: 0.1,
     maxWidthOrHeight: 300,
-    useWebWorker: true
+    useWebWorker: true,
   });
 }
 
@@ -49,7 +47,10 @@ export function validateMedia(file) {
   const isVideo = validVideoTypes.includes(file.type);
 
   if (!isImage && !isVideo) {
-    return { valid: false, error: 'Unsupported file type. Use JPEG, PNG, WebP, MP4, MOV, or WebM.' };
+    return {
+      valid: false,
+      error: 'Unsupported file type. Use JPEG, PNG, WebP, MP4, MOV, or WebM.',
+    };
   }
 
   if (isImage && file.size > 10 * 1024 * 1024) {

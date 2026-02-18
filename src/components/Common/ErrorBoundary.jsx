@@ -4,7 +4,7 @@ import ErrorFallback from './ErrorFallback';
 const logErrorToService = (error, errorInfo) => {
   console.error('Error caught by boundary:', error);
   console.error('Component stack:', errorInfo.componentStack);
-  
+
   // Placeholder for error tracking service integration
   // Examples: Sentry, LogRocket, Bugsnag, etc.
   // if (window.Sentry) {

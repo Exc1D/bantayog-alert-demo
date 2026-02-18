@@ -5,10 +5,15 @@ export function useErrorReporting() {
   const reportError = useCallback((error, context = {}) => {
     const { component, action, metadata, tags, user } = context;
 
-    addBreadcrumb('error', `Error in ${component || 'unknown'}: ${action || 'unknown action'}`, 'error', {
-      errorMessage: error?.message,
-      ...metadata,
-    });
+    addBreadcrumb(
+      'error',
+      `Error in ${component || 'unknown'}: ${action || 'unknown action'}`,
+      'error',
+      {
+        errorMessage: error?.message,
+        ...metadata,
+      }
+    );
 
     return captureException(error, {
       tags: {
@@ -56,25 +61,32 @@ export function useErrorReporting() {
     });
   }, []);
 
-  const logApiCall = useCallback((endpoint, method, status, duration, details = {}) => {
-    const level = status >= 400 ? 'error' : 'info';
-    
-    addBreadcrumb('api', `${method.toUpperCase()} ${endpoint}`, level, {
-      method,
-      endpoint,
-      status,
-      duration: `${duration}ms`,
-      ...details,
-    });
+  const logApiCall = useCallback(
+    (endpoint, method, status, duration, details = {}) => {
+      const level = status >= 400 ? 'error' : 'info';
 
-    if (status >= 500) {
-      reportMessage(`API error: ${method.toUpperCase()} ${endpoint} returned ${status}`, 'error', {
-        component: 'api',
-        action: method,
-        metadata: { endpoint, status, duration, ...details },
+      addBreadcrumb('api', `${method.toUpperCase()} ${endpoint}`, level, {
+        method,
+        endpoint,
+        status,
+        duration: `${duration}ms`,
+        ...details,
       });
-    }
-  }, [reportMessage]);
+
+      if (status >= 500) {
+        reportMessage(
+          `API error: ${method.toUpperCase()} ${endpoint} returned ${status}`,
+          'error',
+          {
+            component: 'api',
+            action: method,
+            metadata: { endpoint, status, duration, ...details },
+          }
+        );
+      }
+    },
+    [reportMessage]
+  );
 
   const setComponentContext = useCallback((name, data) => {
     setContext(name, data);

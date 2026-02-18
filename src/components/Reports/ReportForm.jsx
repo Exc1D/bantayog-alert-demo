@@ -4,16 +4,16 @@ import { useSanitization } from '../../hooks/useSanitization';
 const SEVERITY_STYLES = {
   critical: {
     active: 'border-red-500 bg-red-50 text-red-800 ring-1 ring-red-200',
-    icon: '\u{1F534}'
+    icon: '\u{1F534}',
   },
   moderate: {
     active: 'border-amber-500 bg-amber-50 text-amber-800 ring-1 ring-amber-200',
-    icon: '\u{1F7E0}'
+    icon: '\u{1F7E0}',
   },
   minor: {
     active: 'border-green-500 bg-green-50 text-green-800 ring-1 ring-green-200',
-    icon: '\u{1F7E2}'
-  }
+    icon: '\u{1F7E2}',
+  },
 };
 
 export default function ReportForm({ formData, onChange }) {
@@ -36,7 +36,7 @@ export default function ReportForm({ formData, onChange }) {
           Severity Level <span className="text-accent">*</span>
         </label>
         <div className="grid grid-cols-3 gap-2">
-          {SEVERITY_LEVELS.map(level => {
+          {SEVERITY_LEVELS.map((level) => {
             const style = SEVERITY_STYLES[level];
             return (
               <button
@@ -79,7 +79,9 @@ export default function ReportForm({ formData, onChange }) {
       {/* Location Details */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">Barangay</label>
+          <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
+            Barangay
+          </label>
           <input
             type="text"
             value={formData.barangay || ''}
@@ -91,7 +93,9 @@ export default function ReportForm({ formData, onChange }) {
           />
         </div>
         <div>
-          <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">Street/Landmark</label>
+          <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
+            Street/Landmark
+          </label>
           <input
             type="text"
             value={formData.street || ''}

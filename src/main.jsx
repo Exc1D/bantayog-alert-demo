@@ -12,9 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       fallback={({ error, componentStack, resetError }) => (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
           <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
-            <h1 className="text-xl font-bold text-red-600 mb-4">
-              Something went wrong
-            </h1>
+            <h1 className="text-xl font-bold text-red-600 mb-4">Something went wrong</h1>
             <p className="text-gray-600 mb-4">
               We apologize for the inconvenience. The error has been reported.
             </p>

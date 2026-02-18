@@ -7,7 +7,7 @@ import {
   updateProfile,
   signInAnonymously,
   sendPasswordResetEmail,
-  deleteUser
+  deleteUser,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
@@ -63,12 +63,12 @@ export function useAuth() {
         reportsSubmitted: 0,
         reportsVerified: 0,
         reportsResolved: 0,
-        upvotesReceived: 0
+        upvotesReceived: 0,
       },
       settings: {
         notifications: true,
-        shareLocation: true
-      }
+        shareLocation: true,
+      },
     });
 
     return credential.user;
@@ -131,7 +131,8 @@ export function useAuth() {
     setUserProfile(null);
   };
 
-  const isAdmin = userProfile?.role?.startsWith('admin_') || userProfile?.role === 'superadmin_provincial';
+  const isAdmin =
+    userProfile?.role?.startsWith('admin_') || userProfile?.role === 'superadmin_provincial';
   const isSuperAdmin = userProfile?.role === 'superadmin_provincial';
 
   return {
@@ -146,6 +147,6 @@ export function useAuth() {
     updateProfilePicture,
     removeAccount,
     isAdmin,
-    isSuperAdmin
+    isSuperAdmin,
   };
 }

@@ -6,30 +6,29 @@ const ReportsContext = createContext(null);
 export function ReportsProvider({ children }) {
   const [filters, setFilters] = useState({
     municipality: 'all',
-    sort: 'recent'
+    sort: 'recent',
   });
 
   const { reports, loading, error, loadMore, hasMore } = useReports(filters);
 
   const updateFilters = useCallback((newFilters) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+    setFilters((prev) => ({ ...prev, ...newFilters }));
   }, []);
 
-  const value = useMemo(() => ({
-    reports,
-    loading,
-    error,
-    loadMore,
-    hasMore,
-    filters,
-    updateFilters
-  }), [reports, loading, error, loadMore, hasMore, filters, updateFilters]);
-
-  return (
-    <ReportsContext.Provider value={value}>
-      {children}
-    </ReportsContext.Provider>
+  const value = useMemo(
+    () => ({
+      reports,
+      loading,
+      error,
+      loadMore,
+      hasMore,
+      filters,
+      updateFilters,
+    }),
+    [reports, loading, error, loadMore, hasMore, filters, updateFilters]
   );
+
+  return <ReportsContext.Provider value={value}>{children}</ReportsContext.Provider>;
 }
 
 export function useReportsContext() {

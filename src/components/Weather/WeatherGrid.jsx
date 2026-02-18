@@ -17,7 +17,16 @@ export default function WeatherGrid({ weatherData, loading }) {
           onClick={() => setSelectedMunicipality(null)}
           className="text-xs text-accent font-semibold mb-3 hover:underline flex items-center gap-1"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="15 18 9 12 15 6" />
           </svg>
           Back to all municipalities
@@ -33,17 +42,13 @@ export default function WeatherGrid({ weatherData, loading }) {
   return (
     <div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
-        {MUNICIPALITIES.map(municipality => (
+        {MUNICIPALITIES.map((municipality) => (
           <button
             key={municipality}
             onClick={() => setSelectedMunicipality(municipality)}
             className="text-left"
           >
-            <WeatherCard
-              municipality={municipality}
-              weather={weatherData[municipality]}
-              compact
-            />
+            <WeatherCard municipality={municipality} weather={weatherData[municipality]} compact />
           </button>
         ))}
       </div>

@@ -27,7 +27,7 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
     const sanitizedActions = sanitizeText(actionsTaken);
     const sanitizedNotes = sanitizeText(resolutionNotes);
     const sanitizedResources = sanitizeText(resourcesUsed);
-    
+
     if (evidencePhotos.length === 0) {
       addToast('At least 1 evidence photo is required', 'warning');
       return;
@@ -37,7 +37,7 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
       addToast('Please describe what actions were taken (at least 10 characters)', 'warning');
       return;
     }
-    
+
     if (containsXSS(actionsTaken) || containsXSS(resolutionNotes) || containsXSS(resourcesUsed)) {
       addToast('Invalid characters detected in input', 'warning');
       return;
@@ -52,13 +52,16 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
         truncateText(sanitizedActions, 2000),
         truncateText(sanitizedNotes, 1000),
         truncateText(sanitizedResources, 500),
-        userProfile?.role || ""
+        userProfile?.role || ''
       );
 
       addToast('Report marked as resolved!', 'success');
       handleClose();
     } catch (error) {
-      addToast(`Failed to resolve report: ${error?.message || error?.code || 'Unknown error'}`, 'error');
+      addToast(
+        `Failed to resolve report: ${error?.message || error?.code || 'Unknown error'}`,
+        'error'
+      );
       console.error(error);
     } finally {
       setSubmitting(false);
@@ -73,32 +76,40 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
     onClose();
   };
 
-  const inputClass = "w-full border border-stone-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white";
+  const inputClass =
+    'w-full border border-stone-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white';
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="RESOLVE REPORT"
-    >
+    <Modal isOpen={isOpen} onClose={handleClose} title="RESOLVE REPORT">
       <div className="space-y-4">
         {/* Original Report Info */}
         <div className="bg-stone-50 border border-stone-200 rounded-lg p-3">
-          <p className="text-[10px] font-bold text-textLight uppercase tracking-wider mb-2">Original Report</p>
+          <p className="text-[10px] font-bold text-textLight uppercase tracking-wider mb-2">
+            Original Report
+          </p>
           <div className="text-xs space-y-1 text-textLight">
-            <p><span className="font-semibold text-text">Type:</span> {disasterType.icon} {disasterType.label}</p>
-            <p><span className="font-semibold text-text">Location:</span> {report.location?.municipality}</p>
-            <p><span className="font-semibold text-text">Severity:</span> <span className="capitalize">{report.disaster?.severity}</span></p>
-            <p><span className="font-semibold text-text">Reported:</span> {formatDate(report.timestamp)}</p>
+            <p>
+              <span className="font-semibold text-text">Type:</span> {disasterType.icon}{' '}
+              {disasterType.label}
+            </p>
+            <p>
+              <span className="font-semibold text-text">Location:</span>{' '}
+              {report.location?.municipality}
+            </p>
+            <p>
+              <span className="font-semibold text-text">Severity:</span>{' '}
+              <span className="capitalize">{report.disaster?.severity}</span>
+            </p>
+            <p>
+              <span className="font-semibold text-text">Reported:</span>{' '}
+              {formatDate(report.timestamp)}
+            </p>
           </div>
           <p className="text-xs text-textLight mt-2">{report.disaster?.description}</p>
         </div>
 
         {/* Evidence Upload */}
-        <EvidenceUpload
-          photos={evidencePhotos}
-          onPhotosChange={setEvidencePhotos}
-        />
+        <EvidenceUpload photos={evidencePhotos} onPhotosChange={setEvidencePhotos} />
 
         {/* Actions Taken */}
         <div>
@@ -116,7 +127,9 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
 
         {/* Resources Used */}
         <div>
-          <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">Resources Used</label>
+          <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
+            Resources Used
+          </label>
           <textarea
             value={resourcesUsed}
             onChange={(e) => setResourcesUsed(e.target.value)}
@@ -128,7 +141,9 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
 
         {/* Resolution Notes */}
         <div>
-          <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">Additional Notes</label>
+          <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
+            Additional Notes
+          </label>
           <textarea
             value={resolutionNotes}
             onChange={(e) => setResolutionNotes(e.target.value)}

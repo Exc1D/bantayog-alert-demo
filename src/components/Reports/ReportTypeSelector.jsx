@@ -1,9 +1,7 @@
 export default function ReportTypeSelector({ onSelect }) {
   return (
     <div className="space-y-4">
-      <p className="text-sm text-textLight text-center">
-        What are you reporting?
-      </p>
+      <p className="text-sm text-textLight text-center">What are you reporting?</p>
       <div className="grid grid-cols-1 gap-3">
         <button
           type="button"

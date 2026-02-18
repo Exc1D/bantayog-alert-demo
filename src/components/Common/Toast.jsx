@@ -6,7 +6,7 @@ const TOAST_TYPES = {
   success: { bg: 'bg-emerald-600', icon: '\u2705' },
   error: { bg: 'bg-red-600', icon: '\u274C' },
   warning: { bg: 'bg-amber-600', icon: '\u26A0\uFE0F' },
-  info: { bg: 'bg-primary', icon: '\u2139\uFE0F' }
+  info: { bg: 'bg-primary', icon: '\u2139\uFE0F' },
 };
 
 export function ToastProvider({ children }) {
@@ -14,15 +14,15 @@ export function ToastProvider({ children }) {
 
   const addToast = useCallback((message, type = 'info', duration = 4000) => {
     const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type }]);
+    setToasts((prev) => [...prev, { id, message, type }]);
 
     setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
+      setToasts((prev) => prev.filter((t) => t.id !== id));
     }, duration);
   }, []);
 
   const removeToast = useCallback((id) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   return (

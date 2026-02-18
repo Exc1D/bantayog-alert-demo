@@ -5,7 +5,8 @@ export default function FeedFilters({ filters, onFilterChange }) {
     onFilterChange({ ...filters, [key]: value });
   };
 
-  const selectClass = "flex-1 min-w-[130px] p-2 border border-stone-300 rounded-lg text-xs font-medium bg-white focus:ring-2 focus:ring-accent/30 focus:border-accent";
+  const selectClass =
+    'flex-1 min-w-[130px] p-2 border border-stone-300 rounded-lg text-xs font-medium bg-white focus:ring-2 focus:ring-accent/30 focus:border-accent';
 
   return (
     <div className="bg-white rounded-xl p-3 shadow-card mb-3 border border-stone-100">
@@ -16,8 +17,10 @@ export default function FeedFilters({ filters, onFilterChange }) {
           onChange={(e) => handleChange('municipality', e.target.value)}
         >
           <option value="all">All Municipalities</option>
-          {MUNICIPALITIES.map(m => (
-            <option key={m} value={m}>{m}</option>
+          {MUNICIPALITIES.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
           ))}
         </select>
 

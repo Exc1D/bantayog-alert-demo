@@ -6,11 +6,13 @@ import boundariesData from '../data/camarines-norte-boundaries.json';
 import { MUNICIPALITY_COORDS } from './constants';
 
 const BARANGAY_MUNICIPALITY_OVERRIDES = {
-  maslog: 'San Lorenzo Ruiz'
+  maslog: 'San Lorenzo Ruiz',
 };
 
 function normalizeBarangay(value) {
-  return String(value || '').trim().toLowerCase();
+  return String(value || '')
+    .trim()
+    .toLowerCase();
 }
 
 export function detectMunicipality(lat, lng, options = {}) {
@@ -59,8 +61,10 @@ function hasValidCoordinates(lat, lng) {
     typeof lng === 'number' &&
     Number.isFinite(lat) &&
     Number.isFinite(lng) &&
-    lat >= -90 && lat <= 90 &&
-    lng >= -180 && lng <= 180
+    lat >= -90 &&
+    lat <= 90 &&
+    lng >= -180 &&
+    lng <= 180
   );
 }
 
@@ -97,6 +101,6 @@ export function resolveMunicipality(lat, lng, fallbackMunicipality = null) {
 
   return {
     municipality: fallbackMunicipality || 'Unknown',
-    method: fallbackMunicipality ? 'fallback_input' : 'unknown'
+    method: fallbackMunicipality ? 'fallback_input' : 'unknown',
   };
 }

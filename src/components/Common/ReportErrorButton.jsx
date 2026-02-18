@@ -12,7 +12,7 @@ export function ReportErrorButton({
 
   const handleReport = () => {
     setIsReporting(true);
-    
+
     showReportDialog({
       eventId,
       title: 'Report an Issue',

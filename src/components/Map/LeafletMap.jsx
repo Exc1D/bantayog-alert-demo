@@ -12,7 +12,7 @@ delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png'
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
 function flyToCurrentPosition(map) {
@@ -46,19 +46,23 @@ export default function LeafletMap({ reports = [], onReportClick }) {
   const mapRef = useRef(null);
 
   const [filters, setFilters] = useState({
-    municipality: 'all'
+    municipality: 'all',
   });
 
   const filteredReports = useMemo(() => {
-    return reports.filter(report => {
-      if (filters.municipality !== 'all' && report.location?.municipality !== filters.municipality) return false;
+    return reports.filter((report) => {
+      if (filters.municipality !== 'all' && report.location?.municipality !== filters.municipality)
+        return false;
       return true;
     });
   }, [reports, filters]);
 
-  const handleMarkerClick = useCallback((report) => {
-    if (onReportClick) onReportClick(report);
-  }, [onReportClick]);
+  const handleMarkerClick = useCallback(
+    (report) => {
+      if (onReportClick) onReportClick(report);
+    },
+    [onReportClick]
+  );
 
   const handleLocate = () => {
     if (mapRef.current) flyToCurrentPosition(mapRef.current);
@@ -79,7 +83,14 @@ export default function LeafletMap({ reports = [], onReportClick }) {
         style={{ bottom: '10px', left: '10px', width: '40px', height: '40px' }}
         title="My Location"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        >
           <circle cx="12" cy="12" r="3" />
           <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
         </svg>
@@ -111,11 +122,7 @@ export default function LeafletMap({ reports = [], onReportClick }) {
           disableClusteringAtZoom={16}
         >
           {filteredReports.map((report) => (
-            <DisasterMarker
-              key={report.id}
-              report={report}
-              onClick={handleMarkerClick}
-            />
+            <DisasterMarker key={report.id} report={report} onClick={handleMarkerClick} />
           ))}
         </MarkerClusterGroup>
 

@@ -30,7 +30,7 @@ export async function fetchCurrentWeather(lat, lng) {
       windDirection: degreesToCardinal(data.wind.deg),
       humidity: data.main.humidity,
       pressure: data.main.pressure,
-      visibility: data.visibility
+      visibility: data.visibility,
     };
   } catch (error) {
     console.error('Weather API error:', error);
@@ -63,7 +63,7 @@ export async function fetchForecast(lat, lng) {
           tempMin: item.main.temp_min,
           condition: item.weather[0].main,
           icon: item.weather[0].icon,
-          rainfall: item.rain ? item.rain['3h'] || 0 : 0
+          rainfall: item.rain ? item.rain['3h'] || 0 : 0,
         };
       } else {
         dailyMap[date].tempMax = Math.max(dailyMap[date].tempMax, item.main.temp_max);
@@ -72,12 +72,14 @@ export async function fetchForecast(lat, lng) {
       }
     }
 
-    return Object.values(dailyMap).slice(0, 5).map(day => ({
-      ...day,
-      tempMax: Math.round(day.tempMax),
-      tempMin: Math.round(day.tempMin),
-      rainfall: Math.round(day.rainfall)
-    }));
+    return Object.values(dailyMap)
+      .slice(0, 5)
+      .map((day) => ({
+        ...day,
+        tempMax: Math.round(day.tempMax),
+        tempMin: Math.round(day.tempMin),
+        rainfall: Math.round(day.rainfall),
+      }));
   } catch (error) {
     console.error('Forecast API error:', error);
     return getMockForecast();
@@ -114,7 +116,7 @@ function getMockWeather() {
     windDirection: 'NE',
     humidity: 75,
     pressure: 1013,
-    visibility: 10000
+    visibility: 10000,
   };
 }
 
@@ -129,7 +131,7 @@ function getMockForecast() {
       tempMin: 25 + i,
       condition: ['Clouds', 'Rain', 'Thunderstorm', 'Rain', 'Clouds'][i],
       icon: ['03d', '10d', '11d', '10d', '03d'][i],
-      rainfall: [0, 15, 45, 20, 5][i]
+      rainfall: [0, 15, 45, 20, 5][i],
     };
   });
 }
