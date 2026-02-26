@@ -6,6 +6,8 @@ import { verifyReport, rejectReport, deleteReport } from '../../hooks/useReports
 import { useToast } from '../Common/Toast';
 import Button from '../Common/Button';
 import { getSafeMediaUrls } from '../../utils/mediaSafety';
+import RequirePermission, { AccessDenied } from '../Common/RequirePermission';
+import { PERMISSIONS } from '../../utils/rbac';
 
 const SEV_STYLES = {
   critical: 'bg-red-600 text-white',
@@ -86,7 +88,7 @@ export default function VerificationPanel({ report, onDone }) {
     }
   };
 
-  return (
+  const panelContent = (
     <div className="space-y-4">
       {/* Report Summary */}
       <div className="bg-stone-50 border border-stone-200 rounded-lg p-3">
@@ -226,5 +228,14 @@ export default function VerificationPanel({ report, onDone }) {
         </div>
       )}
     </div>
+  );
+
+  return (
+    <RequirePermission
+      permission={PERMISSIONS.MODERATE_REPORTS}
+      fallback={<AccessDenied message="You do not have permission to moderate reports." />}
+    >
+      {panelContent}
+    </RequirePermission>
   );
 }

@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { useReportsContext } from '../contexts/ReportsContext';
 import FeedList from '../components/Feed/FeedList';
 import FeedFilters from '../components/Feed/FeedFilters';
+import { FEATURE_FLAGS } from '../config/featureFlags';
+import FeatureFlag, { FeatureFlagDisabled } from '../components/Common/FeatureFlag';
 
 const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
@@ -42,14 +44,43 @@ export default function FeedTab({ onViewMap, onRequireSignUp }) {
   return (
     <div className="max-w-[800px] mx-auto px-3 py-3 sm:px-4 sm:py-4">
       <FeedFilters filters={filters} onFilterChange={updateFilters} />
-      <FeedList
-        reports={feedReports}
-        loading={loading}
-        hasMore={hasMore}
-        loadMore={loadMore}
-        onViewMap={onViewMap}
-        onRequireSignUp={onRequireSignUp}
-      />
+      <FeatureFlag
+        flag={FEATURE_FLAGS.COMMUNITY_ENGAGEMENT}
+        fallback={
+          <FeatureFlagDisabled flag={FEATURE_FLAGS.COMMUNITY_ENGAGEMENT}>
+            <div className="bg-white rounded-xl p-4 text-center shadow-card border border-stone-100 mb-3">
+              <div className="w-10 h-10 mx-auto mb-2 bg-stone-100 rounded-full flex items-center justify-center">
+                <svg
+                  aria-hidden="true"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#78716c"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                </svg>
+              </div>
+              <p className="font-semibold text-sm text-textLight">Community features coming soon</p>
+              <p className="text-xs text-textLight mt-1">
+                Upvotes and comments will be available soon
+              </p>
+            </div>
+          </FeatureFlagDisabled>
+        }
+      >
+        <FeedList
+          reports={feedReports}
+          loading={loading}
+          hasMore={hasMore}
+          loadMore={loadMore}
+          onViewMap={onViewMap}
+          onRequireSignUp={onRequireSignUp}
+        />
+      </FeatureFlag>
     </div>
   );
 }

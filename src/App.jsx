@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense, useTransition } from 'react';
 import Header from './components/Layout/Header';
 import TabNavigation from './components/Layout/TabNavigation';
 import Footer from './components/Layout/Footer';
@@ -35,13 +35,15 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState(getTabFromHash);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showSignUpPrompt, setShowSignUpPrompt] = useState(false);
+  const [_isPending, startTransition] = useTransition();
 
   // Sync tab changes to URL hash + browser history
   const changeTab = useCallback((tab) => {
     if (!VALID_TABS.includes(tab)) tab = 'map';
-    setActiveTab(tab);
+    startTransition(() => {
+      setActiveTab(tab);
+    });
     const newHash = `#${tab}`;
-    // Only push a new history entry if the hash actually changed
     if (window.location.hash !== newHash) {
       window.history.pushState(null, '', newHash);
     }

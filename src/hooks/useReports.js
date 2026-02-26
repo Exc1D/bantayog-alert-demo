@@ -23,6 +23,7 @@ import { fetchCurrentWeather } from '../utils/weatherAPI';
 import { resolveMunicipality } from '../utils/geoFencing';
 import { FEED_PAGE_SIZE } from '../utils/constants';
 import { checkLimit, recordAction, formatResetTime } from '../utils/rateLimiter';
+import { logAuditEvent, AuditEvent, AuditEventType } from '../utils/auditLogger';
 
 const ADMIN_ROLES = ['superadmin_provincial'];
 
@@ -250,6 +251,23 @@ export async function submitReport(reportData, evidenceFiles, user) {
   };
 
   const docRef = await addDoc(collection(db, 'reports'), report);
+
+  logAuditEvent(
+    new AuditEvent({
+      eventType: AuditEventType.REPORT_CREATE,
+      userId: user.uid,
+      userEmail: user.email || null,
+      targetType: 'report',
+      targetId: docRef.id,
+      metadata: {
+        reportType: reportData.reportType || 'situation',
+        disasterType: reportData.disaster?.type,
+        severity: reportData.disaster?.severity,
+        municipality,
+      },
+    })
+  );
+
   return { id: docRef.id, skippedFiles };
 }
 
@@ -345,10 +363,21 @@ export async function resolveReport(
   });
 }
 
-export async function deleteReport(reportId, adminRole = '') {
+export async function deleteReport(reportId, adminRole = '', adminId = null) {
   if (!isAdminRole(adminRole)) {
     throw new Error('Admin privileges required to delete reports.');
   }
+
+  logAuditEvent(
+    new AuditEvent({
+      eventType: AuditEventType.REPORT_DELETE,
+      userId: adminId,
+      userRole: adminRole,
+      targetType: 'report',
+      targetId: reportId,
+      metadata: { action: 'report_deleted_by_admin', adminRole },
+    })
+  );
 
   const reportRef = doc(db, 'reports', reportId);
   await deleteDoc(reportRef);

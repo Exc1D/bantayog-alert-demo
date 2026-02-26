@@ -4,6 +4,8 @@ import { MUNICIPALITIES } from '../utils/constants';
 import Button from '../components/Common/Button';
 import AdminDashboard from '../components/Admin/AdminDashboard';
 import { useToast } from '../components/Common/Toast';
+import PrivacySettings from '../components/Common/PrivacySettings';
+import { logAuditEvent, AuditEvent, AuditEventType } from '../utils/auditLogger';
 
 function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -101,7 +103,8 @@ function AuthForm() {
       <div className="bg-white rounded-xl p-5 shadow-card border border-stone-100">
         <div className="text-center mb-5">
           <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
-            <svg aria-hidden="true"
+            <svg
+              aria-hidden="true"
               width="24"
               height="24"
               viewBox="0 0 24 24"
@@ -290,6 +293,18 @@ function UserProfile() {
     setUploadingPhoto(true);
     try {
       await updateProfilePicture(file);
+
+      logAuditEvent(
+        new AuditEvent({
+          eventType: AuditEventType.PROFILE_UPDATE,
+          userId: user.uid,
+          userEmail: user.email || null,
+          targetType: 'user',
+          targetId: user.uid,
+          metadata: { action: 'profile_picture_updated' },
+        })
+      );
+
       addToast('Profile picture updated.', 'success');
     } catch (error) {
       addToast(error.message || 'Could not update profile picture.', 'error');
@@ -423,6 +438,8 @@ function UserProfile() {
           )}
         </div>
       </div>
+
+      {!user?.isAnonymous && <PrivacySettings />}
 
       {isAdmin && <AdminDashboard />}
     </div>

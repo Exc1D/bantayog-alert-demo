@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { validateImage } from '../../utils/imageCompression';
 import { useToast } from '../Common/Toast';
+import RequirePermission from '../Common/RequirePermission';
+import { PERMISSIONS } from '../../utils/rbac';
 
 export default function EvidenceUpload({ photos, onPhotosChange, maxPhotos = 5 }) {
   const { addToast } = useToast();
@@ -35,7 +37,7 @@ export default function EvidenceUpload({ photos, onPhotosChange, maxPhotos = 5 }
     setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
   };
 
-  return (
+  const uploadContent = (
     <div>
       <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
         Evidence Photos <span className="text-accent">*</span>
@@ -45,7 +47,8 @@ export default function EvidenceUpload({ photos, onPhotosChange, maxPhotos = 5 }
       </p>
 
       <label className="flex items-center justify-center gap-2 w-full border-2 border-dashed border-stone-300 rounded-lg p-3 cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 transition-colors">
-        <svg aria-hidden="true"
+        <svg
+          aria-hidden="true"
           width="18"
           height="18"
           viewBox="0 0 24 24"
@@ -84,5 +87,16 @@ export default function EvidenceUpload({ photos, onPhotosChange, maxPhotos = 5 }
         </div>
       )}
     </div>
+  );
+
+  return (
+    <RequirePermission
+      permission={PERMISSIONS.MODERATE_REPORTS}
+      fallback={
+        <p className="text-xs text-textMuted">You do not have permission to upload evidence.</p>
+      }
+    >
+      {uploadContent}
+    </RequirePermission>
   );
 }

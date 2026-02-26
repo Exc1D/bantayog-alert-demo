@@ -15,6 +15,8 @@ import { resolveMunicipality } from '../../utils/geoFencing';
 import { MUNICIPALITY_COORDS } from '../../utils/constants';
 import { useRateLimit } from '../../hooks/useRateLimit';
 import { sanitizeText, truncateText, containsXSS } from '../../utils/sanitization';
+import { FEATURE_FLAGS } from '../../config/featureFlags';
+import FeatureFlag, { FeatureFlagDisabled } from '../Common/FeatureFlag';
 
 const STEP_TITLES = {
   1: 'REPORT INCIDENT',
@@ -173,75 +175,108 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={STEP_TITLES[step]}>
-      {step === 1 && <ReportTypeSelector onSelect={handleTypeSelect} />}
+      <FeatureFlag
+        flag={FEATURE_FLAGS.NEW_REPORT_FLOW}
+        fallback={
+          <FeatureFlagDisabled flag={FEATURE_FLAGS.NEW_REPORT_FLOW}>
+            <div className="text-center py-6">
+              <div className="w-12 h-12 mx-auto mb-3 bg-stone-100 rounded-full flex items-center justify-center">
+                <svg
+                  aria-hidden="true"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#78716c"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+              </div>
+              <p className="text-sm text-textLight font-medium">
+                Report submission is currently unavailable.
+              </p>
+              <p className="text-xs text-textLight mt-1">
+                We&apos;re working on improving the reporting experience.
+              </p>
+            </div>
+          </FeatureFlagDisabled>
+        }
+      >
+        {step === 1 && <ReportTypeSelector onSelect={handleTypeSelect} />}
 
-      {step === 2 && (
-        <div className="space-y-4">
-          <EvidenceCapture files={evidenceFiles} onFilesChange={setEvidenceFiles} />
+        {step === 2 && (
+          <div className="space-y-4">
+            <EvidenceCapture files={evidenceFiles} onFilesChange={setEvidenceFiles} />
 
-          <div className="flex gap-3 pt-2">
-            <Button variant="secondary" onClick={handleBack} className="flex-1">
-              Back
-            </Button>
-            <Button variant="primary" onClick={handleEvidenceContinue} className="flex-1">
-              Continue
-            </Button>
+            <div className="flex gap-3 pt-2">
+              <Button variant="secondary" onClick={handleBack} className="flex-1">
+                Back
+              </Button>
+              <Button variant="primary" onClick={handleEvidenceContinue} className="flex-1">
+                Continue
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {step === 3 && (
-        <div className="space-y-4">
-          <ReportForm formData={formData} onChange={setFormData} />
+        {step === 3 && (
+          <div className="space-y-4">
+            <ReportForm formData={formData} onChange={setFormData} />
 
-          <RateLimitIndicator
-            remainingAttempts={rateLimit.remainingAttempts}
-            maxAttempts={rateLimit.maxAttempts}
-            resetTime={rateLimit.resetTime}
-            message={rateLimit.message}
-            isAllowed={rateLimit.isAllowed}
-            showWhenAllowed={true}
-          />
+            <RateLimitIndicator
+              remainingAttempts={rateLimit.remainingAttempts}
+              maxAttempts={rateLimit.maxAttempts}
+              resetTime={rateLimit.resetTime}
+              message={rateLimit.message}
+              isAllowed={rateLimit.isAllowed}
+              showWhenAllowed={true}
+            />
 
-          <ReportSubmission
-            location={location}
-            municipality={municipality}
-            isSubmitting={isSubmitting}
-            geoLoading={geoLoading}
-            geoError={geoError}
-            isInApp={isInApp}
-            manualMunicipality={manualMunicipality}
-            onManualMunicipalityChange={setManualMunicipality}
-            onRefreshLocation={refreshLocation}
-          />
+            <ReportSubmission
+              location={location}
+              municipality={municipality}
+              isSubmitting={isSubmitting}
+              geoLoading={geoLoading}
+              geoError={geoError}
+              isInApp={isInApp}
+              manualMunicipality={manualMunicipality}
+              onManualMunicipalityChange={setManualMunicipality}
+              onRefreshLocation={refreshLocation}
+            />
 
-          <div className="flex gap-3 pt-2">
-            <Button
-              variant="secondary"
-              onClick={handleBack}
-              disabled={isSubmitting}
-              className="flex-1"
-            >
-              Back
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              loading={isSubmitting}
-              disabled={
-                isSubmitting ||
-                !formData.severity ||
-                !formData.description ||
-                !effectiveLocation ||
-                !rateLimit.isAllowed
-              }
-              className="flex-1"
-            >
-              Submit Report
-            </Button>
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="secondary"
+                onClick={handleBack}
+                disabled={isSubmitting}
+                className="flex-1"
+              >
+                Back
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleSubmit}
+                loading={isSubmitting}
+                disabled={
+                  isSubmitting ||
+                  !formData.severity ||
+                  !formData.description ||
+                  !effectiveLocation ||
+                  !rateLimit.isAllowed
+                }
+                className="flex-1"
+              >
+                Submit Report
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </FeatureFlag>
     </Modal>
   );
 }
