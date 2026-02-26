@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
+import { captureException } from '../../utils/sentry';
 import ReportTypeSelector from './ReportTypeSelector';
 import EvidenceCapture from './EvidenceCapture';
 import ReportForm from './ReportForm';
@@ -155,7 +156,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
         const msg = error?.message || error?.code || 'Unknown error';
         addToast(`Failed to submit report: ${msg}`, 'error');
       }
-      console.error('Submit error:', error);
+      captureException(error, { tags: { component: 'ReportModal' } });
     } finally {
       setIsSubmitting(false);
     }

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './App.css';
-import { initSentry, ErrorBoundary } from './utils/sentry';
+import { initSentry, ErrorBoundary, captureException } from './utils/sentry';
 
 initSentry();
 
@@ -42,6 +42,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+    navigator.serviceWorker.register('/sw.js').catch((error) => {
+      captureException(error, { tags: { component: 'serviceWorker' } });
+    });
   });
 }

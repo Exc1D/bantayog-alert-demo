@@ -12,6 +12,7 @@ const TABS = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        aria-hidden="true"
       >
         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
         <line x1="8" y1="2" x2="8" y2="18" />
@@ -32,6 +33,7 @@ const TABS = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        aria-hidden="true"
       >
         <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
       </svg>
@@ -50,6 +52,7 @@ const TABS = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        aria-hidden="true"
       >
         <path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" />
       </svg>
@@ -68,6 +71,7 @@ const TABS = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        aria-hidden="true"
       >
         <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
         <circle cx="12" cy="7" r="4" />
@@ -78,13 +82,16 @@ const TABS = [
 
 export default function TabNavigation({ activeTab, onTabChange }) {
   return (
-    <nav className="sticky top-[56px] z-40 bg-white border-b border-border/60">
-      <div className="max-w-[1400px] mx-auto flex">
+    <nav className="sticky top-[56px] z-40 bg-white border-b border-border/60" aria-label="Main navigation">
+      <div className="max-w-[1400px] mx-auto flex" role="tablist">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={isActive}
+              aria-controls={`tabpanel-${tab.id}`}
               onClick={() => onTabChange(tab.id)}
               className={`flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-semibold transition-all relative ${
                 isActive ? 'text-accent' : 'text-textLight hover:text-text'

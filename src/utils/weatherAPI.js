@@ -1,3 +1,5 @@
+import { captureException } from './sentry';
+
 const OPENWEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
@@ -33,7 +35,7 @@ export async function fetchCurrentWeather(lat, lng) {
       visibility: data.visibility,
     };
   } catch (error) {
-    console.error('Weather API error:', error);
+    captureException(error, { tags: { component: 'weatherAPI', endpoint: 'current' } });
     return getMockWeather();
   }
 }
@@ -81,7 +83,7 @@ export async function fetchForecast(lat, lng) {
         rainfall: Math.round(day.rainfall),
       }));
   } catch (error) {
-    console.error('Forecast API error:', error);
+    captureException(error, { tags: { component: 'weatherAPI', endpoint: 'forecast' } });
     return getMockForecast();
   }
 }

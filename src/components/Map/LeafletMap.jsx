@@ -81,9 +81,9 @@ export default function LeafletMap({ reports = [], onReportClick }) {
         onClick={handleLocate}
         className="absolute z-[1000] flex items-center justify-center bg-white text-primary rounded-lg shadow-dark hover:bg-stone-50 active:bg-stone-100 transition-colors"
         style={{ bottom: '10px', left: '10px', width: '40px', height: '40px' }}
-        title="My Location"
+        aria-label="My Location"
       >
-        <svg
+        <svg aria-hidden="true"
           width="20"
           height="20"
           viewBox="0 0 24 24"

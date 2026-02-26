@@ -17,7 +17,7 @@ export default function FeedList({
     return (
       <div className="bg-white rounded-xl p-8 text-center shadow-card border border-stone-100">
         <div className="w-12 h-12 mx-auto mb-3 bg-stone-100 rounded-full flex items-center justify-center">
-          <svg
+          <svg aria-hidden="true"
             width="24"
             height="24"
             viewBox="0 0 24 24"

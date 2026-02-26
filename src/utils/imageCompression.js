@@ -1,12 +1,13 @@
 import imageCompression from 'browser-image-compression';
 import { IMAGE_COMPRESSION_OPTIONS } from './constants';
+import { captureException } from './sentry';
 
 export async function compressImage(file) {
   try {
     const compressed = await imageCompression(file, IMAGE_COMPRESSION_OPTIONS);
     return compressed;
   } catch (error) {
-    console.error('Image compression failed:', error);
+    captureException(error, { tags: { component: 'imageCompression' } });
     return file;
   }
 }

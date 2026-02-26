@@ -19,6 +19,13 @@ const ReportModal = lazy(() => import('./components/Reports/ReportModal'));
 
 const VALID_TABS = ['map', 'feed', 'weather', 'profile'];
 
+const TAB_TITLES = {
+  map: 'Map - BANTAYOG ALERT',
+  feed: 'Feed - BANTAYOG ALERT',
+  weather: 'Weather - BANTAYOG ALERT',
+  profile: 'Profile - BANTAYOG ALERT',
+};
+
 function getTabFromHash() {
   const hash = window.location.hash.replace('#', '');
   return VALID_TABS.includes(hash) ? hash : 'map';
@@ -55,6 +62,11 @@ function AppContent() {
       window.history.replaceState(null, '', '#map');
     }
   }, []);
+
+  // Update document title on tab change
+  useEffect(() => {
+    document.title = TAB_TITLES[activeTab] || 'BANTAYOG ALERT';
+  }, [activeTab]);
 
   const handleViewMap = () => {
     changeTab('map');
@@ -104,7 +116,7 @@ function AppContent() {
       <Header onProfileClick={handleOpenProfileTab} />
       <TabNavigation activeTab={activeTab} onTabChange={changeTab} />
 
-      <main className="flex-1">
+      <main className="flex-1" id="main-content">
         <Suspense
           fallback={
             <div className="h-[calc(100vh-112px)] flex items-center justify-center">
@@ -122,7 +134,7 @@ function AppContent() {
       <button
         onClick={handleOpenReportModal}
         className="fixed bottom-6 right-4 z-50 flex items-center gap-2 report-btn-glow text-white rounded-full emergency-pulse transition-all duration-200 px-5 py-3.5 sm:px-6"
-        title="Report a Hazard"
+        aria-label="Report a hazard"
       >
         <svg
           width="20"
@@ -133,6 +145,7 @@ function AppContent() {
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
+          aria-hidden="true"
         >
           <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
           <line x1="12" y1="9" x2="12" y2="13" />

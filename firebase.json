@@ -15,6 +15,49 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: *.tile.openstreetmap.org *.openstreetmap.org *.firebaseapp.com *.googleapis.com *.firebasestorage.app *.cloudfunctions.net; font-src 'self' https://fonts.gstatic.com; connect-src 'self' *.firebaseapp.com *.googleapis.com *.firebasestorage.app *.cloudfunctions.net api.openweathermap.org *.ingest.sentry.io *.sentry.io; frame-src 'self' *.firebaseapp.com *.googleapis.com *.firebasestorage.app *.cloudfunctions.net; media-src 'self' blob: *.firebaseapp.com *.googleapis.com *.firebasestorage.app *.cloudfunctions.net; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "DENY"
+          },
+          {
+            "key": "X-XSS-Protection",
+            "value": "0"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
+          {
+            "key": "Permissions-Policy",
+            "value": "camera=(self), microphone=(), geolocation=(self), payment=()"
+          },
+          {
+            "key": "Strict-Transport-Security",
+            "value": "max-age=63072000; includeSubDomains; preload"
+          },
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "same-origin"
+          },
+          {
+            "key": "Cross-Origin-Resource-Policy",
+            "value": "same-origin"
+          }
+        ]
+      }
+    ],
     "rewrites": [
       {
         "source": "**",

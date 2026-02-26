@@ -12,6 +12,7 @@ import {
 import { doc, setDoc, getDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { auth, db, storage } from '../utils/firebaseConfig';
+import { captureException } from '../utils/sentry';
 
 export function useAuth() {
   const [user, setUser] = useState(null);
@@ -29,7 +30,7 @@ export function useAuth() {
             setUserProfile(profileDoc.data());
           }
         } catch (err) {
-          console.error('Error fetching user profile:', err);
+          captureException(err, { tags: { component: 'useAuth', action: 'fetchProfile' } });
         }
       } else {
         setUserProfile(null);
@@ -121,7 +122,7 @@ export function useAuth() {
           await deleteObject(ref(storage, storagePath));
         }
       } catch (error) {
-        console.warn('Failed to delete profile image:', error);
+        captureException(error, { tags: { component: 'useAuth', action: 'deleteProfileImage' }, level: 'warning' });
       }
     }
 

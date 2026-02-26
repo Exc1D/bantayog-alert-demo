@@ -1,15 +1,12 @@
 import { Component } from 'react';
 import ErrorFallback from './ErrorFallback';
+import { captureException } from '../../utils/sentry';
 
 const logErrorToService = (error, errorInfo) => {
-  console.error('Error caught by boundary:', error);
-  console.error('Component stack:', errorInfo.componentStack);
-
-  // Placeholder for error tracking service integration
-  // Examples: Sentry, LogRocket, Bugsnag, etc.
-  // if (window.Sentry) {
-  //   window.Sentry.captureException(error, { contexts: { react: { componentStack: errorInfo.componentStack } } });
-  // }
+  captureException(error, {
+    tags: { component: 'ErrorBoundary' },
+    extra: { componentStack: errorInfo.componentStack },
+  });
 };
 
 export default class ErrorBoundary extends Component {

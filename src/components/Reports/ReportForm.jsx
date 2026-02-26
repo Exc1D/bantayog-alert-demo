@@ -31,17 +31,19 @@ export default function ReportForm({ formData, onChange }) {
   return (
     <div className="space-y-4">
       {/* Severity */}
-      <div>
-        <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
+      <fieldset>
+        <legend className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
           Severity Level <span className="text-accent">*</span>
-        </label>
-        <div className="grid grid-cols-3 gap-2">
+        </legend>
+        <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Severity level">
           {SEVERITY_LEVELS.map((level) => {
             const style = SEVERITY_STYLES[level];
             return (
               <button
                 key={level}
                 type="button"
+                role="radio"
+                aria-checked={formData.severity === level}
                 onClick={() => handleFieldChange('severity', level)}
                 className={`p-2.5 rounded-lg border-2 text-sm font-bold capitalize transition-all ${
                   formData.severity === level
@@ -49,19 +51,20 @@ export default function ReportForm({ formData, onChange }) {
                     : 'border-stone-200 hover:border-stone-300 text-textLight'
                 }`}
               >
-                <span className="mr-1">{style.icon}</span> {level}
+                <span className="mr-1" aria-hidden="true">{style.icon}</span> {level}
               </button>
             );
           })}
         </div>
-      </div>
+      </fieldset>
 
       {/* Description */}
       <div>
-        <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
+        <label htmlFor="report-description" className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
           What is happening? <span className="text-accent">*</span>
         </label>
         <textarea
+          id="report-description"
           value={formData.description || ''}
           onChange={(e) => handleFieldChange('description', e.target.value)}
           placeholder="Describe what you see: location details, severity, and any immediate dangers..."
@@ -70,19 +73,21 @@ export default function ReportForm({ formData, onChange }) {
           }`}
           rows="3"
           required
+          aria-required="true"
         />
         {descriptionState.warning && (
-          <p className="text-xs text-amber-600 mt-1">{descriptionState.warning}</p>
+          <p className="text-xs text-amber-600 mt-1" role="alert">{descriptionState.warning}</p>
         )}
       </div>
 
       {/* Location Details */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
+          <label htmlFor="report-barangay" className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
             Barangay
           </label>
           <input
+            id="report-barangay"
             type="text"
             value={formData.barangay || ''}
             onChange={(e) => handleFieldChange('barangay', e.target.value)}
@@ -93,10 +98,11 @@ export default function ReportForm({ formData, onChange }) {
           />
         </div>
         <div>
-          <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
+          <label htmlFor="report-street" className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2">
             Street/Landmark
           </label>
           <input
+            id="report-street"
             type="text"
             value={formData.street || ''}
             onChange={(e) => handleFieldChange('street', e.target.value)}

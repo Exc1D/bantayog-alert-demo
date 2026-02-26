@@ -5,6 +5,7 @@ import EvidenceUpload from './EvidenceUpload';
 import { resolveReport } from '../../hooks/useReports';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useToast } from '../Common/Toast';
+import { captureException } from '../../utils/sentry';
 import { formatDate } from '../../utils/timeUtils';
 import { getDisasterType } from '../../data/disasterTypes';
 import { sanitizeText, truncateText, containsXSS } from '../../utils/sanitization';
@@ -62,7 +63,7 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
         `Failed to resolve report: ${error?.message || error?.code || 'Unknown error'}`,
         'error'
       );
-      console.error(error);
+      captureException(error, { tags: { component: 'ResolutionModal' } });
     } finally {
       setSubmitting(false);
     }

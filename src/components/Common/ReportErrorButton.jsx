@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { showReportDialog } from '../../utils/sentry';
+import { showReportDialog, captureException } from '../../utils/sentry';
 import Button from './Button';
 
 export function ReportErrorButton({
@@ -62,7 +62,7 @@ export function ReportErrorForm({ onSubmit, onCancel }) {
       onSubmit?.({ name, email, comments });
       setSubmitted(true);
     } catch (error) {
-      console.error('Failed to submit error report:', error);
+      captureException(error, { tags: { component: 'ReportErrorButton' } });
     } finally {
       setIsSubmitting(false);
     }

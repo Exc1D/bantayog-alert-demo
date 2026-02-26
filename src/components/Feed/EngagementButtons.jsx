@@ -82,7 +82,7 @@ export default function EngagementButtons({
           hasUpvoted ? 'bg-accent/10 text-accent' : 'hover:bg-stone-50 text-textLight'
         }`}
       >
-        <svg
+        <svg aria-hidden="true"
           width="16"
           height="16"
           viewBox="0 0 24 24"
@@ -98,7 +98,7 @@ export default function EngagementButtons({
       </button>
 
       <button onClick={handleComments} className={`${btnClass} hover:bg-stone-50 text-textLight`}>
-        <svg
+        <svg aria-hidden="true"
           width="16"
           height="16"
           viewBox="0 0 24 24"
@@ -117,7 +117,7 @@ export default function EngagementButtons({
         onClick={() => onViewMap && onViewMap(report)}
         className={`${btnClass} hover:bg-stone-50 text-textLight`}
       >
-        <svg
+        <svg aria-hidden="true"
           width="16"
           height="16"
           viewBox="0 0 24 24"
@@ -134,7 +134,7 @@ export default function EngagementButtons({
       </button>
 
       <button onClick={handleShare} className={`${btnClass} hover:bg-stone-50 text-textLight`}>
-        <svg
+        <svg aria-hidden="true"
           width="16"
           height="16"
           viewBox="0 0 24 24"

@@ -6,6 +6,7 @@ import { getDisasterType } from '../../data/disasterTypes';
 import { formatTimeAgo } from '../../utils/timeUtils';
 import { deleteReport } from '../../hooks/useReports';
 import { useToast } from '../Common/Toast';
+import { captureException } from '../../utils/sentry';
 import Modal from '../Common/Modal';
 import VerificationPanel from './VerificationPanel';
 import ResolutionModal from './ResolutionModal';
@@ -86,7 +87,7 @@ export default function AdminDashboard() {
         setLoading(false);
       },
       (err) => {
-        console.error('Pending reports query failed:', err);
+        captureException(err, { tags: { component: 'AdminDashboard', query: 'pending' } });
         setLoading(false);
       }
     );
@@ -105,7 +106,7 @@ export default function AdminDashboard() {
         }
       },
       (err) => {
-        console.error('Verified reports query failed:', err);
+        captureException(err, { tags: { component: 'AdminDashboard', query: 'verified' } });
       }
     );
 
@@ -131,7 +132,7 @@ export default function AdminDashboard() {
         }
       },
       (err) => {
-        console.error('Archived reports query failed:', err);
+        captureException(err, { tags: { component: 'AdminDashboard', query: 'archived' } });
       }
     );
 
@@ -162,7 +163,7 @@ export default function AdminDashboard() {
     return (
       <div className="text-center py-8">
         <div className="w-12 h-12 mx-auto mb-3 bg-stone-100 rounded-full flex items-center justify-center">
-          <svg
+          <svg aria-hidden="true"
             width="24"
             height="24"
             viewBox="0 0 24 24"
@@ -200,7 +201,7 @@ export default function AdminDashboard() {
       {/* Admin Header */}
       <div className="bg-primary rounded-xl p-4 mb-3 text-white">
         <div className="flex items-center gap-2">
-          <svg
+          <svg aria-hidden="true"
             width="18"
             height="18"
             viewBox="0 0 24 24"
@@ -267,7 +268,7 @@ export default function AdminDashboard() {
       {displayReports.length === 0 ? (
         <div className="bg-white rounded-xl p-6 text-center shadow-card border border-stone-100">
           <div className="w-10 h-10 mx-auto mb-2 bg-emerald-50 rounded-full flex items-center justify-center">
-            <svg
+            <svg aria-hidden="true"
               width="20"
               height="20"
               viewBox="0 0 24 24"
@@ -334,9 +335,9 @@ export default function AdminDashboard() {
                           onClick={() => handleDeleteReport(report.id)}
                           disabled={deleting}
                           className="bg-red-600 text-white rounded-lg p-1.5 hover:bg-red-700 transition-colors disabled:opacity-40"
-                          title="Confirm delete"
+                          aria-label="Confirm delete"
                         >
-                          <svg
+                          <svg aria-hidden="true"
                             width="14"
                             height="14"
                             viewBox="0 0 24 24"
@@ -352,9 +353,9 @@ export default function AdminDashboard() {
                         <button
                           onClick={() => setDeleteConfirmId(null)}
                           className="bg-stone-200 text-stone-600 rounded-lg p-1.5 hover:bg-stone-300 transition-colors"
-                          title="Cancel"
+                          aria-label="Cancel delete"
                         >
-                          <svg
+                          <svg aria-hidden="true"
                             width="14"
                             height="14"
                             viewBox="0 0 24 24"
@@ -376,9 +377,9 @@ export default function AdminDashboard() {
                           setDeleteConfirmId(report.id);
                         }}
                         className="text-stone-300 hover:text-red-500 transition-colors p-1"
-                        title="Delete report"
+                        aria-label="Delete report"
                       >
-                        <svg
+                        <svg aria-hidden="true"
                           width="16"
                           height="16"
                           viewBox="0 0 24 24"

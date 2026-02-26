@@ -101,7 +101,7 @@ function AuthForm() {
       <div className="bg-white rounded-xl p-5 shadow-card border border-stone-100">
         <div className="text-center mb-5">
           <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
-            <svg
+            <svg aria-hidden="true"
               width="24"
               height="24"
               viewBox="0 0 24 24"

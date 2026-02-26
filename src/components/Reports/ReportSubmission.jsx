@@ -26,7 +26,7 @@ export default function ReportSubmission({
     <div className="bg-stone-50 border border-stone-200 rounded-lg p-3">
       <div className="flex items-center justify-between gap-2 mb-1">
         <div className="flex items-center gap-2">
-          <svg
+          <svg aria-hidden="true"
             width="14"
             height="14"
             viewBox="0 0 24 24"
