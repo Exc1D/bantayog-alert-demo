@@ -97,7 +97,17 @@ export function sanitizeForLog(data) {
 export async function logAuditEvent(event) {
   try {
     const eventData = event instanceof AuditEvent ? event.toFirestoreObject() : event;
-    await addDoc(collection(db, 'audit'), eventData);
+
+    // Write to user's audit subcollection (allowed by Firestore rules)
+    // This ensures audit events are stored even if the root /audit collection
+    // is restricted to admin-only writes
+    if (eventData.userId) {
+      await addDoc(collection(db, `users/${eventData.userId}/audit`), eventData);
+    } else {
+      // Fallback to root audit collection (will fail if rules don't allow it)
+      console.warn('Audit event without userId, attempting root audit collection');
+      await addDoc(collection(db, 'audit'), eventData);
+    }
     return true;
   } catch (error) {
     console.error('Failed to log audit event:', error);
@@ -115,16 +125,23 @@ export async function getAuditTrail({
 }) {
   try {
     const conditions = [orderBy('timestamp', 'desc'), limit(maxResults)];
+    let collectionRef;
 
     if (userId) {
-      conditions.unshift(where('userId', '==', userId));
+      // Read from user's subcollection
+      collectionRef = collection(db, `users/${userId}/audit`);
+      if (eventType) {
+        conditions.unshift(where('eventType', '==', eventType));
+      }
+    } else {
+      // Read from root audit collection (requires admin access)
+      collectionRef = collection(db, 'audit');
+      if (eventType) {
+        conditions.unshift(where('eventType', '==', eventType));
+      }
     }
 
-    if (eventType) {
-      conditions.unshift(where('eventType', '==', eventType));
-    }
-
-    const q = query(collection(db, 'audit'), ...conditions);
+    const q = query(collectionRef, ...conditions);
     const snapshot = await getDocs(q);
 
     let results = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));

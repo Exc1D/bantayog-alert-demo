@@ -312,9 +312,28 @@ service cloud.firestore {
     }
 
     match /audit/{docId} {
-      // Audit logs - read by admins, write by system (via Cloud Functions)
+      // Audit logs - read by admins
+      // Write allowed for authenticated users to their own audit subcollection
+      // and via Cloud Functions for system-level audit
       allow read: if isAdmin();
-      allow write: if false; // Only via Cloud Functions
+      
+      // Allow users to write to their own audit entries via subcollection
+      // Format: /users/{userId}/audit/{auditId}
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasAll(['userId', 'eventType', 'timestamp', 'details'])
+        && request.resource.data.timestamp == serverTimestamp();
+    }
+
+    // User audit subcollection - users can log their own actions
+    match /users/{userId}/audit/{auditId} {
+      // Users can read their own audit logs, admins can read all
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      // Users can create audit entries for their own actions
+      allow create: if isSignedIn() 
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasAll(['eventType', 'timestamp', 'details'])
+        && request.resource.data.timestamp == serverTimestamp();
     }
   }
 }

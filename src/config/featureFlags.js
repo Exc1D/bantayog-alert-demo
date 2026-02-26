@@ -70,7 +70,8 @@ export function isRemoteConfigReady() {
 }
 
 export function isEnabled(flag) {
-  if (!FEATURE_FLAGS[flag]) {
+  const validFlags = Object.values(FEATURE_FLAGS);
+  if (!validFlags.includes(flag)) {
     console.warn(`Unknown feature flag: ${flag}`);
     return false;
   }
