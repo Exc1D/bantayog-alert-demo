@@ -86,13 +86,6 @@ jobs:
       - name: Validate Storage rules syntax
         run: firebase storage:rules:preview --project demo-test --dry-run
 
-      - name: Run Firestore emulator tests
-        uses: firebase/ emulator-action@latest
-        with:
-          version: 'latest'
-          # Firestore tests would run here if tests are defined
-          # For now, we validate rule syntax and structure
-
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
