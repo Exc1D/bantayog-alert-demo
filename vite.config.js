@@ -32,7 +32,9 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       open: true,
     },
+    esbuild: isProduction ? { drop: ['console', 'debugger'] } : {},
     build: {
+      minify: 'esbuild',
       outDir: 'dist',
       sourcemap: isProduction && hasSentryToken,
       target: 'es2020',
@@ -41,8 +43,11 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks: {
             vendor: ['react', 'react-dom'],
-            firebase: ['firebase/app', 'firebase/firestore', 'firebase/auth', 'firebase/storage'],
+            firebase: ['firebase/app', 'firebase/firestore', 'firebase/auth'],
+            'firebase-storage': ['firebase/storage'],
             map: ['leaflet', 'react-leaflet'],
+            sentry: ['@sentry/react'],
+            turf: ['@turf/boolean-point-in-polygon', '@turf/centroid', '@turf/distance', '@turf/helpers'],
           },
         },
       },

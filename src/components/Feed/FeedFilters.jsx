@@ -12,6 +12,7 @@ export default function FeedFilters({ filters, onFilterChange }) {
     <div className="bg-white rounded-xl p-3 shadow-card mb-3 border border-stone-100">
       <div className="flex gap-2 flex-wrap">
         <select
+          aria-label="Filter by municipality"
           className={selectClass}
           value={filters.municipality || 'all'}
           onChange={(e) => handleChange('municipality', e.target.value)}
@@ -25,6 +26,7 @@ export default function FeedFilters({ filters, onFilterChange }) {
         </select>
 
         <select
+          aria-label="Sort reports"
           className={selectClass}
           value={filters.sort || 'recent'}
           onChange={(e) => handleChange('sort', e.target.value)}

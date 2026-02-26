@@ -32,16 +32,6 @@ function MapRefCapture({ mapRef }) {
   return null;
 }
 
-function LocateOnMount() {
-  const map = useMap();
-  useEffect(() => {
-    if (navigator.geolocation) {
-      flyToCurrentPosition(map);
-    }
-  }, [map]);
-  return null;
-}
-
 export default function LeafletMap({ reports = [], onReportClick }) {
   const mapRef = useRef(null);
 
@@ -126,7 +116,6 @@ export default function LeafletMap({ reports = [], onReportClick }) {
           ))}
         </MarkerClusterGroup>
 
-        <LocateOnMount />
         <MapRefCapture mapRef={mapRef} />
       </MapContainer>
     </div>

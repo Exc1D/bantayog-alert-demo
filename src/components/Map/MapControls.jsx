@@ -9,6 +9,7 @@ export default function MapControls({ filters, onFilterChange, reportCount }) {
       <div className="bg-primary/90 backdrop-blur-sm rounded-xl shadow-dark p-2.5 pointer-events-auto w-fit">
         <div className="flex flex-wrap gap-2 items-center">
           <select
+            aria-label="Filter by municipality"
             value={filters.municipality || 'all'}
             onChange={(e) => onFilterChange({ ...filters, municipality: e.target.value })}
             className={selectClass}
