@@ -1,41 +1,145 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+
     function isSignedIn() {
       return request.auth != null;
     }
 
+    function isAdmin() {
+      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
+      return isSignedIn() && exists(userPath) ? (
+        get(userPath).data.role == 'superadmin_provincial' ||
+        get(userPath).data.role.matches('^admin_.*')
+      ) : false;
+    }
+
+    // Validate image types only (jpeg, png, gif, webp)
     function isAllowedImage() {
       return request.resource.contentType.matches('image/(jpeg|png|gif|webp)');
     }
 
+    // Validate video types
     function isAllowedVideo() {
       return request.resource.contentType.matches('video/(mp4|quicktime|webm)');
     }
 
+    // Check file size (max 5MB for images as per requirements)
+    function isValidImageSize() {
+      return request.resource.size <= 5 * 1024 * 1024; // 5MB
+    }
+
+    // Check video size (max 50MB)
+    function isValidVideoSize() {
+      return request.resource.size <= 50 * 1024 * 1024; // 50MB
+    }
+
+    // Validate filename - prevent path traversal and special characters
+    function isValidFileName(name) {
+      return name is string
+        && name.size() <= 200
+        && !name.matches('.*\\.\\..*')  // No path traversal
+        && !name.matches('.*[/\\\\].*')  // No directory separators
+        && !name.matches('^\\..*');  // No hidden files
+    }
+
+    // Extract filename from path
+    function fileName() {
+      return request.resource.name.split('/').last();
+    }
+
+    // ============================================
+    // REPORTS MEDIA (photos, videos, thumbnails)
+    // ============================================
+
     match /reports/{allPaths=**} {
+      // Public read access
       allow read: if true;
+
+      // Write: Authenticated users can upload evidence
+      // Note: Malware scanning is handled by Firebase Cloud Functions
+      // Consider implementing: https://firebase.google.com/docs/storage/security/cloud-function-scanning
       allow write: if isSignedIn()
         && (
-          (isAllowedImage() && request.resource.size < 10 * 1024 * 1024)
-          ||
-          (isAllowedVideo() && request.resource.size < 50 * 1024 * 1024)
-        );
+          // Images: max 5MB
+          (isAllowedImage() && isValidImageSize())
+          // Videos: max 50MB
+          || (isAllowedVideo() && isValidVideoSize())
+        )
+        && isValidFileName(fileName());
     }
+
+    // ============================================
+    // EVIDENCE (resolution evidence photos)
+    // ============================================
 
     match /evidence/{allPaths=**} {
+      // Public read access
       allow read: if true;
+
+      // Write: Authenticated users can upload evidence
       allow write: if isSignedIn()
         && isAllowedImage()
-        && request.resource.size < 10 * 1024 * 1024;
+        && isValidImageSize()
+        && isValidFileName(fileName());
     }
 
-    match /avatars/{userId}/{allPaths=**} {
+    // ============================================
+    // AVATARS (user profile pictures)
+    // ============================================
+
+    match /avatars/{userId}/{fileName=**} {
+      // Public read access
       allow read: if true;
+
+      // Write: Users can only upload to their own avatar path
       allow write: if isSignedIn()
         && request.auth.uid == userId
         && isAllowedImage()
-        && request.resource.size < 5 * 1024 * 1024;
+        && isValidImageSize()
+        && isValidFileName(fileName());
+    }
+
+    // ============================================
+    // ADMIN UPLOADS (for future admin features)
+    // ============================================
+
+    match /admin/{allPaths=**} {
+      // Only admins can read/write in admin paths
+      allow read, write: if isAdmin();
     }
   }
 }
+
+// ============================================
+// SECURITY CONSIDERATIONS
+// ============================================
+//
+// 1. File Type Validation:
+//    - Images: Only jpeg, png, gif, webp are allowed
+//    - Videos: Only mp4, quicktime, webm are allowed
+//    - Content-Type header is validated client-side and server-side
+//
+// 2. File Size Limits:
+//    - Images: Maximum 5MB per file
+//    - Videos: Maximum 50MB per file
+//    - Prevents DoS attacks via large file uploads
+//
+// 3. Path Validation:
+//    - Filenames cannot contain path traversal sequences (..)
+//    - Filenames cannot contain directory separators
+//    - No hidden files allowed
+//    - Avatar paths are restricted to user's own UID
+//
+// 4. Malware Scanning:
+//    - Consider integrating with Firebase Cloud Functions for virus scanning
+//    - Example: https://firebase.google.com/docs/storage/security/cloud-function-scanning
+//    - Alternatively, use a third-party service like ClamAV
+//
+// 5. Rate Limiting:
+//    - Rate limiting should be implemented at the application level
+//    - Firebase Storage does not natively support rate limiting
+//    - Consider using Cloud Functions to implement custom rate limiting

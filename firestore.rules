@@ -1,6 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
     function isSignedIn() {
       return request.auth != null;
     }
@@ -8,6 +12,11 @@ service cloud.firestore {
     function userRole() {
       let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
       return isSignedIn() && exists(userPath) ? get(userPath).data.role : '';
+    }
+
+    function userData() {
+      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
+      return isSignedIn() && exists(userPath) ? get(userPath).data : null;
     }
 
     function isAdmin() {
@@ -18,78 +27,354 @@ service cloud.firestore {
       );
     }
 
-    // Input validation functions for sanitization
-    function isValidString(value, maxLength) {
+    function isModerator() {
+      let role = userRole();
+      return isSignedIn() && (
+        role == 'superadmin_provincial' ||
+        role.matches('^admin_.*') ||
+        role == 'moderator'
+      );
+    }
+
+    function isVerifiedReporter() {
+      let data = userData();
+      return data != null && data.isVerified == true;
+    }
+
+    // Valid municipalities in Camarines Norte
+    function isValidMunicipality(municipality) {
+      return municipality in [
+        'Basud', 'Capalonga', 'Daet', 'Jose Panganiban', 'Labo',
+        'Mercedes', 'Paracale', 'San Lorenzo Ruiz', 'San Vicente',
+        'Santa Elena', 'Talisay', 'Vinzons'
+      ];
+    }
+
+    // Valid disaster types
+    function isValidDisasterType(type) {
+      return type in [
+        'flood', 'landslide', 'fire', 'earthquake', 'typhoon',
+        'health', 'road_incident', 'infrastructure', 'environmental',
+        'security', 'other', 'pending'
+      ];
+    }
+
+    // Valid severity levels
+    function isValidSeverity(severity) {
+      return severity in ['critical', 'moderate', 'minor'];
+    }
+
+    // Valid verification statuses
+    function isValidStatus(status) {
+      return status in ['pending', 'verified', 'rejected', 'resolved'];
+    }
+
+    // Valid report types
+    function isValidReportType(reportType) {
+      return reportType in ['situation', 'alert', 'info'];
+    }
+
+    // ============================================
+    // INPUT VALIDATION FUNCTIONS
+    // ============================================
+
+    function isValidString(value, maxLength, minLength) {
       return value is string 
         && value.size() <= maxLength
+        && (minLength == null || value.size() >= minLength)
         && !value.matches('.*<script.*')
         && !value.matches('.*javascript:.*')
-        && !value.matches('.*on\\w+\\s*=.*');
+        && !value.matches('.*on\\w+\\s*=.*')
+        && !value.matches('.*data:.*')
+        && !value.matches('.*vbscript:.*');
     }
 
-    function isValidDescription(data) {
-      let desc = data.disaster.description;
-      return isValidString(desc, 2000) && desc.size() >= 10;
+    function isValidLatitude(lat) {
+      return lat is number && lat >= 12.5 && lat <= 15.5;
     }
 
-    function isValidLocation(data) {
-      let barangay = data.location.barangay;
-      let street = data.location.street;
-      return (barangay == null || barangay == '' || isValidString(barangay, 100))
-        && (street == null || street == '' || isValidString(street, 100));
+    function isValidLongitude(lng) {
+      return lng >= 122.0 && lng <= 124.0;
     }
 
-    function isValidSeverity(value) {
-      return value in ['critical', 'moderate', 'minor'];
+    function isValidCoordinates(lat, lng) {
+      return isValidLatitude(lat) && isValidLongitude(lng);
     }
 
-    function isValidResolutionData(data) {
-      let actions = data.verification.resolution.actionsTaken;
-      let notes = data.verification.resolution.resolutionNotes;
-      let resources = data.verification.resolution.resourcesUsed;
-      return isValidString(actions, 2000) && actions.size() >= 10
-        && (notes == null || notes == '' || isValidString(notes, 1000))
-        && (resources == null || resources == '' || isValidString(resources, 500));
+    function isValidTagsArray(tags) {
+      return tags is list 
+        && tags.size() <= 10
+        && tags.forEach(tag => tag is string && tag.size() <= 50);
     }
+
+    function isValidPhotoArray(photos) {
+      return photos is list 
+        && photos.size() <= 5
+        && photos.forEach(url => url is string && url.size() <= 2048);
+    }
+
+    function isValidVideoArray(videos) {
+      return videos is list 
+        && videos.size() <= 2
+        && videos.forEach(url => url is string && url.size() <= 2048);
+    }
+
+    function isValidEngagementData(data) {
+      let engagement = data.engagement;
+      return engagement is map
+        && engagement.keys().hasAll(['upvotes', 'upvotedBy'])
+        && (engagement.upvotes == 0 || engagement.upvotes is number)
+        && engagement.upvotedBy is list
+        && engagement.upvotes >= 0
+        && engagement.upvotes <= 1000000;
+    }
+
+    function isValidTimestamp(ts) {
+      return ts is timestamp;
+    }
+
+    // ============================================
+    // REPORTS COLLECTION
+    // ============================================
 
     match /reports/{reportId} {
+      // Public read access - reports are viewable by everyone
       allow read: if true;
 
-      // Report submissions must come from authenticated users (including Firebase anonymous auth)
-      // Input sanitization is applied client-side, server validates basic constraints
+      // Create: Authenticated users can submit reports with full validation
       allow create: if isSignedIn()
         && request.resource.data.reporter.userId == request.auth.uid
+        && request.resource.data.keys().hasAll([
+          'timestamp', 'reportType', 'location', 'disaster',
+          'media', 'reporter', 'verification', 'engagement', 'weatherContext'
+        ])
+        // Timestamp validation - must be server timestamp
+        && request.resource.data.timestamp == serverTimestamp()
+        // Report type validation
+        && isValidReportType(request.resource.data.reportType)
+        // Location validation
+        && request.resource.data.location.keys().hasAll(['lat', 'lng', 'municipality'])
+        && isValidCoordinates(
+          request.resource.data.location.lat,
+          request.resource.data.location.lng
+        )
+        && isValidMunicipality(request.resource.data.location.municipality)
+        && (request.resource.data.location.barangay == null 
+            || request.resource.data.location.barangay == '' 
+            || isValidString(request.resource.data.location.barangay, 100, 2))
+        && (request.resource.data.location.street == null 
+            || request.resource.data.location.street == '' 
+            || isValidString(request.resource.data.location.street, 100, 2))
+        // Disaster validation
+        && request.resource.data.disaster.keys().hasAll(['type', 'severity', 'description'])
+        && isValidDisasterType(request.resource.data.disaster.type)
+        && isValidSeverity(request.resource.data.disaster.severity)
+        && isValidString(request.resource.data.disaster.description, 2000, 10)
+        && (request.resource.data.disaster.tags == null 
+            || request.resource.data.disaster.tags is list
+            || isValidTagsArray(request.resource.data.disaster.tags))
+        // Media validation
+        && request.resource.data.media is map
+        && request.resource.data.media.keys().hasAll(['photos', 'videos', 'thumbnails'])
+        && isValidPhotoArray(request.resource.data.media.photos)
+        && isValidVideoArray(request.resource.data.media.videos)
+        && isValidPhotoArray(request.resource.data.media.thumbnails)
+        // Reporter validation
+        && request.resource.data.reporter is map
+        && request.resource.data.reporter.userId == request.auth.uid
+        && (request.resource.data.reporter.name == null 
+            || isValidString(request.resource.data.reporter.name, 100, 1))
+        // Verification initial state validation
+        && request.resource.data.verification is map
         && request.resource.data.verification.status == 'pending'
-        && isValidDescription(request.resource.data)
-        && isValidLocation(request.resource.data)
-        && isValidSeverity(request.resource.data.disaster.severity);
+        && request.resource.data.verification.keys().hasAll(['status', 'resolution'])
+        // Engagement initial state validation
+        && isValidEngagementData(request.resource.data)
+        && request.resource.data.engagement.upvotes == 0
+        && request.resource.data.engagement.upvotedBy == []
+        // Weather context validation (can be empty map)
+        && request.resource.data.weatherContext is map;
 
-      // Admins can fully moderate reports.
-      // Any signed-in user can update only engagement data (upvotes).
-      allow update: if isAdmin()
-        || (isSignedIn()
+      // Update: Moderators/admins can update any field
+      // Regular users can only update engagement (upvotes)
+      allow update: if isModerator()
+        || (
+          isSignedIn()
+          // Only allow engagement updates
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['engagement'])
+          // Validate engagement data
+          && isValidEngagementData(request.resource.data)
           // Prevent upvote count from going below zero
           && request.resource.data.engagement.upvotes >= 0
-          // Ensure the user removing their upvote was actually in the upvotedBy list
+          // Ensure upvotedBy is a list
+          && request.resource.data.engagement.upvotedBy is list
+          // Ensure upvote removal only by the user who upvoted
           && (
             request.resource.data.engagement.upvotes >= resource.data.engagement.upvotes
             || request.auth.uid in resource.data.engagement.upvotedBy
           )
+          // Validate no new fields added
+          && request.resource.data.keys().hasAll(resource.data.keys())
+        )
+        // Admin can also update verification status
+        || (
+          isModerator()
+          && request.resource.data.keys().hasAll([
+            'verification', 'disaster', 'engagement', 'location'
+          ])
+          // Only allow specific verification fields to be modified
+          && request.resource.data.verification is map
+          && (
+            // Status change to verified
+            (request.resource.data.verification.status == 'verified'
+              && request.resource.data.verification.keys().hasAll([
+                'status', 'verifiedBy', 'verifiedAt', 'verifierRole', 'notes', 'resolution'
+              ])
+              && request.resource.data.verification.verifiedBy == request.auth.uid
+              && request.resource.data.verification.verifiedAt == serverTimestamp()
+              && isValidString(request.resource.data.verification.notes, 1000, 0))
+            // Status change to rejected
+            || (request.resource.data.verification.status == 'rejected'
+              && request.resource.data.verification.keys().hasAll([
+                'status', 'verifiedBy', 'verifiedAt', 'verifierRole', 'notes', 'resolution'
+              ])
+              && request.resource.data.verification.verifiedBy == request.auth.uid
+              && request.resource.data.verification.verifiedAt == serverTimestamp()
+              && isValidString(request.resource.data.verification.notes, 1000, 0))
+            // Status change to resolved
+            || (request.resource.data.verification.status == 'resolved'
+              && request.resource.data.verification.keys().hasAll([
+                'status', 'verifiedBy', 'verifiedAt', 'verifierRole', 'notes', 'resolution'
+              ])
+              && request.resource.data.verification.verifiedBy == request.auth.uid
+              && request.resource.data.verification.verifiedAt == serverTimestamp()
+              && isValidString(request.resource.data.verification.notes, 1000, 0)
+              && request.resource.data.verification.resolution is map
+              && request.resource.data.verification.resolution.keys().hasAll([
+                'resolvedBy', 'resolvedAt', 'evidencePhotos', 'resolutionNotes', 'actionsTaken', 'resourcesUsed'
+              ])
+              && request.resource.data.verification.resolution.resolvedBy == request.auth.uid
+              && request.resource.data.verification.resolution.resolvedAt == serverTimestamp()
+              && isValidPhotoArray(request.resource.data.verification.resolution.evidencePhotos)
+              && isValidString(request.resource.data.verification.resolution.resolutionNotes, 1000, 0)
+              && isValidString(request.resource.data.verification.resolution.actionsTaken, 2000, 10)
+              && isValidString(request.resource.data.verification.resolution.resourcesUsed, 500, 0))
+            // No status change - allow other verification field updates
+            || request.resource.data.verification.status == resource.data.verification.status
+          )
         );
 
+      // Delete: Only admins can delete reports
       allow delete: if isAdmin();
     }
-    
+
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+
     match /users/{userId} {
-      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
-      allow create: if isSignedIn() && request.auth.uid == userId
+      // Read: Own user profile or admins can read
+      allow read: if isSignedIn() 
+        && (request.auth.uid == userId || isAdmin());
+
+      // Create: Users can only create their own profile with role='user'
+      allow create: if isSignedIn() 
+        && request.auth.uid == userId
         && request.resource.data.keys().hasAll(['userId', 'displayName', 'municipality', 'role'])
+        && request.resource.data.userId == request.auth.uid
         && request.resource.data.role == 'user'
-        && request.resource.data.userId == request.auth.uid;
-      allow update: if isSignedIn() && request.auth.uid == userId
-        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'userId']);
+        && isValidString(request.resource.data.displayName, 100, 1)
+        && (request.resource.data.municipality == null 
+            || request.resource.data.municipality == '' 
+            || isValidMunicipality(request.resource.data.municipality));
+
+      // Update: Users can update their own profile, but not role or userId
+      allow update: if isSignedIn() 
+        && request.auth.uid == userId
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'userId'])
+        && (request.resource.data.displayName == null 
+            || isValidString(request.resource.data.displayName, 100, 1))
+        && (request.resource.data.municipality == null 
+            || request.resource.data.municipality == '' 
+            || isValidMunicipality(request.resource.data.municipality));
+
+      // Delete: No one can delete user documents (for audit trail)
       allow delete: if false;
+    }
+
+    // ============================================
+    // SYSTEM COLLECTIONS (for future use)
+    // ============================================
+
+    match /system/{docId} {
+      // System collection - admins only
+      allow read, write: if isAdmin();
+    }
+
+    match /audit/{docId} {
+      // Audit logs - read by admins
+      // Write allowed for authenticated users to their own audit subcollection
+      // and via Cloud Functions for system-level audit
+      allow read: if isAdmin();
+      
+      // Allow users to write to their own audit entries via subcollection
+      // Format: /users/{userId}/audit/{auditId}
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.keys().hasAll(['userId', 'eventType', 'timestamp', 'details'])
+        && request.resource.data.timestamp == serverTimestamp();
+    }
+
+    // User audit subcollection - users can log their own actions
+    match /users/{userId}/audit/{auditId} {
+      // Users can read their own audit logs, admins can read all
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      // Users can create audit entries for their own actions
+      allow create: if isSignedIn() 
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasAll(['eventType', 'timestamp', 'details'])
+        && request.resource.data.timestamp == serverTimestamp();
     }
   }
 }
+
+// ============================================
+// REQUIRED INDEXES (create in firestore.indexes.json)
+// ============================================
+//
+// {
+//   "indexes": [
+//     {
+//       "collectionGroup": "reports",
+//       "queryScope": "COLLECTION",
+//       "fields": [
+//         { "fieldPath": "location.municipality", "order": "ASC" },
+//         { "fieldPath": "timestamp", "order": "DESC" }
+//       ]
+//     },
+//     {
+//       "collectionGroup": "reports",
+//       "queryScope": "COLLECTION",
+//       "fields": [
+//         { "fieldPath": "verification.status", "order": "ASC" },
+//         { "fieldPath": "timestamp", "order": "DESC" }
+//       ]
+//     },
+//     {
+//       "collectionGroup": "reports",
+//       "queryScope": "COLLECTION",
+//       "fields": [
+//         { "fieldPath": "disaster.severity", "order": "ASC" },
+//         { "fieldPath": "timestamp", "order": "DESC" }
+//       ]
+//     },
+//     {
+//       "collectionGroup": "reports",
+//       "queryScope": "COLLECTION",
+//       "fields": [
+//         { "fieldPath": "disaster.type", "order": "ASC" },
+//         { "fieldPath": "timestamp", "order": "DESC" }
+//       ]
+//     }
+//   ]
+// }

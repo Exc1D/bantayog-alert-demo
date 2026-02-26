@@ -13,6 +13,7 @@ import { doc, setDoc, getDoc, serverTimestamp, deleteDoc } from 'firebase/firest
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { auth, db, storage } from '../utils/firebaseConfig';
 import { captureException } from '../utils/sentry';
+import { logAuditEvent, AuditEvent, AuditEventType } from '../utils/auditLogger';
 
 export function useAuth() {
   const [user, setUser] = useState(null);
@@ -44,6 +45,18 @@ export function useAuth() {
 
   const signIn = async (email, password) => {
     const credential = await signInWithEmailAndPassword(auth, email, password);
+
+    logAuditEvent(
+      new AuditEvent({
+        eventType: AuditEventType.LOGIN,
+        userId: credential.user.uid,
+        userEmail: email,
+        targetType: 'user',
+        targetId: credential.user.uid,
+        metadata: { method: 'email_password' },
+      })
+    );
+
     return credential.user;
   };
 
@@ -69,18 +82,58 @@ export function useAuth() {
       settings: {
         notifications: true,
         shareLocation: true,
+        dataCollectionEnabled: true,
       },
     });
+
+    logAuditEvent(
+      new AuditEvent({
+        eventType: AuditEventType.PROFILE_UPDATE,
+        userId: credential.user.uid,
+        userEmail: email,
+        userRole: 'citizen',
+        targetType: 'user',
+        targetId: credential.user.uid,
+        metadata: { action: 'account_created' },
+      })
+    );
 
     return credential.user;
   };
 
   const signInAsGuest = async () => {
     const credential = await signInAnonymously(auth);
+
+    logAuditEvent(
+      new AuditEvent({
+        eventType: AuditEventType.LOGIN,
+        userId: credential.user.uid,
+        userEmail: null,
+        targetType: 'user',
+        targetId: credential.user.uid,
+        metadata: { method: 'anonymous' },
+      })
+    );
+
     return credential.user;
   };
 
   const signOut = async () => {
+    const currentUser = auth.currentUser;
+
+    if (currentUser && !currentUser.isAnonymous) {
+      logAuditEvent(
+        new AuditEvent({
+          eventType: AuditEventType.LOGOUT,
+          userId: currentUser.uid,
+          userEmail: currentUser.email || null,
+          targetType: 'user',
+          targetId: currentUser.uid,
+          metadata: {},
+        })
+      );
+    }
+
     await firebaseSignOut(auth);
     setUser(null);
     setUserProfile(null);
@@ -122,14 +175,47 @@ export function useAuth() {
           await deleteObject(ref(storage, storagePath));
         }
       } catch (error) {
-        captureException(error, { tags: { component: 'useAuth', action: 'deleteProfileImage' }, level: 'warning' });
+        captureException(error, {
+          tags: { component: 'useAuth', action: 'deleteProfileImage' },
+          level: 'warning',
+        });
       }
     }
+
+    logAuditEvent(
+      new AuditEvent({
+        eventType: AuditEventType.DATA_DELETE,
+        userId: uid,
+        userEmail: userProfile?.email || auth.currentUser.email || null,
+        targetType: 'user',
+        targetId: uid,
+        metadata: { action: 'account_deletion' },
+      })
+    );
 
     await deleteDoc(doc(db, 'users', uid));
     await deleteUser(auth.currentUser);
     setUser(null);
     setUserProfile(null);
+  };
+
+  const exportUserData = async () => {
+    if (!auth.currentUser) {
+      throw new Error('No signed in user found.');
+    }
+
+    logAuditEvent(
+      new AuditEvent({
+        eventType: AuditEventType.DATA_EXPORT,
+        userId: auth.currentUser.uid,
+        userEmail: userProfile?.email || auth.currentUser.email,
+        targetType: 'user',
+        targetId: auth.currentUser.uid,
+        metadata: { action: 'user_data_export_request' },
+      })
+    );
+
+    return true;
   };
 
   const isAdmin =
@@ -147,6 +233,7 @@ export function useAuth() {
     requestPasswordReset,
     updateProfilePicture,
     removeAccount,
+    exportUserData,
     isAdmin,
     isSuperAdmin,
   };

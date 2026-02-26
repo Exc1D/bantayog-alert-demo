@@ -1,0 +1,77 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build staging
+        run: npm run build:staging
+        env:
+          VITE_APP_ENV: staging
+
+      - name: Check Firebase token
+        id: check-token
+        run: |
+          if [ -z "${{ secrets.FIREBASE_TOKEN }}" ]; then
+            echo "has_token=false" >> $GITHUB_OUTPUT
+            echo "⚠️ FIREBASE_TOKEN not configured. Skipping deployment."
+          else
+            echo "has_token=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install Firebase CLI
+        if: steps.check-token.outputs.has_token == 'true'
+        run: npm install -g firebase-tools@13
+
+      - name: Deploy to Firebase Hosting Staging
+        if: steps.check-token.outputs.has_token == 'true'
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: firebase hosting:channel:deploy staging --token "$FIREBASE_TOKEN"
+
+      - name: Get Staging Deployment URL
+        if: steps.check-token.outputs.has_token == 'true'
+        id: deploy-url
+        run: |
+          echo "url=https://bantayog-alert-demo-staging.web.app" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR
+        if: steps.check-token.outputs.has_token == 'true' && github.event_name == 'push'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${context.ref.replace('refs/heads/', '')}`
+            });
+
+            if (prs.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prs[0].number,
+                body: `## 🚀 Staging Deployment Successful!\n\nThe changes have been deployed to Firebase Hosting **staging** site.\n\n**Staging URL:** ${{ steps.deploy-url.outputs.url }}\n\n> This comment explains: It deploys to a separate Firebase hosting site (bantayog-alert-demo-staging) isolated from the production site.`
+              });
+            }

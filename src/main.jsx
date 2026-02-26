@@ -3,8 +3,18 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './App.css';
 import { initSentry, ErrorBoundary, captureException } from './utils/sentry';
+import { reportWebVitals } from './utils/webVitals';
 
 initSentry();
+
+performance.mark('app-start');
+performance.mark('react-init-start');
+
+window.addEventListener('load', () => {
+  performance.mark('page-loaded');
+  performance.measure('app-boot', 'app-start', 'page-loaded');
+  performance.measure('initial-load', 'app-start', 'page-loaded');
+});
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -40,6 +50,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>
 );
 
+performance.mark('react-render-complete');
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch((error) => {
@@ -47,3 +59,12 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+reportWebVitals((metric) => {
+  performance.mark(`${metric.name}-complete`);
+  performance.measure(metric.name, 'app-start', `${metric.name}-complete`);
+
+  if (metric.name === 'LCP') {
+    performance.measure('time-to-interactive', 'app-start', `${metric.name}-complete`);
+  }
+});

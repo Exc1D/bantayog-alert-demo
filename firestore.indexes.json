@@ -1,0 +1,75 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "location.municipality",
+          "order": "ASC"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESC"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "verification.status",
+          "order": "ASC"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESC"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "disaster.severity",
+          "order": "ASC"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESC"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "disaster.type",
+          "order": "ASC"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESC"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "engagement.upvotes",
+          "order": "DESC"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESC"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

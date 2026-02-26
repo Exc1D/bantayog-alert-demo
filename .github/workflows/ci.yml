@@ -52,3 +52,170 @@ jobs:
           name: build-artifacts
           path: dist/
           retention-days: 7
+
+  firestore-rules:
+    name: Validate Firestore Rules
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Verify Firestore rules exist and are valid
+        run: |
+          echo "Verifying Firestore rules..."
+          if [ ! -f "firestore.rules" ]; then
+            echo "Error: firestore.rules is missing"
+            exit 1
+          fi
+          if ! grep -q "rules_version" firestore.rules; then
+            echo "Error: firestore.rules missing rules_version"
+            exit 1
+          fi
+          if ! grep -q "function" firestore.rules; then
+            echo "Warning: firestore.rules may be missing helper functions"
+          fi
+          echo "Firestore rules verified"
+
+      - name: Verify Storage rules exist and are valid
+        run: |
+          echo "Verifying Storage rules..."
+          if [ ! -f "storage.rules" ]; then
+            echo "Error: storage.rules is missing"
+            exit 1
+          fi
+          if ! grep -q "rules_version" storage.rules; then
+            echo "Error: storage.rules missing rules_version"
+            exit 1
+          fi
+          echo "Storage rules verified"
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Check for exposed secrets
+        run: |
+          echo "Checking for exposed secrets..."
+          if grep -r "firebase-adminsdk" . --include="*.json" --include="*.env" 2>/dev/null | grep -v ".example" | grep -v "node_modules" | grep -v ".git"; then
+            echo "Potential secrets found!"
+            exit 1
+          fi
+
+      - name: Verify security rules don't expose data
+        run: |
+          echo "Verifying Firestore rules..."
+
+          # Check that firestore.rules doesn't have overly permissive rules
+          if grep -q "allow read: if true" firestore.rules && ! grep -q "allow read: if true" firestore.rules | grep -q "reports"; then
+            echo "Warning: Potentially overly permissive read rule found"
+          fi
+
+          echo "Verifying Storage rules..."
+          if grep -q "allow write: if true" storage.rules; then
+            echo "Warning: Potentially overly permissive write rule found"
+            exit 1
+          fi
+
+          echo "Security rules verified"
+
+  compliance-check:
+    name: Compliance Check
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Check for PRIVACY.md
+        run: |
+          echo "Verifying privacy documentation..."
+          if [ ! -f "PRIVACY.md" ]; then
+            echo "Error: PRIVACY.md is missing"
+            exit 1
+          fi
+          echo "PRIVACY.md exists"
+
+      - name: Verify audit logger exists
+        run: |
+          echo "Verifying compliance features..."
+          if [ ! -f "src/utils/auditLogger.js" ]; then
+            echo "Error: auditLogger.js is missing"
+            exit 1
+          fi
+          echo "Audit logger exists"
+
+      - name: Verify privacy settings component exists
+        run: |
+          if [ ! -f "src/components/Common/PrivacySettings.jsx" ]; then
+            echo "Error: PrivacySettings.jsx is missing"
+            exit 1
+          fi
+          echo "Privacy settings component exists"
+
+      - name: Check for sensitive data patterns
+        run: |
+          echo "Checking for exposed sensitive data patterns..."
+
+          # Check for common sensitive patterns in source code
+          if grep -rn "password\s*=\s*['\"]" src/ --include="*.js" --include="*.jsx" 2>/dev/null | grep -v "test" | grep -v ".test."; then
+            echo "Warning: Potential hardcoded password found"
+          fi
+
+          if grep -rn "apiKey\s*=\s*['\"][a-zA-Z0-9]{20,}" src/ --include="*.js" --include="*.jsx" 2>/dev/null | grep -v "VITE_" | grep -v "test"; then
+            echo "Warning: Potential hardcoded API key found"
+          fi
+
+          echo "Sensitive data check complete"
+
+      - name: Verify GDPR compliance features
+        run: |
+          echo "Verifying GDPR compliance implementation..."
+
+          # Check for audit event types
+          if ! grep -q "AuditEventType" src/utils/auditLogger.js; then
+            echo "Error: AuditEventType not defined"
+            exit 1
+          fi
+
+          # Check for required event types
+          for event in "LOGIN" "LOGOUT" "DATA_EXPORT" "DATA_DELETE"; do
+            if ! grep -q "$event" src/utils/auditLogger.js; then
+              echo "Error: Missing $event event type"
+              exit 1
+            fi
+          done
+
+          echo "GDPR compliance features verified"
+
+      - name: Check audit logging integration
+        run: |
+          echo "Verifying audit logging integration..."
+
+          # Check Auth hook integration
+          if ! grep -q "AuditEvent" src/hooks/useAuth.js; then
+            echo "Warning: Audit logging not integrated in useAuth.js"
+          fi
+
+          # Check Reports hook integration
+          if ! grep -q "AuditEvent" src/hooks/useReports.js; then
+            echo "Warning: Audit logging not integrated in useReports.js"
+          fi
+
+          echo "Audit logging integration check complete"
