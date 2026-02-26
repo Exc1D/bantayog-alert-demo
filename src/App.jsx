@@ -116,7 +116,7 @@ function AppContent() {
       <Header onProfileClick={handleOpenProfileTab} />
       <TabNavigation activeTab={activeTab} onTabChange={changeTab} />
 
-      <main className="flex-1" id="main-content">
+      <main className="flex-1" id={`tabpanel-${activeTab}`}>
         <Suspense
           fallback={
             <div className="h-[calc(100vh-112px)] flex items-center justify-center">

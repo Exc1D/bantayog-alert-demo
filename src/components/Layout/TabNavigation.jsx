@@ -94,7 +94,7 @@ export default function TabNavigation({ activeTab, onTabChange }) {
               aria-controls={`tabpanel-${tab.id}`}
               onClick={() => onTabChange(tab.id)}
               className={`flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-semibold transition-all relative ${
-                isActive ? 'text-accent' : 'text-textLight hover:text-text'
+                isActive ? 'text-accentDark' : 'text-textLight hover:text-text'
               }`}
             >
               {tab.icon(isActive)}

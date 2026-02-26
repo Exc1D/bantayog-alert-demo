@@ -37,7 +37,7 @@ export default function Header({ onProfileClick }) {
         <img src="/logo.svg" alt="Bantayog Alert" className="w-8 h-8 rounded-lg" />
         <div className="leading-none">
           <h1 className="text-[15px] font-extrabold tracking-wide text-white">BANTAYOG ALERT</h1>
-          <p className="text-[9px] font-medium text-white/40 tracking-widest uppercase">
+          <p className="text-[9px] font-medium text-white/60 tracking-widest uppercase">
             Camarines Norte
           </p>
         </div>

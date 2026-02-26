@@ -70,10 +70,11 @@ export default function ReportSubmission({
 
           {/* Manual municipality fallback */}
           <div className="pt-1">
-            <label className="block text-[10px] font-bold text-textLight uppercase tracking-wider mb-1">
+            <label htmlFor="report-municipality" className="block text-[10px] font-bold text-textLight uppercase tracking-wider mb-1">
               Select your municipality{isInApp ? '' : ' manually'}
             </label>
             <select
+              id="report-municipality"
               value={manualMunicipality}
               onChange={(e) => onManualMunicipalityChange(e.target.value)}
               className="w-full border border-stone-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white"
