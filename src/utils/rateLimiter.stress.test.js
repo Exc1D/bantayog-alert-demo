@@ -5,7 +5,7 @@
  * Uses the same mock localStorage pattern as the existing test to ensure
  * the module's localStorage calls work correctly.
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Set up mock localStorage BEFORE importing the module
 let store = {};

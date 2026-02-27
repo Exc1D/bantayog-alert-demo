@@ -267,7 +267,7 @@ describe('RBAC consistency — structural integrity', () => {
 
   it('ROLE_PERMISSIONS only references valid permissions', () => {
     const validPerms = new Set(Object.values(PERMISSIONS));
-    for (const [role, perms] of Object.entries(ROLE_PERMISSIONS)) {
+    for (const [_role, perms] of Object.entries(ROLE_PERMISSIONS)) {
       for (const perm of perms) {
         expect(validPerms.has(perm)).toBe(true);
       }
@@ -282,7 +282,7 @@ describe('RBAC consistency — structural integrity', () => {
   });
 
   it('no role has duplicate permissions', () => {
-    for (const [role, perms] of Object.entries(ROLE_PERMISSIONS)) {
+    for (const [_role, perms] of Object.entries(ROLE_PERMISSIONS)) {
       const unique = new Set(perms);
       expect(unique.size).toBe(perms.length);
     }
