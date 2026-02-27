@@ -12,7 +12,8 @@ import {
 import { doc, setDoc, getDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { auth, db, storage } from '../utils/firebaseConfig';
-import { captureException } from '../utils/sentry';
+import { captureException, addBreadcrumb } from '../utils/sentry';
+import { getStoragePathFromUrl } from '../utils/firebaseStorage';
 import { logAuditEvent, AuditEvent, AuditEventType } from '../utils/auditLogger';
 
 export function useAuth() {
@@ -151,16 +152,19 @@ export function useAuth() {
     // Delete old avatar if it exists
     const currentPhotoURL = auth.currentUser.photoURL || userProfile?.photoURL;
     if (currentPhotoURL && currentPhotoURL.includes('/avatars%2F')) {
-      try {
-        const match = currentPhotoURL.match(/\/o\/(.*?)\?/);
-        if (match?.[1]) {
-          const storagePath = decodeURIComponent(match[1]);
+      const storagePath = getStoragePathFromUrl(currentPhotoURL);
+      if (storagePath) {
+        try {
           await deleteObject(ref(storage, storagePath));
+        } catch (error) {
+          captureException(error, {
+            tags: { component: 'useAuth', action: 'deleteOldAvatar' },
+            level: 'warning',
+          });
         }
-      } catch (error) {
-        captureException(error, {
-          tags: { component: 'useAuth', action: 'deleteOldAvatar' },
-          level: 'warning',
+      } else {
+        addBreadcrumb('storage', 'Unable to extract avatar storage path from URL', 'info', {
+          currentPhotoURL,
         });
       }
     }
@@ -185,16 +189,19 @@ export function useAuth() {
     const currentPhotoURL = auth.currentUser.photoURL || userProfile?.photoURL;
 
     if (currentPhotoURL && currentPhotoURL.includes('/avatars%2F')) {
-      try {
-        const match = currentPhotoURL.match(/\/o\/(.*?)\?/);
-        if (match?.[1]) {
-          const storagePath = decodeURIComponent(match[1]);
+      const storagePath = getStoragePathFromUrl(currentPhotoURL);
+      if (storagePath) {
+        try {
           await deleteObject(ref(storage, storagePath));
+        } catch (error) {
+          captureException(error, {
+            tags: { component: 'useAuth', action: 'deleteProfileImage' },
+            level: 'warning',
+          });
         }
-      } catch (error) {
-        captureException(error, {
-          tags: { component: 'useAuth', action: 'deleteProfileImage' },
-          level: 'warning',
+      } else {
+        addBreadcrumb('storage', 'Unable to extract avatar storage path from URL', 'info', {
+          currentPhotoURL,
         });
       }
     }

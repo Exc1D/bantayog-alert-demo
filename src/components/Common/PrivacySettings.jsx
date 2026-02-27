@@ -14,6 +14,7 @@ export default function PrivacySettings() {
   );
   const [showExportModal, setShowExportModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [toggling, setToggling] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
@@ -23,8 +24,15 @@ export default function PrivacySettings() {
   }
 
   const handleDataCollectionToggle = async () => {
-    const newValue = !dataCollectionEnabled;
-    setDataCollectionEnabled(newValue);
+    if (toggling) return;
+    setToggling(true);
+
+    let newValue;
+    setDataCollectionEnabled((prev) => {
+      newValue = !prev;
+      return newValue;
+    });
+
     try {
       await setDoc(
         doc(db, 'users', user.uid),
@@ -33,8 +41,10 @@ export default function PrivacySettings() {
       );
       addToast(`Data collection ${newValue ? 'enabled' : 'disabled'}`, 'info');
     } catch {
-      setDataCollectionEnabled(!newValue);
+      setDataCollectionEnabled((prev) => !prev);
       addToast('Failed to update privacy setting', 'error');
+    } finally {
+      setToggling(false);
     }
   };
 

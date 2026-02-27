@@ -100,7 +100,7 @@ export function useReports(filters = {}) {
       setLastDoc(snapshot.docs[snapshot.docs.length - 1] || null);
       setHasMore(snapshot.docs.length >= FEED_PAGE_SIZE);
     } catch (err) {
-      setError(err.message);
+      setError(err?.message ?? 'Failed to load more reports');
     }
   }, [lastDoc, hasMore, filters.municipality]);
 
