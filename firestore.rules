@@ -103,20 +103,17 @@ service cloud.firestore {
 
     function isValidTagsArray(tags) {
       return tags is list 
-        && tags.size() <= 10
-        && tags.forEach(tag => tag is string && tag.size() <= 50);
+        && tags.size() <= 10;
     }
 
     function isValidPhotoArray(photos) {
       return photos is list 
-        && photos.size() <= 5
-        && photos.forEach(url => url is string && url.size() <= 2048);
+        && photos.size() <= 5;
     }
 
     function isValidVideoArray(videos) {
       return videos is list 
-        && videos.size() <= 2
-        && videos.forEach(url => url is string && url.size() <= 2048);
+        && videos.size() <= 2;
     }
 
     function isValidEngagementData(data) {
