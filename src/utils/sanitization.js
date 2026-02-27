@@ -3,6 +3,7 @@ import validator from 'validator';
 
 const DANGEROUS_PATTERNS = [
   /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+  /<\/?script\b[^>]*>/gi,
   /javascript:/gi,
   /on\w+\s*=/gi,
   /data:\s*text\/html/gi,
@@ -17,14 +18,22 @@ export function sanitizeText(text) {
 
   let sanitized = String(text).trim();
 
-  for (const pattern of DANGEROUS_PATTERNS) {
-    sanitized = sanitized.replace(pattern, '');
-  }
-
+  // Strip control characters and zero-width spaces FIRST so they can't break
+  // pattern matching (e.g. null bytes inside <scri\x00pt> preventing regex match)
   sanitized = sanitized
     // eslint-disable-next-line no-control-regex
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
     .replace(/\u200B/g, '');
+
+  // Run dangerous pattern removal in a loop to catch fragments that recombine
+  // after an inner match is stripped (e.g. <scr<script>ipt> → <script>)
+  let previous;
+  do {
+    previous = sanitized;
+    for (const pattern of DANGEROUS_PATTERNS) {
+      sanitized = sanitized.replace(pattern, '');
+    }
+  } while (sanitized !== previous);
 
   return sanitized;
 }
@@ -125,7 +134,7 @@ export function validatePhoneNumber(phone) {
     return { isValid: false, error: 'Phone number is required' };
   }
 
-  const phoneRegex = /^(\+?\d{1,3}[-.]?)?\(?\d{2,4}\)?[-.]?\d{3,4}[-.]?\d{3,4}$/;
+  const phoneRegex = /^(\+?\d{1,3}[-.]?)?\(?\d{2,4}\)?[-.]?\d{3,4}[-.]?\d{0,4}$/;
 
   if (!phoneRegex.test(cleaned)) {
     return { isValid: false, error: 'Invalid phone number format' };

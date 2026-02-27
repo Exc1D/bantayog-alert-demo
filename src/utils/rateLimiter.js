@@ -41,6 +41,12 @@ function cleanExpiredEntries(actionType) {
 
   if (!config || !history[actionType]) return;
 
+  if (!Array.isArray(history[actionType])) {
+    delete history[actionType];
+    setHistory(history);
+    return;
+  }
+
   const now = Date.now();
   const windowStart = now - config.windowMs;
 
