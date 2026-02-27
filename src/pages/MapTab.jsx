@@ -11,7 +11,7 @@ export default function MapTab({ onViewReport }) {
   }, [reports]);
 
   return (
-    <div className="h-[calc(100vh-112px)] isolate">
+    <div className="h-[calc(100vh-112px)] isolate overflow-hidden">
       <LeafletMap reports={mapReports} onReportClick={onViewReport} />
     </div>
   );
