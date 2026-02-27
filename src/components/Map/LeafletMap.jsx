@@ -61,7 +61,6 @@ function TileErrorHandler({ onTileError }) {
 
 export default function LeafletMap({ reports = [], onReportClick }) {
   const mapRef = useRef(null);
-  const [tileErrorCount, setTileErrorCount] = useState(0);
   const [currentTileIndex, setCurrentTileIndex] = useState(0);
 
   const [filters, setFilters] = useState({
@@ -70,19 +69,14 @@ export default function LeafletMap({ reports = [], onReportClick }) {
 
   // Switch to fallback tile provider after multiple errors
   const handleTileError = useCallback(() => {
-    setTileErrorCount((prev) => {
-      const newCount = prev + 1;
-      if (newCount >= 3 && currentTileIndex < TILE_PROVIDERS.length - 1) {
-        console.warn(
-          'Switching to fallback tile provider:',
-          TILE_PROVIDERS[currentTileIndex + 1].name
-        );
-        setCurrentTileIndex((prevIndex) => prevIndex + 1);
-        return 0;
+    setCurrentTileIndex((prevIndex) => {
+      if (prevIndex < TILE_PROVIDERS.length - 1) {
+        console.warn('Switching to fallback tile provider:', TILE_PROVIDERS[prevIndex + 1].name);
+        return prevIndex + 1;
       }
-      return newCount;
+      return prevIndex;
     });
-  }, [currentTileIndex]);
+  }, []);
 
   const currentTile = TILE_PROVIDERS[currentTileIndex];
 

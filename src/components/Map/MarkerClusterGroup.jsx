@@ -9,18 +9,8 @@ const MarkerClusterGroup = createLayerComponent(
     { children: _children, eventHandlers: _eventHandlers, ...props },
     ctx
   ) {
-    const clusterProps = {
-      chunkedLoading: props.chunkedLoading,
-      maxClusterRadius: props.maxClusterRadius,
-      spiderfyOnMaxZoom: props.spiderfyOnMaxZoom,
-      showCoverageOnHover: props.showCoverageOnHover,
-      disableClusteringAtZoom: props.disableClusteringAtZoom,
-      singleMarkerMode: props.singleMarkerMode,
-      spiderfyDistanceMultiplier: props.spiderfyDistanceMultiplier,
-      iconCreateFunction: props.iconCreateFunction,
-    };
-
-    const instance = new L.MarkerClusterGroup(clusterProps);
+    // Pass all props through to MarkerClusterGroup to preserve all options
+    const instance = new L.MarkerClusterGroup(props);
 
     return createElementObject(instance, {
       ...ctx,

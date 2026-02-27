@@ -16,25 +16,48 @@ const SEVERITY_STYLES = {
   },
 };
 
-// Field-level validation state (simplified - no trimming during typing)
-const getFieldWarning = (name, value) => {
-  if (containsXSS(value)) {
-    return 'Potentially unsafe content detected';
+// Sanitize text for XSS but don't trim (to allow spaces during typing)
+const DANGEROUS_PATTERNS = [
+  /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+  /javascript:/gi,
+  /on\w+\s*=/gi,
+  /data:\s*text\/html/gi,
+];
+
+function sanitizeWithoutTrim(text) {
+  if (text === null || text === undefined) {
+    return '';
   }
-  return null;
-};
+  let sanitized = String(text);
+  for (const pattern of DANGEROUS_PATTERNS) {
+    sanitized = sanitized.replace(pattern, '');
+  }
+  // Remove control characters but preserve spaces
+  // eslint-disable-next-line no-control-regex
+  return sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').replace(/\u200B/g, '');
+}
 
 export default function ReportForm({ formData, onChange }) {
   const handleFieldChange = (name, value) => {
-    // Don't trim during typing - allow spaces
-    // Truncation and XSS protection still apply
-    const truncatedValue = truncateText(value || '', 2000);
+    // Sanitize XSS content and truncate, but don't trim during typing to allow spaces
+    const sanitizedValue = sanitizeWithoutTrim(value);
+    const truncatedValue = truncateText(sanitizedValue, 2000);
     onChange({ ...formData, [name]: truncatedValue });
   };
 
-  const descriptionWarning = getFieldWarning('description', formData.description);
-  const barangayWarning = getFieldWarning('barangay', formData.barangay);
-  const streetWarning = getFieldWarning('street', formData.street);
+  // Check if original input contained XSS (for warning display)
+  const descriptionWarning =
+    formData.description && containsXSS(formData.description)
+      ? 'Potentially unsafe content was removed'
+      : null;
+  const barangayWarning =
+    formData.barangay && containsXSS(formData.barangay)
+      ? 'Potentially unsafe content was removed'
+      : null;
+  const streetWarning =
+    formData.street && containsXSS(formData.street)
+      ? 'Potentially unsafe content was removed'
+      : null;
 
   return (
     <div className="space-y-4">
