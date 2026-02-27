@@ -18,10 +18,10 @@ const DEFAULT_FLAGS = Object.freeze({
 
 const ENVIRONMENT_DEFAULTS = Object.freeze({
   production: {
-    [FEATURE_FLAGS.NEW_REPORT_FLOW]: false,
+    [FEATURE_FLAGS.NEW_REPORT_FLOW]: true,
     [FEATURE_FLAGS.WEATHER_ALERTS]: true,
     [FEATURE_FLAGS.COMMUNITY_ENGAGEMENT]: true,
-    [FEATURE_FLAGS.ADMIN_ANALYTICS]: false,
+    [FEATURE_FLAGS.ADMIN_ANALYTICS]: true,
     [FEATURE_FLAGS.BETA_FEATURES]: false,
   },
   staging: {

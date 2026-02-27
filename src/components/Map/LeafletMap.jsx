@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from './MarkerClusterGroup';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -14,6 +14,22 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
+
+// Tile providers with fallbacks
+const TILE_PROVIDERS = [
+  {
+    name: 'openstreetmap',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+  {
+    name: 'cartodb-light',
+    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  },
+];
 
 function flyToCurrentPosition(map) {
   navigator.geolocation.getCurrentPosition(
@@ -32,12 +48,37 @@ function MapRefCapture({ mapRef }) {
   return null;
 }
 
+// Component to handle tile errors and switch providers
+function TileErrorHandler({ onTileError }) {
+  useMapEvents({
+    tileerror: (e) => {
+      console.warn('Tile loading error:', e.tile?.src);
+      onTileError?.();
+    },
+  });
+  return null;
+}
+
 export default function LeafletMap({ reports = [], onReportClick }) {
   const mapRef = useRef(null);
+  const [currentTileIndex, setCurrentTileIndex] = useState(0);
 
   const [filters, setFilters] = useState({
     municipality: 'all',
   });
+
+  // Switch to fallback tile provider after multiple errors
+  const handleTileError = useCallback(() => {
+    setCurrentTileIndex((prevIndex) => {
+      if (prevIndex < TILE_PROVIDERS.length - 1) {
+        console.warn('Switching to fallback tile provider:', TILE_PROVIDERS[prevIndex + 1].name);
+        return prevIndex + 1;
+      }
+      return prevIndex;
+    });
+  }, []);
+
+  const currentTile = TILE_PROVIDERS[currentTileIndex];
 
   const filteredReports = useMemo(() => {
     return reports.filter((report) => {
@@ -98,12 +139,17 @@ export default function LeafletMap({ reports = [], onReportClick }) {
         {/* Zoom controls — bottomleft, CSS pushes them above the location button */}
         <ZoomControl position="bottomleft" />
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          keepBuffer={4}
+          key={currentTile.name}
+          attribution={currentTile.attribution}
+          url={currentTile.url}
+          keepBuffer={8}
           updateWhenZooming={false}
           updateWhenIdle={true}
+          maxZoom={MAP_MAX_ZOOM}
+          minZoom={MAP_MIN_ZOOM}
+          crossOrigin="anonymous"
         />
+        <TileErrorHandler onTileError={handleTileError} />
 
         <MarkerClusterGroup
           chunkedLoading

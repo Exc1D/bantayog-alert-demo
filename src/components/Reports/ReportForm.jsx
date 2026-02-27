@@ -1,5 +1,5 @@
 import { SEVERITY_LEVELS } from '../../utils/constants';
-import { useSanitization } from '../../hooks/useSanitization';
+import { containsXSS, truncateText } from '../../utils/sanitization';
 
 const SEVERITY_STYLES = {
   critical: {
@@ -16,17 +16,48 @@ const SEVERITY_STYLES = {
   },
 };
 
-export default function ReportForm({ formData, onChange }) {
-  const { sanitize, getFieldState } = useSanitization({ maxLength: 2000 });
+// Sanitize text for XSS but don't trim (to allow spaces during typing)
+const DANGEROUS_PATTERNS = [
+  /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+  /javascript:/gi,
+  /on\w+\s*=/gi,
+  /data:\s*text\/html/gi,
+];
 
+function sanitizeWithoutTrim(text) {
+  if (text === null || text === undefined) {
+    return '';
+  }
+  let sanitized = String(text);
+  for (const pattern of DANGEROUS_PATTERNS) {
+    sanitized = sanitized.replace(pattern, '');
+  }
+  // Remove control characters but preserve spaces
+  // eslint-disable-next-line no-control-regex
+  return sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').replace(/\u200B/g, '');
+}
+
+export default function ReportForm({ formData, onChange }) {
   const handleFieldChange = (name, value) => {
-    const sanitizedValue = sanitize(name, value, 'text');
-    onChange({ ...formData, [name]: sanitizedValue });
+    // Sanitize XSS content and truncate, but don't trim during typing to allow spaces
+    const sanitizedValue = sanitizeWithoutTrim(value);
+    const truncatedValue = truncateText(sanitizedValue, 2000);
+    onChange({ ...formData, [name]: truncatedValue });
   };
 
-  const descriptionState = getFieldState('description');
-  const barangayState = getFieldState('barangay');
-  const streetState = getFieldState('street');
+  // Check if original input contained XSS (for warning display)
+  const descriptionWarning =
+    formData.description && containsXSS(formData.description)
+      ? 'Potentially unsafe content was removed'
+      : null;
+  const barangayWarning =
+    formData.barangay && containsXSS(formData.barangay)
+      ? 'Potentially unsafe content was removed'
+      : null;
+  const streetWarning =
+    formData.street && containsXSS(formData.street)
+      ? 'Potentially unsafe content was removed'
+      : null;
 
   return (
     <div className="space-y-4">
@@ -75,15 +106,15 @@ export default function ReportForm({ formData, onChange }) {
           onChange={(e) => handleFieldChange('description', e.target.value)}
           placeholder="Describe what you see: location details, severity, and any immediate dangers..."
           className={`w-full border rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none bg-white ${
-            descriptionState.warning ? 'border-amber-400' : 'border-stone-300'
+            descriptionWarning ? 'border-amber-400' : 'border-stone-300'
           }`}
           rows="3"
           required
           aria-required="true"
         />
-        {descriptionState.warning && (
+        {descriptionWarning && (
           <p className="text-xs text-amber-600 mt-1" role="alert">
-            {descriptionState.warning}
+            {descriptionWarning}
           </p>
         )}
       </div>
@@ -104,7 +135,7 @@ export default function ReportForm({ formData, onChange }) {
             onChange={(e) => handleFieldChange('barangay', e.target.value)}
             placeholder="Optional"
             className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white ${
-              barangayState.warning ? 'border-amber-400' : 'border-stone-300'
+              barangayWarning ? 'border-amber-400' : 'border-stone-300'
             }`}
           />
         </div>
@@ -122,7 +153,7 @@ export default function ReportForm({ formData, onChange }) {
             onChange={(e) => handleFieldChange('street', e.target.value)}
             placeholder="Optional"
             className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white ${
-              streetState.warning ? 'border-amber-400' : 'border-stone-300'
+              streetWarning ? 'border-amber-400' : 'border-stone-300'
             }`}
           />
         </div>
