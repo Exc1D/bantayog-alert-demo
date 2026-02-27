@@ -15,6 +15,9 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
+// Delay (ms) before fallback invalidateSize call for slow-rendering devices
+const INVALIDATE_SIZE_FALLBACK_MS = 300;
+
 // Tile providers with fallbacks
 const TILE_PROVIDERS = [
   {
@@ -74,6 +77,11 @@ function MapResizeHandler() {
       map.invalidateSize();
     });
 
+    // Fallback timeout for devices where RAF fires before layout completes
+    let initTimeout = setTimeout(() => {
+      map.invalidateSize();
+    }, INVALIDATE_SIZE_FALLBACK_MS);
+
     // Debounce helper for resize events
     let resizeTimeout = null;
     const debouncedResize = () => {
@@ -97,6 +105,7 @@ function MapResizeHandler() {
 
     return () => {
       cancelAnimationFrame(rafId);
+      clearTimeout(initTimeout);
       if (resizeTimeout) {
         clearTimeout(resizeTimeout);
       }
@@ -199,7 +208,6 @@ export default function LeafletMap({ reports = [], onReportClick }) {
           updateWhenIdle={true}
           maxZoom={MAP_MAX_ZOOM}
           minZoom={MAP_MIN_ZOOM}
-          crossOrigin="anonymous"
         />
         <TileErrorHandler onTileError={handleTileError} />
 
