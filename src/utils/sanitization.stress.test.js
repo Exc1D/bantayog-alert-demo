@@ -41,13 +41,13 @@ describe('sanitizeText — advanced XSS bypass attempts', () => {
     expect(typeof result).toBe('string');
   });
 
-  it('handles massive input without crashing', () => {
+  it('handles massive input without crashing (capped at 100K)', () => {
     const input = 'a'.repeat(1_000_000);
     const start = performance.now();
     const result = sanitizeText(input);
     const duration = performance.now() - start;
-    expect(result.length).toBe(1_000_000);
-    expect(duration).toBeLessThan(5000); // Should complete within 5s
+    expect(result.length).toBe(100_000);
+    expect(duration).toBeLessThan(5000);
   });
 
   it('handles input with only whitespace and control characters', () => {
@@ -269,6 +269,11 @@ describe('validatePhoneNumber — edge cases', () => {
 
   it('handles number at exactly 7 digits (minimum)', () => {
     expect(validatePhoneNumber('1234567').isValid).toBe(true);
+  });
+
+  it('rejects trailing separator with no digits', () => {
+    expect(validatePhoneNumber('123-456-').isValid).toBe(false);
+    expect(validatePhoneNumber('1234.').isValid).toBe(false);
   });
 
   it('handles number at exactly 15 digits (maximum)', () => {

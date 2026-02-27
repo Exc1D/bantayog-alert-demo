@@ -42,6 +42,11 @@ function cleanExpiredEntries(actionType) {
   if (!config || !history[actionType]) return;
 
   if (!Array.isArray(history[actionType])) {
+    console.error(
+      '[rateLimiter] Invalid history entry for "%s": expected array, got %o',
+      actionType,
+      history[actionType]
+    );
     delete history[actionType];
     setHistory(history);
     return;
