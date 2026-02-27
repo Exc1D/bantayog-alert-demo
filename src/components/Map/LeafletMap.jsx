@@ -59,6 +59,31 @@ function TileErrorHandler({ onTileError }) {
   return null;
 }
 
+// Component to handle map resize when container size changes
+function MapResizeHandler() {
+  const map = useMap();
+
+  useEffect(() => {
+    // Invalidate size after a short delay to ensure container is properly sized
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+
+    // Also invalidate on window resize
+    const handleResize = () => {
+      map.invalidateSize();
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [map]);
+
+  return null;
+}
+
 export default function LeafletMap({ reports = [], onReportClick }) {
   const mapRef = useRef(null);
   const [currentTileIndex, setCurrentTileIndex] = useState(0);
@@ -138,6 +163,7 @@ export default function LeafletMap({ reports = [], onReportClick }) {
       >
         {/* Zoom controls — bottomleft, CSS pushes them above the location button */}
         <ZoomControl position="bottomleft" />
+        <MapResizeHandler />
         <TileLayer
           key={currentTile.name}
           attribution={currentTile.attribution}
