@@ -36,36 +36,32 @@ function validateEnv() {
   }
 }
 
-function getEnvString(key, defaultValue = '') {
-  return import.meta.env[key] || defaultValue;
-}
-
 validateEnv();
 
 export const appConfig = Object.freeze({
-  env: getEnvString('VITE_APP_ENV', 'development'),
+  env: import.meta.env.VITE_APP_ENV || 'development',
   version: '1.0.0',
   name: 'Bantayog Alert',
-  isDevelopment: getEnvString('VITE_APP_ENV', 'development') === 'development',
-  isProduction: getEnvString('VITE_APP_ENV', 'development') === 'production',
+  isDevelopment: (import.meta.env.VITE_APP_ENV || 'development') === 'development',
+  isProduction: import.meta.env.VITE_APP_ENV === 'production',
 });
 
 export const firebaseConfig = Object.freeze({
-  apiKey: getEnvString('VITE_FIREBASE_API_KEY'),
-  authDomain: getEnvString('VITE_FIREBASE_AUTH_DOMAIN'),
-  projectId: getEnvString('VITE_FIREBASE_PROJECT_ID'),
-  storageBucket: getEnvString('VITE_FIREBASE_STORAGE_BUCKET'),
-  messagingSenderId: getEnvString('VITE_FIREBASE_MESSAGING_SENDER_ID'),
-  appId: getEnvString('VITE_FIREBASE_APP_ID'),
-  measurementId: getEnvString('VITE_FIREBASE_MEASUREMENT_ID'),
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 });
 
 export const fcmConfig = Object.freeze({
-  vapidKey: getEnvString('VITE_FIREBASE_VAPID_KEY'),
+  vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
 });
 
 export const apiConfig = Object.freeze({
-  openWeatherApiKey: getEnvString('VITE_OPENWEATHER_API_KEY'),
+  openWeatherApiKey: import.meta.env.VITE_OPENWEATHER_API_KEY,
   openWeatherBaseUrl: 'https://api.openweathermap.org/data/2.5',
 });
 
