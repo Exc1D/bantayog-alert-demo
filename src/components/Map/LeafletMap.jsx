@@ -160,7 +160,7 @@ export default function LeafletMap({ reports = [], onReportClick }) {
   };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="absolute inset-0">
       <MapControls
         filters={filters}
         onFilterChange={setFilters}
