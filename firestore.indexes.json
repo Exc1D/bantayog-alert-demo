@@ -6,11 +6,11 @@
       "fields": [
         {
           "fieldPath": "location.municipality",
-          "order": "ASC"
+          "order": "ASCENDING"
         },
         {
           "fieldPath": "timestamp",
-          "order": "DESC"
+          "order": "DESCENDING"
         }
       ]
     },
@@ -20,11 +20,11 @@
       "fields": [
         {
           "fieldPath": "verification.status",
-          "order": "ASC"
+          "order": "ASCENDING"
         },
         {
           "fieldPath": "timestamp",
-          "order": "DESC"
+          "order": "DESCENDING"
         }
       ]
     },
@@ -34,11 +34,11 @@
       "fields": [
         {
           "fieldPath": "disaster.severity",
-          "order": "ASC"
+          "order": "ASCENDING"
         },
         {
           "fieldPath": "timestamp",
-          "order": "DESC"
+          "order": "DESCENDING"
         }
       ]
     },
@@ -48,11 +48,11 @@
       "fields": [
         {
           "fieldPath": "disaster.type",
-          "order": "ASC"
+          "order": "ASCENDING"
         },
         {
           "fieldPath": "timestamp",
-          "order": "DESC"
+          "order": "DESCENDING"
         }
       ]
     },
@@ -62,11 +62,11 @@
       "fields": [
         {
           "fieldPath": "engagement.upvotes",
-          "order": "DESC"
+          "order": "DESCENDING"
         },
         {
           "fieldPath": "timestamp",
-          "order": "DESC"
+          "order": "DESCENDING"
         }
       ]
     }
