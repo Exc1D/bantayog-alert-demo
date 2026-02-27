@@ -65,10 +65,10 @@ describe('featureFlags', () => {
     vi.stubEnv('VITE_APP_ENV', 'production');
     const { getDefaultFlags } = await import('../../src/config/featureFlags');
     const defaults = getDefaultFlags();
-    expect(defaults.newReportFlow).toBe(false);
+    expect(defaults.newReportFlow).toBe(true);
     expect(defaults.weatherAlerts).toBe(true);
     expect(defaults.communityEngagement).toBe(true);
-    expect(defaults.adminAnalytics).toBe(false);
+    expect(defaults.adminAnalytics).toBe(true);
     expect(defaults.betaFeatures).toBe(false);
   });
 
@@ -78,7 +78,7 @@ describe('featureFlags', () => {
       await import('../../src/config/featureFlags');
     initializeRemoteConfig({});
 
-    expect(isEnabled(FEATURE_FLAGS.NEW_REPORT_FLOW)).toBe(false);
+    expect(isEnabled(FEATURE_FLAGS.NEW_REPORT_FLOW)).toBe(true);
   });
 
   it.skip('should return remote config value when set', async () => {
