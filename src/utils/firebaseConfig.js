@@ -1,8 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { serverTimestamp, initializeFirestore, CACHE_SIZE_UNLIMITED } from 'firebase/firestore';
+import { serverTimestamp, initializeFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
-import { getRemoteConfig } from 'firebase/remote-config';
 import { getMessaging, isSupported } from 'firebase/messaging';
 import { firebaseConfig } from '../config';
 
@@ -35,11 +34,40 @@ validateFirebaseConfig();
 const app = initializeApp(firebaseConfig);
 
 const db = initializeFirestore(app, {
-  cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+  cacheSizeBytes: 50 * 1024 * 1024, // 50MB cache
 });
 
-const firebaseRemoteConfig = getRemoteConfig(app);
-firebaseRemoteConfig.settings.minimumFetchIntervalMillis = 3600000;
+// Lazy-load Remote Config to avoid triggering Installations SDK on initial load
+let remoteConfigInstance = null;
+let remoteConfigImportPromise = null;
+
+/**
+ * Asynchronously gets the Remote Config instance.
+ * Initializes on first call and returns a cached instance on subsequent calls.
+ * @returns {Promise<object>} Promise that resolves to the Remote Config instance
+ */
+async function getRemoteConfigInstance() {
+  if (remoteConfigInstance) {
+    return remoteConfigInstance;
+  }
+
+  if (!remoteConfigImportPromise) {
+    remoteConfigImportPromise = import('firebase/remote-config').then(
+      ({ getRemoteConfig }) => {
+        remoteConfigInstance = getRemoteConfig(app);
+        remoteConfigInstance.settings.minimumFetchIntervalMillis = 3600000;
+        return remoteConfigInstance;
+      },
+      (error) => {
+        console.error('Failed to load Remote Config:', error);
+        remoteConfigImportPromise = null;
+        throw error;
+      }
+    );
+  }
+
+  return remoteConfigImportPromise;
+}
 
 let messagingInstance = null;
 let messagingSupported = null;
@@ -87,5 +115,7 @@ async function isMessagingSupported() {
 export { db, serverTimestamp, getMessagingInstance, isMessagingSupported };
 export const auth = getAuth(app);
 export const storage = getStorage(app);
-export const remoteConfig = firebaseRemoteConfig;
+export const remoteConfig = {
+  getInstance: getRemoteConfigInstance,
+};
 export default app;
