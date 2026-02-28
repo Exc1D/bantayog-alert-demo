@@ -13,7 +13,7 @@ function WeatherSkeleton() {
   );
 }
 
-export default function WeatherGrid({ weatherData, loading }) {
+export default function WeatherGrid({ weatherData, forecastData, loading }) {
   const [selectedMunicipality, setSelectedMunicipality] = useState(null);
 
   if (loading) {
@@ -45,6 +45,7 @@ export default function WeatherGrid({ weatherData, loading }) {
         <WeatherCard
           municipality={selectedMunicipality}
           weather={weatherData[selectedMunicipality]}
+          forecast={forecastData[selectedMunicipality]}
         />
       </div>
     );
@@ -59,7 +60,12 @@ export default function WeatherGrid({ weatherData, loading }) {
             onClick={() => setSelectedMunicipality(municipality)}
             className="text-left"
           >
-            <WeatherCard municipality={municipality} weather={weatherData[municipality]} compact />
+            <WeatherCard
+              municipality={municipality}
+              weather={weatherData[municipality]}
+              forecast={forecastData[municipality]}
+              compact
+            />
           </button>
         ))}
       </div>

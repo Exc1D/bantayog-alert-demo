@@ -19,12 +19,75 @@ const WEATHER_ICONS = {
   '50n': '\u{1F32B}\uFE0F',
 };
 
-export default function WeatherCard({ municipality, weather, compact = false }) {
+function getDayName(dateStr) {
+  const date = new Date(dateStr);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  if (date.toDateString() === today.toDateString()) return 'Today';
+  if (date.toDateString() === tomorrow.toDateString()) return 'Tomorrow';
+
+  return date.toLocaleDateString('en-PH', { weekday: 'short' });
+}
+
+function MiniForecast({ forecast }) {
+  if (!forecast || forecast.length === 0) return null;
+
+  const displayForecast = forecast.slice(0, 5);
+
+  return (
+    <div className="border-t border-stone-100 dark:border-dark-border p-3">
+      <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold mb-2">
+        5-Day Forecast
+      </p>
+      <div className="flex justify-between gap-1">
+        {displayForecast.map((day, idx) => (
+          <div key={idx} className="flex flex-col items-center">
+            <span className="text-[9px] font-medium text-textLight dark:text-dark-textLight">
+              {getDayName(day.date)}
+            </span>
+            <span className="text-lg my-1">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>
+            <span className="text-[10px] font-bold text-text dark:text-dark-text">
+              {day.tempMax}&deg;
+            </span>
+            <span className="text-[9px] text-textMuted dark:text-dark-textMuted">
+              {day.tempMin}&deg;
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CompactForecast({ forecast }) {
+  if (!forecast || forecast.length === 0) return null;
+
+  const displayForecast = forecast.slice(0, 3);
+
+  return (
+    <div className="flex gap-1 mt-1">
+      {displayForecast.map((day, idx) => (
+        <div key={idx} className="flex flex-col items-center">
+          <span className="text-[8px] text-textMuted dark:text-dark-textMuted">
+            {getDayName(day.date).slice(0, 3)}
+          </span>
+          <span className="text-xs">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function WeatherCard({ municipality, weather, forecast, compact = false }) {
   if (!weather) {
     return (
-      <div className="bg-white rounded-xl p-4 shadow-card border border-stone-100">
+      <div className="bg-white dark:bg-dark-card rounded-xl p-4 shadow-card border border-stone-100 dark:border-dark-border">
         <h3 className="font-bold text-sm">{municipality}</h3>
-        <p className="text-xs text-textMuted mt-1">Weather data unavailable</p>
+        <p className="text-xs text-textMuted dark:text-dark-textMuted mt-1">
+          Weather data unavailable
+        </p>
       </div>
     );
   }
@@ -33,24 +96,25 @@ export default function WeatherCard({ municipality, weather, compact = false }) 
 
   if (compact) {
     return (
-      <div className="bg-white rounded-xl p-3 shadow-card border border-stone-100 hover:shadow-card-hover transition-shadow">
+      <div className="bg-white dark:bg-dark-card rounded-xl p-3 shadow-card border border-stone-100 dark:border-dark-border hover:shadow-card-hover transition-shadow">
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-xs truncate">{municipality}</h3>
           <span className="text-xl">{weatherIcon}</span>
         </div>
         <div className="flex items-baseline gap-0.5 mt-1">
           <span className="text-xl font-bold">{weather.temperature}</span>
-          <span className="text-xs text-textLight">&deg;C</span>
+          <span className="text-xs text-textLight dark:text-dark-textLight">&deg;C</span>
         </div>
-        <p className="text-[10px] text-textMuted capitalize truncate">
+        <p className="text-[10px] text-textMuted dark:text-dark-textMuted capitalize truncate">
           {weather.description || weather.condition}
         </p>
+        <CompactForecast forecast={forecast} />
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-card border border-stone-100 overflow-hidden hover:shadow-card-hover transition-shadow">
+    <div className="bg-white dark:bg-dark-card rounded-xl shadow-card border border-stone-100 dark:border-dark-border overflow-hidden hover:shadow-card-hover transition-shadow">
       {/* Header */}
       <div className="bg-primary text-white p-4">
         <div className="flex items-center justify-between">
@@ -73,26 +137,28 @@ export default function WeatherCard({ municipality, weather, compact = false }) 
 
       {/* Details */}
       <div className="p-3 grid grid-cols-2 gap-2">
-        <div className="bg-stone-50 rounded-lg p-2 text-center">
-          <p className="text-[10px] text-textMuted uppercase tracking-wider font-semibold">Wind</p>
+        <div className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-2 text-center">
+          <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
+            Wind
+          </p>
           <p className="font-bold text-xs mt-0.5">
             {weather.windSpeed} kph {weather.windDirection}
           </p>
         </div>
-        <div className="bg-stone-50 rounded-lg p-2 text-center">
-          <p className="text-[10px] text-textMuted uppercase tracking-wider font-semibold">
+        <div className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-2 text-center">
+          <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Humidity
           </p>
           <p className="font-bold text-xs mt-0.5">{weather.humidity}%</p>
         </div>
-        <div className="bg-stone-50 rounded-lg p-2 text-center">
-          <p className="text-[10px] text-textMuted uppercase tracking-wider font-semibold">
+        <div className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-2 text-center">
+          <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Pressure
           </p>
           <p className="font-bold text-xs mt-0.5">{weather.pressure} hPa</p>
         </div>
-        <div className="bg-stone-50 rounded-lg p-2 text-center">
-          <p className="text-[10px] text-textMuted uppercase tracking-wider font-semibold">
+        <div className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-2 text-center">
+          <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Visibility
           </p>
           <p className="font-bold text-xs mt-0.5">
@@ -100,6 +166,9 @@ export default function WeatherCard({ municipality, weather, compact = false }) 
           </p>
         </div>
       </div>
+
+      {/* Mini Forecast */}
+      <MiniForecast forecast={forecast} />
     </div>
   );
 }
