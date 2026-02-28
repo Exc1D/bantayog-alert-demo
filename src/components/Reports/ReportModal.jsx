@@ -133,7 +133,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
   };
 
   const handleEvidenceContinue = () => {
-    setFormData({ description: '' });
+    setFormData((prev) => ({ ...prev, description: '' }));
     setStep(3);
   };
 

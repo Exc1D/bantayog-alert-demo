@@ -8,28 +8,13 @@ import Button from '../Common/Button';
 import { getSafeMediaUrls } from '../../utils/mediaSafety';
 import RequirePermission, { AccessDenied } from '../Common/RequirePermission';
 import { PERMISSIONS } from '../../utils/rbac';
+import { SEVERITY_OPTIONS } from '../../utils/constants';
 
 const SEV_STYLES = {
   critical: 'bg-red-600 text-white',
   moderate: 'bg-amber-500 text-white',
   minor: 'bg-emerald-600 text-white',
 };
-
-const SEVERITY_LEVELS = [
-  {
-    id: 'critical',
-    label: 'Critical',
-    icon: '\u{1F534}',
-    description: 'Immediate danger or life-threatening',
-  },
-  {
-    id: 'moderate',
-    label: 'Moderate',
-    icon: '\u{1F7E0}',
-    description: 'Significant impact but manageable',
-  },
-  { id: 'minor', label: 'Minor', icon: '\u{1F7E2}', description: 'Low impact, informational' },
-];
 
 // Disaster types available for classification (exclude 'pending')
 const CLASSIFIABLE_TYPES = DISASTER_TYPES.filter((t) => t.id !== 'pending');
@@ -195,14 +180,23 @@ export default function VerificationPanel({ report, onDone }) {
 
       {/* Severity Level Classification */}
       <div>
-        <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
+        <label
+          id="severity-level-label"
+          className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5"
+        >
           Set Severity Level <span className="text-accent">*</span>
         </label>
-        <div className="grid grid-cols-3 gap-2">
-          {SEVERITY_LEVELS.map((level) => (
+        <div
+          className="grid grid-cols-3 gap-2"
+          role="radiogroup"
+          aria-labelledby="severity-level-label"
+        >
+          {SEVERITY_OPTIONS.map((level) => (
             <button
               key={level.id}
               type="button"
+              role="radio"
+              aria-checked={selectedSeverity === level.id}
               onClick={() => setSelectedSeverity(level.id)}
               className={`p-2.5 rounded-lg border-2 text-sm font-bold capitalize transition-all ${
                 selectedSeverity === level.id
