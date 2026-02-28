@@ -63,6 +63,7 @@ export function useWeather(municipality) {
 
 export function useAllMunicipalitiesWeather() {
   const [weatherData, setWeatherData] = useState({});
+  const [forecastData, setForecastData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -71,35 +72,40 @@ export function useAllMunicipalitiesWeather() {
       setLoading(true);
       setError(null);
       const results = {};
+      const forecasts = {};
       let fetchErrors = 0;
 
       const entries = Object.entries(MUNICIPALITY_COORDS);
       const promises = entries.map(async ([name, coords]) => {
-        // Use cache if available
         const cached = weatherCache.get(name);
         if (cached && Date.now() - cached.timestamp < WEATHER_CACHE_DURATION) {
           results[name] = cached.weather;
+          forecasts[name] = cached.forecast || [];
           return;
         }
 
         try {
-          const weather = await fetchCurrentWeather(coords.lat, coords.lng);
+          const [weather, forecast] = await Promise.all([
+            fetchCurrentWeather(coords.lat, coords.lng),
+            fetchForecast(coords.lat, coords.lng),
+          ]);
           results[name] = weather;
-          // Store in shared cache, preserving existing forecast data
-          const existing = weatherCache.get(name);
+          forecasts[name] = forecast || [];
           weatherCache.set(name, {
             weather,
-            forecast: existing?.forecast ?? [],
+            forecast: forecast || [],
             timestamp: Date.now(),
           });
         } catch {
           results[name] = null;
+          forecasts[name] = [];
           fetchErrors++;
         }
       });
 
       await Promise.all(promises);
       setWeatherData(results);
+      setForecastData(forecasts);
       if (fetchErrors > 0) {
         setError(
           `Failed to fetch weather for ${fetchErrors} municipality${fetchErrors > 1 ? 'ies' : ''}`
@@ -111,5 +117,5 @@ export function useAllMunicipalitiesWeather() {
     fetchAll();
   }, []);
 
-  return { weatherData, loading, error };
+  return { weatherData, forecastData, loading, error };
 }

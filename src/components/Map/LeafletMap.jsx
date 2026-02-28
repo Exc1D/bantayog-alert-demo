@@ -21,10 +21,15 @@ const INVALIDATE_SIZE_FALLBACK_MS = 300;
 // Tile providers with fallbacks
 const TILE_PROVIDERS = [
   {
-    name: 'openstreetmap',
+    name: 'streets',
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+  {
+    name: 'satellite',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri',
   },
   {
     name: 'cartodb-light',
@@ -122,17 +127,29 @@ function MapResizeHandler() {
 export default function LeafletMap({ reports = [], onReportClick }) {
   const mapRef = useRef(null);
   const [currentTileIndex, setCurrentTileIndex] = useState(0);
+  const [activeLayer, setActiveLayer] = useState('streets');
 
   const [filters, setFilters] = useState({
     municipality: 'all',
   });
 
+  // Update tile index when layer changes
+  const handleLayerChange = useCallback((layerId) => {
+    setActiveLayer(layerId);
+    const index = TILE_PROVIDERS.findIndex((p) => p.name === layerId);
+    if (index >= 0) {
+      setCurrentTileIndex(index);
+    }
+  }, []);
+
   // Switch to fallback tile provider after multiple errors
   const handleTileError = useCallback(() => {
     setCurrentTileIndex((prevIndex) => {
       if (prevIndex < TILE_PROVIDERS.length - 1) {
-        console.warn('Switching to fallback tile provider:', TILE_PROVIDERS[prevIndex + 1].name);
-        return prevIndex + 1;
+        const nextIndex = prevIndex + 1;
+        console.warn('Switching to fallback tile provider:', TILE_PROVIDERS[nextIndex].name);
+        setActiveLayer(TILE_PROVIDERS[nextIndex].name);
+        return nextIndex;
       }
       return prevIndex;
     });
@@ -165,6 +182,8 @@ export default function LeafletMap({ reports = [], onReportClick }) {
         filters={filters}
         onFilterChange={setFilters}
         reportCount={filteredReports.length}
+        activeLayer={activeLayer}
+        onLayerChange={handleLayerChange}
       />
 
       {/* Location button — rendered outside MapContainer for precise positioning */}
