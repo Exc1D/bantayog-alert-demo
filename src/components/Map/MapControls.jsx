@@ -15,7 +15,7 @@ export default function MapControls({
   const [showLegend, setShowLegend] = useState(false);
 
   const selectClass =
-    'text-[11px] font-medium border border-white/20 rounded-lg px-2 py-1.5 bg-white/10 text-white focus:ring-2 focus:ring-accent/50 focus:border-accent appearance-none';
+    'text-[11px] font-medium border border-white/20 rounded-lg px-2 py-1.5 bg-white/10 text-white focus:ring-2 focus:ring-accent/50 focus:border-accent appearance-none dark:bg-dark-card dark:text-dark-text dark:border-dark-border';
 
   const legendItems = [
     { type: 'critical', label: 'Critical', color: 'bg-red-500' },

@@ -96,11 +96,14 @@ function AuthForm() {
   };
 
   const inputClass =
-    'w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white';
+    'w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white dark:bg-dark-card dark:border-dark-border dark:text-dark-text';
+
+  const labelClass =
+    'block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5';
 
   return (
     <div className="max-w-md mx-auto">
-      <div className="bg-white rounded-xl p-5 shadow-card border border-stone-100">
+      <div className="bg-white rounded-xl p-5 shadow-card border border-stone-100 dark:bg-dark-card dark:border-dark-border">
         <div className="text-center mb-5">
           <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
             <svg
@@ -119,8 +122,10 @@ function AuthForm() {
               <line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
           </div>
-          <h2 className="text-lg font-bold">{isLogin ? 'Sign In' : 'Create Account'}</h2>
-          <p className="text-xs text-textLight mt-1">
+          <h2 className="text-lg font-bold dark:text-dark-text">
+            {isLogin ? 'Sign In' : 'Create Account'}
+          </h2>
+          <p className="text-xs text-textLight dark:text-dark-textLight mt-1">
             {isLogin ? 'Sign in to submit hazard reports' : 'Join Bantayog Alert'}
           </p>
         </div>
@@ -129,9 +134,7 @@ function AuthForm() {
           {!isLogin && (
             <>
               <div>
-                <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
-                  Full Name
-                </label>
+                <label className={labelClass}>Full Name</label>
                 <input
                   type="text"
                   value={name}
@@ -142,9 +145,7 @@ function AuthForm() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
-                  Municipality
-                </label>
+                <label className={labelClass}>Municipality</label>
                 <select
                   value={municipality}
                   onChange={(e) => setMunicipality(e.target.value)}
@@ -162,9 +163,7 @@ function AuthForm() {
           )}
 
           <div>
-            <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
-              Email
-            </label>
+            <label className={labelClass}>Email</label>
             <input
               type="email"
               value={email}
@@ -176,9 +175,7 @@ function AuthForm() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
-              Password
-            </label>
+            <label className={labelClass}>Password</label>
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}
@@ -192,9 +189,7 @@ function AuthForm() {
 
           {!isLogin && (
             <div>
-              <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
-                Confirm Password
-              </label>
+              <label className={labelClass}>Confirm Password</label>
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={confirmPassword}
@@ -207,7 +202,7 @@ function AuthForm() {
             </div>
           )}
 
-          <label className="flex items-center gap-2 text-xs text-textLight cursor-pointer select-none">
+          <label className="flex items-center gap-2 text-xs text-textLight dark:text-dark-textLight cursor-pointer select-none">
             <input
               type="checkbox"
               checked={showPassword}
@@ -248,7 +243,7 @@ function AuthForm() {
           </button>
         </div>
 
-        <div className="mt-3 pt-3 border-t border-stone-100">
+        <div className="mt-3 pt-3 border-t border-stone-100 dark:border-dark-border">
           <Button variant="ghost" onClick={handleGuest} loading={loading} className="w-full">
             Continue as Guest
           </Button>
@@ -316,7 +311,7 @@ function UserProfile() {
 
   return (
     <div className="space-y-3">
-      <div className="bg-white rounded-xl p-5 shadow-card border border-stone-100">
+      <div className="bg-white rounded-xl p-5 shadow-card border border-stone-100 dark:bg-dark-card dark:border-dark-border">
         <div className="flex items-center gap-3">
           {profilePhoto ? (
             <img
@@ -334,14 +329,16 @@ function UserProfile() {
           )}
 
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-bold truncate">
+            <h2 className="text-lg font-bold truncate dark:text-dark-text">
               {userProfile?.displayName ||
                 userProfile?.name ||
                 user?.displayName ||
                 'Anonymous User'}
             </h2>
-            <p className="text-xs text-textLight">{user?.email || 'Guest'}</p>
-            <p className="text-[11px] text-textMuted capitalize mt-0.5">
+            <p className="text-xs text-textLight dark:text-dark-textLight">
+              {user?.email || 'Guest'}
+            </p>
+            <p className="text-[11px] text-textMuted dark:text-dark-textMuted capitalize mt-0.5">
               {userProfile?.role?.replace('_', ' ') || 'Citizen'}
               {userProfile?.municipality ? ` \u2022 ${userProfile.municipality}` : ''}
             </p>
@@ -349,7 +346,7 @@ function UserProfile() {
         </div>
 
         {!user?.isAnonymous && (
-          <div className="mt-4 pt-4 border-t border-stone-100 space-y-2">
+          <div className="mt-4 pt-4 border-t border-stone-100 dark:border-dark-border space-y-2">
             <input
               ref={fileInputRef}
               type="file"
@@ -369,10 +366,10 @@ function UserProfile() {
         )}
 
         {userProfile?.stats && (
-          <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-stone-100">
+          <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-stone-100 dark:border-dark-border">
             <div className="text-center">
               <p className="text-xl font-bold text-accent">{userProfile.stats.reportsSubmitted}</p>
-              <p className="text-[10px] text-textLight uppercase tracking-wider font-semibold">
+              <p className="text-[10px] text-textLight dark:text-dark-textLight uppercase tracking-wider font-semibold">
                 Reports
               </p>
             </div>
@@ -380,7 +377,7 @@ function UserProfile() {
               <p className="text-xl font-bold text-emerald-600">
                 {userProfile.stats.reportsVerified}
               </p>
-              <p className="text-[10px] text-textLight uppercase tracking-wider font-semibold">
+              <p className="text-[10px] text-textLight dark:text-dark-textLight uppercase tracking-wider font-semibold">
                 Verified
               </p>
             </div>
@@ -388,7 +385,7 @@ function UserProfile() {
               <p className="text-xl font-bold text-amber-500">
                 {userProfile.stats.upvotesReceived}
               </p>
-              <p className="text-[10px] text-textLight uppercase tracking-wider font-semibold">
+              <p className="text-[10px] text-textLight dark:text-dark-textLight uppercase tracking-wider font-semibold">
                 Upvotes
               </p>
             </div>
