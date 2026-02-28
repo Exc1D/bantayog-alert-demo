@@ -98,6 +98,9 @@ function AuthForm() {
   const inputClass =
     'w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white dark:bg-dark-card dark:border-dark-border dark:text-dark-text';
 
+  const labelClass =
+    'block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5';
+
   return (
     <div className="max-w-md mx-auto">
       <div className="bg-white rounded-xl p-5 shadow-card border border-stone-100 dark:bg-dark-card dark:border-dark-border">
@@ -131,9 +134,7 @@ function AuthForm() {
           {!isLogin && (
             <>
               <div>
-                <label className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5">
-                  Full Name
-                </label>
+                <label className={labelClass}>Full Name</label>
                 <input
                   type="text"
                   value={name}
@@ -144,9 +145,7 @@ function AuthForm() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5">
-                  Municipality
-                </label>
+                <label className={labelClass}>Municipality</label>
                 <select
                   value={municipality}
                   onChange={(e) => setMunicipality(e.target.value)}
@@ -164,9 +163,7 @@ function AuthForm() {
           )}
 
           <div>
-            <label className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5">
-              Email
-            </label>
+            <label className={labelClass}>Email</label>
             <input
               type="email"
               value={email}
@@ -178,9 +175,7 @@ function AuthForm() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5">
-              Password
-            </label>
+            <label className={labelClass}>Password</label>
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}
@@ -194,9 +189,7 @@ function AuthForm() {
 
           {!isLogin && (
             <div>
-              <label className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5">
-                Confirm Password
-              </label>
+              <label className={labelClass}>Confirm Password</label>
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={confirmPassword}

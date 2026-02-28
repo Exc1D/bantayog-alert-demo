@@ -315,3 +315,9 @@ textarea:focus-visible {
     border-left-width: 6px;
   }
 }
+
+/* ---- Dark mode select option styles ---- */
+.dark select option {
+  background-color: #161b22;
+  color: #e6edf3;
+}

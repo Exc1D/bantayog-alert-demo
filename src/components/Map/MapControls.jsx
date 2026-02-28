@@ -26,12 +26,6 @@ export default function MapControls({
 
   return (
     <div className="absolute top-3 left-3 z-[1000] pointer-events-none">
-      <style>{`
-        .dark select option {
-          background-color: #161b22;
-          color: #e6edf3;
-        }
-      `}</style>
       <div className="bg-primary/90 backdrop-blur-sm rounded-xl shadow-dark p-2.5 pointer-events-auto w-fit">
         <div className="flex flex-wrap gap-2 items-center">
           <select
