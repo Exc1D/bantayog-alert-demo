@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { serverTimestamp, initializeFirestore, CACHE_SIZE_UNLIMITED } from 'firebase/firestore';
+import { serverTimestamp, initializeFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { getMessaging, isSupported } from 'firebase/messaging';
@@ -39,16 +39,34 @@ const db = initializeFirestore(app, {
 
 // Lazy-load Remote Config to avoid triggering Installations SDK on initial load
 let remoteConfigInstance = null;
+let remoteConfigImportPromise = null;
 
-function getRemoteConfigInstance() {
-  if (!remoteConfigInstance) {
-    // Dynamic import to avoid triggering Installations SDK
-    import('firebase/remote-config').then(({ getRemoteConfig }) => {
-      remoteConfigInstance = getRemoteConfig(app);
-      remoteConfigInstance.settings.minimumFetchIntervalMillis = 3600000;
-    });
+/**
+ * Asynchronously gets the Remote Config instance.
+ * Initializes on first call and returns a cached instance on subsequent calls.
+ * @returns {Promise<object>} Promise that resolves to the Remote Config instance
+ */
+async function getRemoteConfigInstance() {
+  if (remoteConfigInstance) {
+    return remoteConfigInstance;
   }
-  return remoteConfigInstance;
+
+  if (!remoteConfigImportPromise) {
+    remoteConfigImportPromise = import('firebase/remote-config').then(
+      ({ getRemoteConfig }) => {
+        remoteConfigInstance = getRemoteConfig(app);
+        remoteConfigInstance.settings.minimumFetchIntervalMillis = 3600000;
+        return remoteConfigInstance;
+      },
+      (error) => {
+        console.error('Failed to load Remote Config:', error);
+        remoteConfigImportPromise = null;
+        throw error;
+      }
+    );
+  }
+
+  return remoteConfigImportPromise;
 }
 
 let messagingInstance = null;

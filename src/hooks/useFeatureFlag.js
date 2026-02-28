@@ -16,15 +16,16 @@ async function fetchRemoteConfig() {
 
   remoteConfigFetchPromise = (async () => {
     try {
-      const { getRemoteConfig, getValue } = await import('firebase/remote-config');
+      const { getValue } = await import('firebase/remote-config');
       const { remoteConfig } = await import('../utils/firebaseConfig.js');
 
-      if (!remoteConfig) {
+      // Use the async getInstance method
+      const rc = await remoteConfig.getInstance();
+
+      if (!rc) {
         console.warn('Firebase Remote Config not initialized');
         return null;
       }
-
-      await getRemoteConfig(remoteConfig);
 
       const values = {};
       const flagNames = [
@@ -37,7 +38,7 @@ async function fetchRemoteConfig() {
 
       for (const flag of flagNames) {
         try {
-          const value = getValue(remoteConfig, flag);
+          const value = getValue(rc, flag);
           values[flag] = value.asBoolean();
         } catch (e) {
           console.warn(`Failed to get remote config for ${flag}:`, e);
