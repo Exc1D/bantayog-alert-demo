@@ -30,6 +30,10 @@ export default function FeedFilters({ filters, onFilterChange }) {
   );
 
   useEffect(() => {
+    setSearchInput(filters.search || '');
+  }, [filters.search]);
+
+  useEffect(() => {
     if (debouncedSearch !== filters.search) {
       handleChange('search', debouncedSearch);
     }

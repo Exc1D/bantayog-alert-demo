@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
 import { captureException } from '../../utils/sentry';
@@ -24,9 +24,39 @@ const STEP_TITLES = {
   3: 'REPORT DETAILS',
 };
 
+const STEPS = [
+  { num: 1, label: 'Type' },
+  { num: 2, label: 'Evidence' },
+  { num: 3, label: 'Details' },
+];
+
+const DRAFT_KEY = 'bantayog_report_draft';
+
+function loadDraft() {
+  try {
+    const draft = localStorage.getItem(DRAFT_KEY);
+    if (draft) {
+      return JSON.parse(draft);
+    }
+  } catch {}
+  return null;
+}
+
+function saveDraft(data) {
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+  } catch {}
+}
+
+function clearDraft() {
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch {}
+}
+
 export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitted }) {
   const [step, setStep] = useState(1);
-  const [reportType, setReportType] = useState(null); // 'emergency' | 'situation'
+  const [reportType, setReportType] = useState(null);
   const [evidenceFiles, setEvidenceFiles] = useState([]);
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,6 +79,35 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
       if (anonTimeoutRef.current) clearTimeout(anonTimeoutRef.current);
     };
   }, []);
+
+  // Auto-save draft when form data changes
+  useEffect(() => {
+    if (
+      isOpen &&
+      (formData.severity || formData.description || formData.barangay || formData.street)
+    ) {
+      const draftData = { reportType, formData, manualMunicipality, step };
+      saveDraft(draftData);
+    }
+  }, [formData, reportType, manualMunicipality, step, isOpen]);
+
+  // Load draft when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      const draft = loadDraft();
+      if (draft && draft.step) {
+        if (draft.formData?.severity || draft.formData?.description) {
+          setFormData(draft.formData || {});
+          setReportType(draft.reportType || null);
+          setManualMunicipality(draft.manualMunicipality || '');
+          if (draft.step > 1) {
+            setStep(draft.step);
+          }
+          addToast('Resumed from saved draft', 'info');
+        }
+      }
+    }
+  }, [isOpen]);
 
   const municipality = location
     ? resolveMunicipality(location.lat, location.lng).municipality
@@ -177,6 +236,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
     setEvidenceFiles([]);
     setFormData({});
     setManualMunicipality('');
+    clearDraft();
     onClose();
   };
 
