@@ -15,6 +15,22 @@ const SEV_STYLES = {
   minor: 'bg-emerald-600 text-white',
 };
 
+const SEVERITY_LEVELS = [
+  {
+    id: 'critical',
+    label: 'Critical',
+    icon: '\u{1F534}',
+    description: 'Immediate danger or life-threatening',
+  },
+  {
+    id: 'moderate',
+    label: 'Moderate',
+    icon: '\u{1F7E0}',
+    description: 'Significant impact but manageable',
+  },
+  { id: 'minor', label: 'Minor', icon: '\u{1F7E2}', description: 'Low impact, informational' },
+];
+
 // Disaster types available for classification (exclude 'pending')
 const CLASSIFIABLE_TYPES = DISASTER_TYPES.filter((t) => t.id !== 'pending');
 
@@ -22,6 +38,9 @@ export default function VerificationPanel({ report, onDone }) {
   const [notes, setNotes] = useState('');
   const [selectedType, setSelectedType] = useState(
     report.disaster?.type !== 'pending' ? report.disaster?.type : ''
+  );
+  const [selectedSeverity, setSelectedSeverity] = useState(
+    report.disaster?.severity !== 'pending' ? report.disaster?.severity : ''
   );
   const [processing, setProcessing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -36,9 +55,20 @@ export default function VerificationPanel({ report, onDone }) {
       addToast('Please classify the hazard/disaster type before verifying', 'warning');
       return;
     }
+    if (!selectedSeverity) {
+      addToast('Please select the severity level before verifying', 'warning');
+      return;
+    }
     setProcessing(true);
     try {
-      await verifyReport(report.id, user.uid, userProfile?.role, notes, selectedType);
+      await verifyReport(
+        report.id,
+        user.uid,
+        userProfile?.role,
+        notes,
+        selectedType,
+        selectedSeverity
+      );
       addToast('Report verified and classified successfully', 'success');
       onDone();
     } catch (error) {
@@ -163,6 +193,36 @@ export default function VerificationPanel({ report, onDone }) {
         )}
       </div>
 
+      {/* Severity Level Classification */}
+      <div>
+        <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
+          Set Severity Level <span className="text-accent">*</span>
+        </label>
+        <div className="grid grid-cols-3 gap-2">
+          {SEVERITY_LEVELS.map((level) => (
+            <button
+              key={level.id}
+              type="button"
+              onClick={() => setSelectedSeverity(level.id)}
+              className={`p-2.5 rounded-lg border-2 text-sm font-bold capitalize transition-all ${
+                selectedSeverity === level.id
+                  ? level.id === 'critical'
+                    ? 'border-red-500 bg-red-50 text-red-800 ring-1 ring-red-200'
+                    : level.id === 'moderate'
+                      ? 'border-amber-500 bg-amber-50 text-amber-800 ring-1 ring-amber-200'
+                      : 'border-green-500 bg-green-50 text-green-800 ring-1 ring-green-200'
+                  : 'border-stone-200 hover:border-stone-300 text-textLight'
+              }`}
+            >
+              <span className="mr-1" aria-hidden="true">
+                {level.icon}
+              </span>{' '}
+              {level.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Admin Notes */}
       <div>
         <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
@@ -186,7 +246,7 @@ export default function VerificationPanel({ report, onDone }) {
           variant="success"
           onClick={handleVerify}
           loading={processing}
-          disabled={!selectedType}
+          disabled={!selectedType || !selectedSeverity}
           className="flex-1"
         >
           Verify Report
