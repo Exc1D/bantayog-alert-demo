@@ -42,11 +42,11 @@ function AppContent() {
 
   // Sync tab changes to URL hash + browser history
   const changeTab = useCallback((tab) => {
-    if (!VALID_TABS.includes(tab)) tab = 'map';
+    const validTab = VALID_TABS.includes(tab) ? tab : 'map';
     startTransition(() => {
-      setActiveTab(tab);
+      setActiveTab(validTab);
     });
-    const newHash = `#${tab}`;
+    const newHash = `#${validTab}`;
     if (window.location.hash !== newHash) {
       window.history.pushState(null, '', newHash);
     }
