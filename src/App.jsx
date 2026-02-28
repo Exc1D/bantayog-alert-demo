@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, lazy, Suspense, useTransition } from 'react';
-import { SIDEBAR_WIDTH } from './config/tabs';
 import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
 import TabNavigation from './components/Layout/TabNavigation';
@@ -125,7 +124,7 @@ function AppContent() {
       <Sidebar activeTab={activeTab} onTabChange={changeTab} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-0 lg:flex-row">
+      <div className="flex-1 flex flex-col min-h-0 lg:ml-56">
         {/* Mobile Tab Navigation - hidden on desktop */}
         <div className="lg:hidden">
           <TabNavigation activeTab={activeTab} onTabChange={changeTab} />
@@ -150,7 +149,6 @@ function AppContent() {
       <button
         onClick={handleOpenReportModal}
         className="fixed bottom-6 right-4 z-50 flex items-center gap-2 report-btn-glow text-white rounded-full emergency-pulse transition-all duration-200 px-5 py-3.5 sm:px-6"
-        style={{ right: `calc(${SIDEBAR_WIDTH} + 1rem)` }}
         aria-label="Report a hazard"
       >
         <svg
