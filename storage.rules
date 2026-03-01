@@ -48,7 +48,8 @@ service firebase.storage {
 
     // Extract filename from path
     function fileName() {
-      return request.resource.name.split('/').last();
+      let parts = request.resource.name.split('/');
+      return parts[parts.size() - 1];
     }
 
     // ============================================

@@ -76,7 +76,7 @@ service cloud.firestore {
 
     // Valid report types
     function isValidReportType(reportType) {
-      return reportType in ['situation', 'alert', 'info'];
+      return reportType in ['situation', 'alert', 'info', 'emergency'];
     }
 
     // ============================================
