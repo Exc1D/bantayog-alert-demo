@@ -90,7 +90,7 @@ service cloud.firestore {
         && !value.matches('.*<script.*')
         && !value.matches('.*javascript:.*')
         && !value.matches('.*on\\w+\\s*=.*')
-        && !value.matches('.*data:.*')
+        && !value.matches('.*data:\\s*text/html.*')
         && !value.matches('.*vbscript:.*');
     }
 
@@ -153,7 +153,7 @@ service cloud.firestore {
           'media', 'reporter', 'verification', 'engagement', 'weatherContext'
         ])
         // Timestamp validation - must be server timestamp
-        && request.resource.data.timestamp == serverTimestamp()
+        && request.resource.data.timestamp == request.time
         // Report type validation
         && isValidReportType(request.resource.data.reportType)
         // Location validation
@@ -235,7 +235,7 @@ service cloud.firestore {
                 'status', 'verifiedBy', 'verifiedAt', 'verifierRole', 'notes', 'resolution'
               ])
               && request.resource.data.verification.verifiedBy == request.auth.uid
-              && request.resource.data.verification.verifiedAt == serverTimestamp()
+              && request.resource.data.verification.verifiedAt == request.time
               && isValidString(request.resource.data.verification.notes, 1000, 0))
             // Status change to rejected
             || (request.resource.data.verification.status == 'rejected'
@@ -243,7 +243,7 @@ service cloud.firestore {
                 'status', 'verifiedBy', 'verifiedAt', 'verifierRole', 'notes', 'resolution'
               ])
               && request.resource.data.verification.verifiedBy == request.auth.uid
-              && request.resource.data.verification.verifiedAt == serverTimestamp()
+              && request.resource.data.verification.verifiedAt == request.time
               && isValidString(request.resource.data.verification.notes, 1000, 0))
             // Status change to resolved
             || (request.resource.data.verification.status == 'resolved'
@@ -251,14 +251,14 @@ service cloud.firestore {
                 'status', 'verifiedBy', 'verifiedAt', 'verifierRole', 'notes', 'resolution'
               ])
               && request.resource.data.verification.verifiedBy == request.auth.uid
-              && request.resource.data.verification.verifiedAt == serverTimestamp()
+              && request.resource.data.verification.verifiedAt == request.time
               && isValidString(request.resource.data.verification.notes, 1000, 0)
               && request.resource.data.verification.resolution is map
               && request.resource.data.verification.resolution.keys().hasAll([
                 'resolvedBy', 'resolvedAt', 'evidencePhotos', 'resolutionNotes', 'actionsTaken', 'resourcesUsed'
               ])
               && request.resource.data.verification.resolution.resolvedBy == request.auth.uid
-              && request.resource.data.verification.resolution.resolvedAt == serverTimestamp()
+              && request.resource.data.verification.resolution.resolvedAt == request.time
               && isValidPhotoArray(request.resource.data.verification.resolution.evidencePhotos)
               && isValidString(request.resource.data.verification.resolution.resolutionNotes, 1000, 0)
               && isValidString(request.resource.data.verification.resolution.actionsTaken, 2000, 10)
@@ -326,7 +326,7 @@ service cloud.firestore {
       allow create: if isSignedIn()
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.keys().hasAll(['userId', 'eventType', 'timestamp', 'details'])
-        && request.resource.data.timestamp == serverTimestamp();
+        && request.resource.data.timestamp == request.time;
     }
 
     // User audit subcollection - users can log their own actions
@@ -337,7 +337,7 @@ service cloud.firestore {
       allow create: if isSignedIn() 
         && request.auth.uid == userId
         && request.resource.data.keys().hasAll(['eventType', 'timestamp', 'details'])
-        && request.resource.data.timestamp == serverTimestamp();
+        && request.resource.data.timestamp == request.time;
     }
   }
 }
