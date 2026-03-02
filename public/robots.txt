@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bantayog-alert.web.app/sitemap.xml

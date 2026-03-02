@@ -224,6 +224,7 @@ export default function LeafletMap({ reports = [], onReportClick }) {
           key={currentTile.name}
           attribution={currentTile.attribution}
           url={currentTileUrl}
+          detectRetina={true}
           keepBuffer={8}
           updateWhenZooming={false}
           updateWhenIdle={true}

@@ -7,7 +7,7 @@ const ThemeToggle = memo(function ThemeToggle({ isDark, onToggle }) {
   return (
     <button
       onClick={onToggle}
-      className="w-8 h-8 rounded-full border border-white/20 overflow-hidden bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
+      className="w-8 h-8 rounded-full border border-border dark:border-dark-border overflow-hidden bg-bg dark:bg-dark-bg hover:bg-border/50 dark:hover:bg-dark-border/50 transition-colors flex items-center justify-center text-text dark:text-dark-text"
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {isDark ? (
@@ -51,18 +51,19 @@ const ThemeToggle = memo(function ThemeToggle({ isDark, onToggle }) {
 
 const RoleBadge = memo(function RoleBadge({ role, color }) {
   return (
-    <span className={`${color} text-white text-[10px] font-bold px-2 py-1 rounded tracking-wide`}>
-      {role}
-    </span>
+    <span className={`${color} text-[10px] font-bold px-2 py-1 rounded tracking-wide`}>{role}</span>
   );
 });
 
 const ActiveIndicator = memo(function ActiveIndicator({ count }) {
   if (count <= 0) return null;
   return (
-    <div className="flex items-center gap-1.5 bg-white/[0.08] border border-white/10 rounded-full px-2.5 py-1">
+    <div className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-full px-2.5 py-1">
       <span className="w-2 h-2 bg-accent rounded-full live-beacon" aria-hidden="true" />
-      <span className="text-[10px] font-bold text-white/70 tracking-wide" aria-live="polite">
+      <span
+        className="text-[10px] font-bold text-primary dark:text-dark-accent tracking-wide"
+        aria-live="polite"
+      >
         {count} ACTIVE
       </span>
     </div>
@@ -73,13 +74,13 @@ const Avatar = memo(function Avatar({ url, initial, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="w-8 h-8 rounded-full border border-white/20 overflow-hidden bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center"
+      className="w-8 h-8 rounded-full border border-border dark:border-dark-border overflow-hidden bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors flex items-center justify-center"
       aria-label="Open profile"
     >
       {url ? (
         <img src={url} alt="Profile" className="w-full h-full object-cover" loading="lazy" />
       ) : (
-        <span className="text-xs font-bold text-white/90">{initial}</span>
+        <span className="text-xs font-bold text-primary dark:text-dark-accent">{initial}</span>
       )}
     </button>
   );
@@ -99,10 +100,11 @@ export default memo(function Header({ onProfileClick }) {
   );
 
   const role = useMemo(() => {
-    if (isSuperAdmin) return { badge: 'CNPIO', color: 'bg-green-500/90' };
-    if (isAdmin) return { badge: 'MUNICIPAL ADMIN', color: 'bg-blue-500/90' };
-    if (user) return { badge: 'CITIZEN', color: 'bg-white/15' };
-    return { badge: 'GUEST', color: 'bg-white/15' };
+    if (isSuperAdmin) return { badge: 'CNPIO', color: 'bg-green-600 text-white' };
+    if (isAdmin) return { badge: 'MUNICIPAL ADMIN', color: 'bg-blue-600 text-white' };
+    if (user)
+      return { badge: 'CITIZEN', color: 'bg-primary/10 text-primary dark:text-dark-accent' };
+    return { badge: 'GUEST', color: 'bg-primary/10 text-textLight dark:text-dark-textLight' };
   }, [isSuperAdmin, isAdmin, user]);
 
   const avatarUrl = userProfile?.photoURL || user?.photoURL;
@@ -117,13 +119,15 @@ export default memo(function Header({ onProfileClick }) {
   }, [onProfileClick]);
 
   return (
-    <header className="sticky top-0 z-50 h-[56px] bg-primary text-white flex items-center justify-between px-4 shadow-dark">
+    <header className="sticky top-0 z-50 h-[60px] bg-white dark:bg-dark-card/95 dark:backdrop-blur-sm text-text dark:text-dark-text border-b border-border dark:border-dark-border flex items-center justify-between px-4 shadow-card">
       {/* Left: Brand */}
       <div className="flex items-center gap-2.5">
         <img src="/logo.svg" alt="Bantayog Alert" className="w-8 h-8 rounded-lg" loading="lazy" />
         <div className="leading-none">
-          <h1 className="text-[15px] font-extrabold tracking-wide text-white">BANTAYOG ALERT</h1>
-          <p className="text-[9px] font-medium text-white/60 tracking-widest uppercase">
+          <h1 className="text-[15px] font-extrabold tracking-wide text-primary dark:text-dark-text">
+            BANTAYOG ALERT
+          </h1>
+          <p className="text-[9px] font-medium text-textMuted dark:text-dark-textMuted tracking-widest uppercase">
             Camarines Norte
           </p>
         </div>

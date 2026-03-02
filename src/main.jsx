@@ -6,7 +6,10 @@ import { initSentry, ErrorBoundary, captureException } from './utils/sentry';
 import { reportWebVitals } from './utils/webVitals';
 import A11yProvider from './components/Common/A11yProvider';
 
-initSentry();
+const scheduleIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+scheduleIdle(() => {
+  initSentry();
+});
 
 performance.mark('app-start');
 performance.mark('react-init-start');

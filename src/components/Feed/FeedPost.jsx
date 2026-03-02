@@ -185,7 +185,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
             {report.disaster.tags.map((tag) => (
               <span
                 key={tag}
-                className="bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 text-[10px] px-2 py-0.5 rounded-full font-medium"
+                className="bg-primary/5 dark:bg-dark-elevated/20 text-primary/70 dark:text-dark-textLight/70 text-[10px] px-2 py-0.5 rounded-full font-medium"
               >
                 #{tag}
               </span>
