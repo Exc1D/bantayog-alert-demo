@@ -153,24 +153,25 @@ export default function AdminDashboard() {
   if (!isAdmin) {
     return (
       <div className="text-center py-8">
-        <div className="w-12 h-12 mx-auto mb-3 bg-stone-100 rounded-full flex items-center justify-center">
+        <div className="w-12 h-12 mx-auto mb-3 bg-stone-100 dark:bg-dark-elevated rounded-full flex items-center justify-center">
           <svg
             aria-hidden="true"
             width="24"
             height="24"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#a8a29e"
+            stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            className="text-stone-400 dark:text-dark-textLight"
           >
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
             <path d="M7 11V7a5 5 0 0110 0v4" />
           </svg>
         </div>
-        <h3 className="text-sm font-bold">Admin Access Required</h3>
-        <p className="text-xs text-textLight mt-1">
+        <h3 className="text-sm font-bold dark:text-dark-text">Admin Access Required</h3>
+        <p className="text-xs text-textLight dark:text-dark-textLight mt-1">
           This section is only available to DRRMO administrators.
         </p>
       </div>
@@ -193,26 +194,29 @@ export default function AdminDashboard() {
       flag={FEATURE_FLAGS.ADMIN_ANALYTICS}
       fallback={
         <FeatureFlagDisabled flag={FEATURE_FLAGS.ADMIN_ANALYTICS}>
-          <div className="bg-white rounded-xl p-6 text-center shadow-card border border-stone-100">
-            <div className="w-12 h-12 mx-auto mb-3 bg-stone-100 rounded-full flex items-center justify-center">
+          <div className="bg-white dark:bg-dark-card rounded-xl p-6 text-center shadow-card border border-stone-100 dark:border-dark-border">
+            <div className="w-12 h-12 mx-auto mb-3 bg-stone-100 dark:bg-dark-elevated rounded-full flex items-center justify-center">
               <svg
                 aria-hidden="true"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#78716c"
+                stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                className="text-stone-500 dark:text-dark-textLight"
               >
                 <line x1="18" y1="20" x2="18" y2="10" />
                 <line x1="12" y1="20" x2="12" y2="4" />
                 <line x1="6" y1="20" x2="6" y2="14" />
               </svg>
             </div>
-            <p className="font-semibold text-sm text-textLight">Analytics Dashboard Coming Soon</p>
-            <p className="text-xs text-textLight mt-1">
+            <p className="font-semibold text-sm text-textLight dark:text-dark-textLight">
+              Analytics Dashboard Coming Soon
+            </p>
+            <p className="text-xs text-textLight dark:text-dark-textLight mt-1">
               Advanced analytics and reporting features are under development
             </p>
           </div>
@@ -221,7 +225,7 @@ export default function AdminDashboard() {
     >
       <div>
         {/* Admin Header */}
-        <div className="bg-primary rounded-xl p-4 mb-3 text-white">
+        <div className="bg-white dark:bg-dark-elevated border border-border/60 dark:border-dark-border rounded-xl p-4 mb-3">
           <div className="flex items-center gap-2">
             <svg
               aria-hidden="true"
@@ -236,20 +240,20 @@ export default function AdminDashboard() {
             >
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <h2 className="text-sm font-bold tracking-wide uppercase">
+            <h2 className="text-sm font-bold tracking-wide uppercase text-primary dark:text-dark-text">
               {isSuperAdmin ? 'Provincial' : 'Municipal'} Dashboard
             </h2>
           </div>
           <div className="flex items-center gap-3 mt-2 ml-[26px]">
-            <span className="text-xs text-amber-400 font-bold">
+            <span className="text-xs text-amber-600 dark:text-amber-400 font-bold">
               {pendingReports.length} pending
             </span>
-            <span className="text-white/20">&bull;</span>
-            <span className="text-xs text-blue-400 font-bold">
+            <span className="text-border dark:text-white/20">&bull;</span>
+            <span className="text-xs text-blue-600 dark:text-blue-400 font-bold">
               {verifiedReports.length} awaiting resolution
             </span>
-            <span className="text-white/20">&bull;</span>
-            <span className="text-xs text-emerald-300 font-bold">
+            <span className="text-border dark:text-white/20">&bull;</span>
+            <span className="text-xs text-emerald-600 dark:text-emerald-300 font-bold">
               {archivedReports.length} archived
             </span>
           </div>
@@ -262,7 +266,7 @@ export default function AdminDashboard() {
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
               activeTab === 'pending'
                 ? 'bg-warning text-white shadow-sm'
-                : 'bg-white text-textLight hover:bg-stone-50 border border-stone-200'
+                : 'bg-white dark:bg-dark-elevated text-textLight dark:text-dark-textLight hover:bg-stone-50 dark:hover:bg-dark-border border border-stone-200 dark:border-dark-border'
             }`}
           >
             Pending ({pendingReports.length})
@@ -272,7 +276,7 @@ export default function AdminDashboard() {
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
               activeTab === 'verified'
                 ? 'bg-accent text-white shadow-sm'
-                : 'bg-white text-textLight hover:bg-stone-50 border border-stone-200'
+                : 'bg-white dark:bg-dark-elevated text-textLight dark:text-dark-textLight hover:bg-stone-50 dark:hover:bg-dark-border border border-stone-200 dark:border-dark-border'
             }`}
           >
             Needs Resolution ({verifiedReports.length})
@@ -282,7 +286,7 @@ export default function AdminDashboard() {
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
               activeTab === 'archived'
                 ? 'bg-emerald-600 text-white shadow-sm'
-                : 'bg-white text-textLight hover:bg-stone-50 border border-stone-200'
+                : 'bg-white dark:bg-dark-elevated text-textLight dark:text-dark-textLight hover:bg-stone-50 dark:hover:bg-dark-border border border-stone-200 dark:border-dark-border'
             }`}
           >
             Archived ({archivedReports.length})
@@ -291,8 +295,8 @@ export default function AdminDashboard() {
 
         {/* Report List */}
         {displayReports.length === 0 ? (
-          <div className="bg-white rounded-xl p-6 text-center shadow-card border border-stone-100">
-            <div className="w-10 h-10 mx-auto mb-2 bg-emerald-50 rounded-full flex items-center justify-center">
+          <div className="bg-white dark:bg-dark-card rounded-xl p-6 text-center shadow-card border border-stone-100 dark:border-dark-border">
+            <div className="w-10 h-10 mx-auto mb-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
               <svg
                 aria-hidden="true"
                 width="20"
@@ -307,7 +311,7 @@ export default function AdminDashboard() {
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <p className="font-semibold text-sm">
+            <p className="font-semibold text-sm dark:text-dark-text">
               {activeTab === 'pending'
                 ? 'No pending reports'
                 : activeTab === 'verified'
@@ -324,7 +328,7 @@ export default function AdminDashboard() {
               return (
                 <div
                   key={report.id}
-                  className="bg-white rounded-xl p-3 shadow-card border border-stone-100 hover:shadow-card-hover transition-shadow"
+                  className="bg-white dark:bg-dark-card rounded-xl p-3 shadow-card border border-stone-100 dark:border-dark-border hover:shadow-card-hover transition-shadow"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div
@@ -340,10 +344,10 @@ export default function AdminDashboard() {
                     >
                       <span className="text-lg">{disasterType.icon}</span>
                       <div className="min-w-0">
-                        <p className="font-bold text-xs uppercase tracking-wide">
+                        <p className="font-bold text-xs uppercase tracking-wide dark:text-dark-text">
                           {disasterType.label}
                         </p>
-                        <p className="text-[10px] text-textLight">
+                        <p className="text-[10px] text-textLight dark:text-dark-textLight">
                           {report.location?.municipality} &bull; {formatTimeAgo(report.timestamp)}
                         </p>
                       </div>
@@ -379,7 +383,7 @@ export default function AdminDashboard() {
                           </button>
                           <button
                             onClick={() => setDeleteConfirmId(null)}
-                            className="bg-stone-200 text-stone-600 rounded-lg p-1.5 hover:bg-stone-300 transition-colors"
+                            className="bg-stone-200 dark:bg-dark-elevated text-stone-600 dark:text-dark-textLight rounded-lg p-1.5 hover:bg-stone-300 dark:hover:bg-dark-border transition-colors"
                             aria-label="Cancel delete"
                           >
                             <svg
@@ -404,7 +408,7 @@ export default function AdminDashboard() {
                             e.stopPropagation();
                             setDeleteConfirmId(report.id);
                           }}
-                          className="text-stone-300 hover:text-red-500 transition-colors p-1"
+                          className="text-stone-300 dark:text-dark-border hover:text-red-500 dark:hover:text-red-400 transition-colors p-1"
                           aria-label="Delete report"
                         >
                           <svg
@@ -426,7 +430,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <p
-                    className="text-[11px] text-textLight mt-1.5 line-clamp-2 pl-[30px] cursor-pointer"
+                    className="text-[11px] text-textLight dark:text-dark-textLight mt-1.5 line-clamp-2 pl-[30px] cursor-pointer"
                     onClick={() => {
                       setSelectedReport(report);
                       if (activeTab === 'pending') {

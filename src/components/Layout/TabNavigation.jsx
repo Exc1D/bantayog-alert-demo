@@ -1,12 +1,9 @@
 import { TABS } from '../../config/tabs';
-import { useTheme } from '../../contexts/ThemeContext';
 
 export default function TabNavigation({ activeTab, onTabChange }) {
-  const { isDark } = useTheme();
-
   return (
     <nav
-      className="sticky top-[60px] z-40 bg-white dark:bg-dark-card/95 dark:backdrop-blur-sm border-b border-border/60 dark:border-dark-border"
+      className="sticky top-[60px] z-40 bg-white dark:bg-dark-card dark:backdrop-blur-sm border-b border-border/60 dark:border-dark-border"
       aria-label="Main navigation"
     >
       <div className="max-w-[1400px] mx-auto px-3 lg:px-6 flex" role="tablist">
@@ -21,11 +18,11 @@ export default function TabNavigation({ activeTab, onTabChange }) {
               onClick={() => onTabChange(tab.id)}
               className={`flex-1 flex flex-col items-center justify-center gap-1 py-3.5 text-xs font-semibold transition-all relative ${
                 isActive
-                  ? 'text-primary dark:text-dark-accent'
+                  ? 'text-primary dark:text-dark-text'
                   : 'text-textLight hover:text-text dark:text-dark-textLight dark:hover:text-dark-text'
               }`}
             >
-              {tab.icon(isActive, isDark)}
+              {tab.icon()}
               <span className="tracking-wide">{tab.label}</span>
               {isActive && (
                 <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-[3px] bg-primary dark:bg-dark-accent rounded-full" />

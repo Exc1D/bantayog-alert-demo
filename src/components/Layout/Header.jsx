@@ -7,17 +7,29 @@ const ThemeToggle = memo(function ThemeToggle({ isDark, onToggle }) {
   return (
     <button
       onClick={onToggle}
-      className="w-8 h-8 rounded-full border border-border dark:border-dark-border overflow-hidden bg-bg dark:bg-dark-bg hover:bg-border/50 dark:hover:bg-dark-border/50 transition-colors flex items-center justify-center text-text dark:text-dark-text"
+      className="relative flex items-center w-[52px] h-7 rounded-full border border-border dark:border-dark-border bg-stone-100 dark:bg-dark-bg p-1 transition-colors hover:border-border dark:hover:border-dark-textMuted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-1"
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      {isDark ? (
+      {/* Sliding thumb */}
+      <span
+        className={`absolute left-1 w-5 h-5 rounded-full bg-white dark:bg-dark-elevated shadow-sm border border-border/60 dark:border-dark-border transition-transform duration-200 ease-in-out ${
+          isDark ? 'translate-x-5' : 'translate-x-0'
+        }`}
+      />
+      {/* Sun icon */}
+      <span
+        className={`relative z-10 flex items-center justify-center w-5 h-5 transition-colors duration-200 ${
+          !isDark ? 'text-amber-500' : 'text-textMuted dark:text-dark-textMuted'
+        }`}
+      >
         <svg
-          width="16"
-          height="16"
+          aria-hidden="true"
+          width="12"
+          height="12"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
@@ -31,20 +43,27 @@ const ThemeToggle = memo(function ThemeToggle({ isDark, onToggle }) {
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
         </svg>
-      ) : (
+      </span>
+      {/* Moon icon */}
+      <span
+        className={`relative z-10 flex items-center justify-center w-5 h-5 transition-colors duration-200 ${
+          isDark ? 'text-indigo-300' : 'text-textMuted'
+        }`}
+      >
         <svg
-          width="16"
-          height="16"
+          aria-hidden="true"
+          width="12"
+          height="12"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
         </svg>
-      )}
+      </span>
     </button>
   );
 });
@@ -58,10 +77,10 @@ const RoleBadge = memo(function RoleBadge({ role, color }) {
 const ActiveIndicator = memo(function ActiveIndicator({ count }) {
   if (count <= 0) return null;
   return (
-    <div className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-full px-2.5 py-1">
+    <div className="flex items-center gap-1.5 bg-primary/10 dark:bg-accent/10 border border-primary/20 dark:border-accent/25 rounded-full px-2.5 py-1">
       <span className="w-2 h-2 bg-accent rounded-full live-beacon" aria-hidden="true" />
       <span
-        className="text-[10px] font-bold text-primary dark:text-dark-accent tracking-wide"
+        className="text-[10px] font-bold text-primary dark:text-accent tracking-wide"
         aria-live="polite"
       >
         {count} ACTIVE
@@ -119,7 +138,7 @@ export default memo(function Header({ onProfileClick }) {
   }, [onProfileClick]);
 
   return (
-    <header className="sticky top-0 z-50 h-[60px] bg-white dark:bg-dark-card/95 dark:backdrop-blur-sm text-text dark:text-dark-text border-b border-border dark:border-dark-border flex items-center justify-between px-4 shadow-card">
+    <header className="sticky top-0 z-50 h-[60px] bg-white dark:bg-dark-card dark:backdrop-blur-sm text-text dark:text-dark-text border-b border-border dark:border-dark-border flex items-center justify-between px-4 shadow-card">
       {/* Left: Brand */}
       <div className="flex items-center gap-2.5">
         <img src="/logo.svg" alt="Bantayog Alert" className="w-8 h-8 rounded-lg" loading="lazy" />

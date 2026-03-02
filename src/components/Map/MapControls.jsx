@@ -15,7 +15,7 @@ export default function MapControls({
   const [showLegend, setShowLegend] = useState(false);
 
   const selectClass =
-    'text-[11px] font-medium border border-white/20 rounded-lg px-2 py-1.5 bg-white/10 text-white focus:ring-2 focus:ring-accent/50 focus:border-accent appearance-none dark:bg-dark-card dark:text-dark-text dark:border-dark-border';
+    'text-[11px] font-medium border border-border rounded-lg px-2 py-1.5 bg-bg text-text focus:ring-2 focus:ring-accent/50 focus:border-accent appearance-none dark:bg-dark-elevated dark:text-dark-text dark:border-dark-border';
 
   const legendItems = [
     { type: 'critical', label: 'Critical', color: 'bg-red-500' },
@@ -26,7 +26,7 @@ export default function MapControls({
 
   return (
     <div className="absolute top-3 left-3 z-[1000] pointer-events-none">
-      <div className="bg-primary/90 backdrop-blur-sm rounded-xl shadow-dark p-2.5 pointer-events-auto w-fit">
+      <div className="bg-white/95 dark:bg-dark-card/95 backdrop-blur-sm rounded-xl shadow-card dark:shadow-dark p-2.5 pointer-events-auto w-fit border border-border/60 dark:border-dark-border">
         <div className="flex flex-wrap gap-2 items-center">
           <select
             aria-label="Filter by municipality"
@@ -51,7 +51,7 @@ export default function MapControls({
                 className={`text-[11px] font-medium border rounded-lg px-2 py-1 transition-colors ${
                   activeLayer === layer.id
                     ? 'bg-accent border-accent text-white'
-                    : 'border-white/20 text-white/70 hover:bg-white/10'
+                    : 'border-border dark:border-dark-border text-textLight dark:text-dark-textLight hover:bg-border/50 dark:hover:bg-dark-elevated'
                 }`}
                 aria-label={`Switch to ${layer.name} view`}
               >
@@ -63,7 +63,7 @@ export default function MapControls({
           {/* Legend Toggle */}
           <button
             onClick={() => setShowLegend(!showLegend)}
-            className="text-[11px] font-medium border border-white/20 rounded-lg px-2 py-1.5 bg-white/10 text-white hover:bg-white/20 transition-colors"
+            className="text-[11px] font-medium border border-border dark:border-dark-border rounded-lg px-2 py-1.5 text-text dark:text-dark-text hover:bg-border/50 dark:hover:bg-dark-elevated transition-colors"
             aria-label="Toggle legend"
             aria-expanded={showLegend}
             aria-controls="map-legend"
@@ -82,23 +82,27 @@ export default function MapControls({
             </svg>
           </button>
 
-          <div className="ml-auto flex items-center gap-1.5 bg-white/10 rounded-full px-2.5 py-1">
+          <div className="ml-auto flex items-center gap-1.5 bg-border/40 dark:bg-dark-elevated rounded-full px-2.5 py-1">
             <span className="w-1.5 h-1.5 bg-accent rounded-full live-beacon" />
-            <span className="text-[10px] font-bold text-white/80 tracking-wide">{reportCount}</span>
+            <span className="text-[10px] font-bold text-textLight dark:text-dark-textLight tracking-wide">
+              {reportCount}
+            </span>
           </div>
         </div>
 
         {/* Legend Dropdown */}
         {showLegend && (
-          <div id="map-legend" className="mt-2 pt-2 border-t border-white/20">
-            <p className="text-[10px] text-white/50 uppercase tracking-wider font-semibold mb-2">
+          <div id="map-legend" className="mt-2 pt-2 border-t border-border dark:border-dark-border">
+            <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold mb-2">
               Marker Legend
             </p>
             <div className="space-y-1.5">
               {legendItems.map((item) => (
                 <div key={item.type} className="flex items-center gap-2">
                   <span className={`w-3 h-3 rounded-full ${item.color}`} />
-                  <span className="text-[10px] text-white/70">{item.label}</span>
+                  <span className="text-[10px] text-textLight dark:text-dark-textLight">
+                    {item.label}
+                  </span>
                 </div>
               ))}
             </div>

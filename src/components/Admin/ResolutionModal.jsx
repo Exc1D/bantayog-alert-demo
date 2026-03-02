@@ -80,39 +80,41 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
   };
 
   const inputClass =
-    'w-full border border-stone-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white';
+    'w-full border border-stone-300 dark:border-dark-border rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white dark:bg-dark-elevated dark:text-dark-text placeholder:text-textMuted dark:placeholder:text-dark-textMuted';
 
   const modalContent = (
     <div className="space-y-4">
-      <div className="bg-stone-50 border border-stone-200 rounded-lg p-3">
-        <p className="text-[10px] font-bold text-textLight uppercase tracking-wider mb-2">
+      <div className="bg-stone-50 dark:bg-dark-elevated border border-stone-200 dark:border-dark-border rounded-lg p-3">
+        <p className="text-[10px] font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-2">
           Original Report
         </p>
-        <div className="text-xs space-y-1 text-textLight">
+        <div className="text-xs space-y-1 text-textLight dark:text-dark-textLight">
           <p>
-            <span className="font-semibold text-text">Type:</span> {disasterType.icon}{' '}
-            {disasterType.label}
+            <span className="font-semibold text-text dark:text-dark-text">Type:</span>{' '}
+            {disasterType.icon} {disasterType.label}
           </p>
           <p>
-            <span className="font-semibold text-text">Location:</span>{' '}
+            <span className="font-semibold text-text dark:text-dark-text">Location:</span>{' '}
             {report.location?.municipality}
           </p>
           <p>
-            <span className="font-semibold text-text">Severity:</span>{' '}
+            <span className="font-semibold text-text dark:text-dark-text">Severity:</span>{' '}
             <span className="capitalize">{report.disaster?.severity}</span>
           </p>
           <p>
-            <span className="font-semibold text-text">Reported:</span>{' '}
+            <span className="font-semibold text-text dark:text-dark-text">Reported:</span>{' '}
             {formatDate(report.timestamp)}
           </p>
         </div>
-        <p className="text-xs text-textLight mt-2">{report.disaster?.description}</p>
+        <p className="text-xs text-textLight dark:text-dark-textLight mt-2">
+          {report.disaster?.description}
+        </p>
       </div>
 
       <EvidenceUpload photos={evidencePhotos} onPhotosChange={setEvidencePhotos} />
 
       <div>
-        <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
+        <label className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5">
           Actions Taken <span className="text-accent">*</span>
         </label>
         <textarea
@@ -125,7 +127,7 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
+        <label className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5">
           Resources Used
         </label>
         <textarea
@@ -138,7 +140,7 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
+        <label className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5">
           Additional Notes
         </label>
         <textarea
@@ -165,7 +167,7 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
         </Button>
       </div>
 
-      <p className="text-[10px] text-textMuted text-center">
+      <p className="text-[10px] text-textMuted dark:text-dark-textMuted text-center">
         Evidence photos are required to resolve a report.
       </p>
     </div>
