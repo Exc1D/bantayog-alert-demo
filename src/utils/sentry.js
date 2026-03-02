@@ -3,21 +3,42 @@ import sentryConfig from '../config/sentry';
 
 let isInitialized = false;
 let Sentry = null;
+let SentryErrorBoundary = null;
+let SentryWithErrorBoundary = null;
+
+const queuedCalls = [];
 
 let sentryReadyResolve;
 export const sentryReady = new Promise((resolve) => {
   sentryReadyResolve = resolve;
 });
 
+function flushQueuedCalls() {
+  while (queuedCalls.length > 0) {
+    const { method, args } = queuedCalls.shift();
+    if (Sentry && typeof Sentry[method] === 'function') {
+      Sentry[method](...args);
+    }
+  }
+}
+
+function queueCall(method, args) {
+  queuedCalls.push({ method, args });
+}
+
 export async function initSentry() {
   if (isInitialized) return;
 
   if (!sentryConfig.enabled || !sentryConfig.dsn) {
     console.info('Sentry disabled: No DSN configured');
+    sentryReadyResolve();
     return;
   }
 
   Sentry = await import('@sentry/react');
+
+  SentryErrorBoundary = Sentry.ErrorBoundary;
+  SentryWithErrorBoundary = Sentry.withErrorBoundary;
 
   Sentry.init({
     dsn: sentryConfig.dsn,
@@ -65,12 +86,16 @@ export async function initSentry() {
   });
 
   isInitialized = true;
+  flushQueuedCalls();
   sentryReadyResolve();
   console.info(`Sentry initialized in ${sentryConfig.environment} environment`);
 }
 
 export function setUserContext(user) {
-  if (!Sentry) return;
+  if (!Sentry) {
+    queueCall('setUser', user ? [user] : [null]);
+    return;
+  }
 
   if (!user) {
     Sentry.setUser(null);
@@ -87,33 +112,42 @@ export function setUserContext(user) {
 }
 
 export function clearUserContext() {
-  if (!Sentry) return;
+  if (!Sentry) {
+    queueCall('setUser', [null]);
+    return;
+  }
   Sentry.setUser(null);
 }
 
 export function addBreadcrumb(category, message, level = 'info', data = {}) {
-  if (!Sentry) return;
-  Sentry.addBreadcrumb({
-    category,
-    message,
-    level,
-    data,
-    timestamp: Date.now() / 1000,
-  });
+  if (!Sentry) {
+    queueCall('addBreadcrumb', [{ category, message, level, data, timestamp: Date.now() / 1000 }]);
+    return;
+  }
+  Sentry.addBreadcrumb({ category, message, level, data, timestamp: Date.now() / 1000 });
 }
 
 export function setTag(key, value) {
-  if (!Sentry) return;
+  if (!Sentry) {
+    queueCall('setTag', [key, value]);
+    return;
+  }
   Sentry.setTag(key, value);
 }
 
 export function setContext(name, context) {
-  if (!Sentry) return;
+  if (!Sentry) {
+    queueCall('setContext', [name, context]);
+    return;
+  }
   Sentry.setContext(name, context);
 }
 
 export function captureException(error, context = {}) {
-  if (!Sentry) return;
+  if (!Sentry) {
+    queueCall('captureException', [error, context]);
+    return;
+  }
 
   const { tags, extra, user, level = 'error' } = context;
 
@@ -133,7 +167,10 @@ export function captureException(error, context = {}) {
 }
 
 export function captureMessage(message, level = 'info', context = {}) {
-  if (!Sentry) return;
+  if (!Sentry) {
+    queueCall('captureMessage', [message, level, context]);
+    return;
+  }
 
   const { tags, extra } = context;
 
@@ -174,12 +211,25 @@ class FallbackErrorBoundary extends React.Component {
   }
 }
 
-export const ErrorBoundary = FallbackErrorBoundary;
-export const withErrorBoundary = (component) => component;
-export const showReportDialog = () => {};
+// Dynamic ErrorBoundary that uses Sentry when available, falls back otherwise
+const DynamicErrorBoundary = SentryErrorBoundary ? SentryErrorBoundary : FallbackErrorBoundary;
+
+// Dynamic withErrorBoundary HOC
+const dynamicWithErrorBoundary = (component, errorBoundaryProps) =>
+  SentryWithErrorBoundary ? SentryWithErrorBoundary(component, errorBoundaryProps) : component;
+
+export const ErrorBoundary = DynamicErrorBoundary;
+export const withErrorBoundary = dynamicWithErrorBoundary;
+
+export function showReportDialog(options) {
+  if (Sentry?.showReportDialog) {
+    Sentry.showReportDialog(options);
+  }
+}
 
 export default {
   init: initSentry,
+  sentryReady,
   setUser: setUserContext,
   clearUser: clearUserContext,
   addBreadcrumb,

@@ -1,7 +1,9 @@
 import { memo } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
 import { TABS, SIDEBAR_WIDTH } from '../../config/tabs';
 
 export default memo(function Sidebar({ activeTab, onTabChange }) {
+  const { isDark } = useTheme();
   return (
     <aside
       className="hidden lg:flex flex-col bg-white dark:bg-dark-card/95 dark:backdrop-blur-sm border-r border-border/60 dark:border-dark-border h-[calc(100vh-60px)] fixed top-[60px] left-0"
@@ -23,7 +25,7 @@ export default memo(function Sidebar({ activeTab, onTabChange }) {
                   : 'text-textLight hover:text-text hover:bg-primary/[0.03] dark:text-dark-textLight dark:hover:text-dark-text dark:hover:bg-primary/[0.05]'
               }`}
             >
-              {tab.icon(isActive)}
+              {tab.icon(isActive, isDark)}
               <span className="tracking-wide">{tab.label}</span>
               {isActive && (
                 <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full" />
