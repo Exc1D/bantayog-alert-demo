@@ -10,7 +10,7 @@ export default function WeatherTab() {
   return (
     <div className="max-w-[1200px] xl:max-w-[1400px] mx-auto px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6 space-y-3">
       {/* Province Header */}
-      <div className="bg-stone-800 rounded-xl p-4 text-white dark:bg-dark-card">
+      <div className="bg-white dark:bg-dark-elevated border border-border/60 dark:border-dark-border rounded-xl p-4">
         <div className="flex items-center gap-2">
           <svg
             aria-hidden="true"
@@ -25,9 +25,9 @@ export default function WeatherTab() {
           >
             <path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" />
           </svg>
-          <h2 className="text-base font-bold tracking-wide">WEATHER &mdash; Camarines Norte</h2>
+          <h2 className="text-base font-bold tracking-wide text-primary dark:text-dark-text">WEATHER &mdash; Camarines Norte</h2>
         </div>
-        <p className="text-xs text-white/50 mt-1 ml-[30px]">
+        <p className="text-xs text-textMuted dark:text-dark-textMuted mt-1 ml-[30px]">
           Real-time conditions across all 12 municipalities
         </p>
       </div>

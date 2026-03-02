@@ -39,30 +39,31 @@ export default function EvidenceUpload({ photos, onPhotosChange, maxPhotos = 5 }
 
   const uploadContent = (
     <div>
-      <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
+      <label className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5">
         Evidence Photos <span className="text-accent">*</span>
       </label>
-      <p className="text-[10px] text-textMuted mb-2">
+      <p className="text-[10px] text-textMuted dark:text-dark-textMuted mb-2">
         Upload 1-{maxPhotos} photos showing the issue has been resolved
       </p>
 
-      <label className="flex items-center justify-center gap-2 w-full border-2 border-dashed border-stone-300 rounded-lg p-3 cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 transition-colors">
+      <label className="flex items-center justify-center gap-2 w-full border-2 border-dashed border-stone-300 dark:border-dark-border rounded-lg p-3 cursor-pointer hover:border-emerald-400 dark:hover:border-emerald-600 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-colors">
         <svg
           aria-hidden="true"
           width="18"
           height="18"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#78716c"
+          stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          className="text-stone-500 dark:text-dark-textLight"
         >
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
           <circle cx="8.5" cy="8.5" r="1.5" />
           <polyline points="21 15 16 10 5 21" />
         </svg>
-        <span className="text-xs text-textLight font-medium">Upload evidence photos</span>
+        <span className="text-xs text-textLight dark:text-dark-textLight font-medium">Upload evidence photos</span>
         <input type="file" accept="image/*" multiple onChange={handleAdd} className="hidden" />
       </label>
 
@@ -73,7 +74,7 @@ export default function EvidenceUpload({ photos, onPhotosChange, maxPhotos = 5 }
               <img
                 src={url}
                 alt={`Evidence ${i + 1}`}
-                className="w-full h-16 object-cover rounded-lg border border-stone-200"
+                className="w-full h-16 object-cover rounded-lg border border-stone-200 dark:border-dark-border"
               />
               <button
                 type="button"

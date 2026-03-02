@@ -106,38 +106,38 @@ export default function VerificationPanel({ report, onDone }) {
   const panelContent = (
     <div className="space-y-4">
       {/* Report Summary */}
-      <div className="bg-stone-50 border border-stone-200 rounded-lg p-3">
+      <div className="bg-stone-50 dark:bg-dark-elevated border border-stone-200 dark:border-dark-border rounded-lg p-3">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-lg">{disasterType.icon}</span>
-          <h3 className="font-bold text-sm uppercase tracking-wide">{disasterType.label}</h3>
+          <h3 className="font-bold text-sm uppercase tracking-wide dark:text-dark-text">{disasterType.label}</h3>
           <span
             className={`${sevStyle} px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide ml-auto`}
           >
             {report.disaster?.severity}
           </span>
         </div>
-        <div className="text-xs space-y-1 text-textLight">
+        <div className="text-xs space-y-1 text-textLight dark:text-dark-textLight">
           <p>
-            <span className="font-semibold text-text">Location:</span>{' '}
+            <span className="font-semibold text-text dark:text-dark-text">Location:</span>{' '}
             {report.location?.municipality}
             {report.location?.street ? `, ${report.location.street}` : ''}
           </p>
           <p>
-            <span className="font-semibold text-text">Reporter:</span>{' '}
+            <span className="font-semibold text-text dark:text-dark-text">Reporter:</span>{' '}
             {report.reporter?.name || 'Anonymous'}
           </p>
           <p>
-            <span className="font-semibold text-text">Reported:</span>{' '}
+            <span className="font-semibold text-text dark:text-dark-text">Reported:</span>{' '}
             {formatTimeAgo(report.timestamp)}
           </p>
         </div>
-        <p className="text-sm mt-2">{report.disaster?.description}</p>
+        <p className="text-sm mt-2 dark:text-dark-text">{report.disaster?.description}</p>
       </div>
 
       {/* Photos */}
       {report.media?.photos?.length > 0 && (
         <div>
-          <p className="text-xs font-bold text-textLight uppercase tracking-wider mb-2">
+          <p className="text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-2">
             Attached Photos
           </p>
           <div className="grid grid-cols-3 gap-2">
@@ -146,7 +146,7 @@ export default function VerificationPanel({ report, onDone }) {
                 key={`${photo}-${i}`}
                 src={photo}
                 alt={`Report photo ${i + 1}`}
-                className="w-full h-20 object-cover rounded-lg border border-stone-200 cursor-pointer hover:opacity-80"
+                className="w-full h-20 object-cover rounded-lg border border-stone-200 dark:border-dark-border cursor-pointer hover:opacity-80"
               />
             ))}
           </div>
@@ -155,13 +155,13 @@ export default function VerificationPanel({ report, onDone }) {
 
       {/* Hazard/Disaster Type Classification */}
       <div>
-        <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
+        <label className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5">
           Classify Hazard Type <span className="text-accent">*</span>
         </label>
         <select
           value={selectedType}
           onChange={(e) => setSelectedType(e.target.value)}
-          className="w-full border border-stone-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white"
+          className="w-full border border-stone-300 dark:border-dark-border rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white dark:bg-dark-elevated dark:text-dark-text"
         >
           <option value="">-- Select hazard type --</option>
           {CLASSIFIABLE_TYPES.map((type) => (
@@ -171,7 +171,7 @@ export default function VerificationPanel({ report, onDone }) {
           ))}
         </select>
         {selectedType && (
-          <div className="mt-1.5 flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1.5">
+          <div className="mt-1.5 flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg px-2.5 py-1.5">
             <span className="text-base">{getDisasterType(selectedType).icon}</span>
             <span className="font-semibold">{getDisasterType(selectedType).label}</span>
           </div>
@@ -182,7 +182,7 @@ export default function VerificationPanel({ report, onDone }) {
       <div>
         <label
           id="severity-level-label"
-          className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5"
+          className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5"
         >
           Set Severity Level <span className="text-accent">*</span>
         </label>
@@ -205,7 +205,7 @@ export default function VerificationPanel({ report, onDone }) {
                     : level.id === 'moderate'
                       ? 'border-amber-500 bg-amber-50 text-amber-800 ring-1 ring-amber-200'
                       : 'border-green-500 bg-green-50 text-green-800 ring-1 ring-green-200'
-                  : 'border-stone-200 hover:border-stone-300 text-textLight'
+                  : 'border-stone-200 dark:border-dark-border hover:border-stone-300 dark:hover:border-dark-textMuted text-textLight dark:text-dark-textLight dark:bg-dark-elevated'
               }`}
             >
               <span className="mr-1" aria-hidden="true">
@@ -219,14 +219,14 @@ export default function VerificationPanel({ report, onDone }) {
 
       {/* Admin Notes */}
       <div>
-        <label className="block text-xs font-bold text-textLight uppercase tracking-wider mb-1.5">
+        <label className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5">
           Admin Notes
         </label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Add notes about this report..."
-          className="w-full border border-stone-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white"
+          className="w-full border border-stone-300 dark:border-dark-border rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white dark:bg-dark-elevated dark:text-dark-text placeholder:text-textMuted dark:placeholder:text-dark-textMuted"
           rows="3"
         />
       </div>
@@ -256,8 +256,8 @@ export default function VerificationPanel({ report, onDone }) {
           Delete this report permanently
         </button>
       ) : (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3 space-y-2">
-          <p className="text-xs font-bold text-red-700 text-center">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 space-y-2">
+          <p className="text-xs font-bold text-red-700 dark:text-red-400 text-center">
             Are you sure? This cannot be undone.
           </p>
           <div className="flex gap-2">

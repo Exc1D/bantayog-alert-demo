@@ -191,7 +191,7 @@ export default function LeafletMap({ reports = [], onReportClick }) {
       {/* Location button — rendered outside MapContainer for precise positioning */}
       <button
         onClick={handleLocate}
-        className="absolute z-[1000] flex items-center justify-center bg-white text-primary rounded-lg shadow-dark hover:bg-stone-50 active:bg-stone-100 transition-colors"
+        className="absolute z-[1000] flex items-center justify-center bg-white dark:bg-dark-card text-primary dark:text-dark-text border border-border/60 dark:border-dark-border rounded-lg shadow-card dark:shadow-dark hover:bg-stone-50 dark:hover:bg-dark-elevated active:bg-stone-100 dark:active:bg-dark-border transition-colors"
         style={{ bottom: '10px', left: '10px', width: '40px', height: '40px' }}
         aria-label="My Location"
       >
