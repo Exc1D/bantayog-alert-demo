@@ -15,7 +15,7 @@
   }
 
   body {
-    background: #f2f0ef;
+    background: #fdf8f3;
   }
 }
 
@@ -57,6 +57,17 @@
   background-color: #f5f5f4 !important;
 }
 
+/* Dark mode Leaflet controls */
+.dark .leaflet-control-zoom a {
+  color: #e8e6f0 !important;
+  background-color: #22212b;
+  border-color: #33323e !important;
+}
+
+.dark .leaflet-control-zoom a:hover {
+  background-color: #2a2935 !important;
+}
+
 .custom-marker {
   background: transparent !important;
   border: none !important;
@@ -70,19 +81,19 @@
 
 .leaflet-popup-content {
   margin: 14px 16px !important;
-  font-family: 'Inter', system-ui, sans-serif !important;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
 }
 
 /* ---- Emergency Pulse Effect (for report button) ---- */
 @keyframes emergency-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.6);
+    box-shadow: 0 0 0 0 rgba(217, 48, 37, 0.6);
   }
   70% {
-    box-shadow: 0 0 0 14px rgba(230, 57, 70, 0);
+    box-shadow: 0 0 0 14px rgba(217, 48, 37, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(230, 57, 70, 0);
+    box-shadow: 0 0 0 0 rgba(217, 48, 37, 0);
   }
 }
 
@@ -149,12 +160,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #a8a29e;
+  background: #b5a28e;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #78716c;
+  background: #8b7355;
 }
 
 /* ---- Touch optimization ---- */
@@ -203,21 +214,21 @@
 /* ---- Modal backdrop ---- */
 .modal-backdrop {
   backdrop-filter: blur(4px);
-  background: rgba(13, 17, 23, 0.7);
+  background: rgba(34, 33, 43, 0.6);
 }
 
 /* ---- Emergency Report Button glow ---- */
 .report-btn-glow {
-  background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+  background: linear-gradient(135deg, #d93025 0%, #b71c1c 100%);
   box-shadow:
-    0 4px 14px rgba(230, 57, 70, 0.4),
-    0 0 0 0 rgba(230, 57, 70, 0.3);
+    0 4px 14px rgba(217, 48, 37, 0.4),
+    0 0 0 0 rgba(217, 48, 37, 0.3);
 }
 
 .report-btn-glow:hover {
   box-shadow:
-    0 6px 20px rgba(230, 57, 70, 0.5),
-    0 0 0 0 rgba(230, 57, 70, 0.4);
+    0 6px 20px rgba(217, 48, 37, 0.5),
+    0 0 0 0 rgba(217, 48, 37, 0.4);
   transform: scale(1.03);
 }
 
@@ -318,6 +329,6 @@ textarea:focus-visible {
 
 /* ---- Dark mode select option styles ---- */
 .dark select option {
-  background-color: #161b22;
-  color: #e6edf3;
+  background-color: #22212b;
+  color: #f5ede4;
 }

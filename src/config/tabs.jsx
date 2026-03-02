@@ -2,13 +2,13 @@ export const TABS = [
   {
     id: 'map',
     label: 'Map',
-    icon: (active) => (
+    icon: (active, isDark) => (
       <svg
         width="20"
         height="20"
         viewBox="0 0 24 24"
         fill="none"
-        stroke={active ? '#e63946' : '#78716c'}
+        stroke={active ? (isDark ? '#E8E6F0' : '#22212B') : isDark ? '#5E5D68' : '#8B7355'}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -23,13 +23,13 @@ export const TABS = [
   {
     id: 'feed',
     label: 'Feed',
-    icon: (active) => (
+    icon: (active, isDark) => (
       <svg
         width="20"
         height="20"
         viewBox="0 0 24 24"
         fill="none"
-        stroke={active ? '#e63946' : '#78716c'}
+        stroke={active ? (isDark ? '#E8E6F0' : '#22212B') : isDark ? '#5E5D68' : '#8B7355'}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -42,13 +42,13 @@ export const TABS = [
   {
     id: 'weather',
     label: 'Weather',
-    icon: (active) => (
+    icon: (active, isDark) => (
       <svg
         width="20"
         height="20"
         viewBox="0 0 24 24"
         fill="none"
-        stroke={active ? '#e63946' : '#78716c'}
+        stroke={active ? (isDark ? '#E8E6F0' : '#22212B') : isDark ? '#5E5D68' : '#8B7355'}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -61,13 +61,13 @@ export const TABS = [
   {
     id: 'profile',
     label: 'Profile',
-    icon: (active) => (
+    icon: (active, isDark) => (
       <svg
         width="20"
         height="20"
         viewBox="0 0 24 24"
         fill="none"
-        stroke={active ? '#e63946' : '#78716c'}
+        stroke={active ? (isDark ? '#E8E6F0' : '#22212B') : isDark ? '#5E5D68' : '#8B7355'}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"

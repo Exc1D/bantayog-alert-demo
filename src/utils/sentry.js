@@ -1,16 +1,23 @@
 import React from 'react';
-import * as Sentry from '@sentry/react';
 import sentryConfig from '../config/sentry';
 
 let isInitialized = false;
+let Sentry = null;
 
-export function initSentry() {
+let sentryReadyResolve;
+export const sentryReady = new Promise((resolve) => {
+  sentryReadyResolve = resolve;
+});
+
+export async function initSentry() {
   if (isInitialized) return;
 
   if (!sentryConfig.enabled || !sentryConfig.dsn) {
     console.info('Sentry disabled: No DSN configured');
     return;
   }
+
+  Sentry = await import('@sentry/react');
 
   Sentry.init({
     dsn: sentryConfig.dsn,
@@ -58,10 +65,13 @@ export function initSentry() {
   });
 
   isInitialized = true;
+  sentryReadyResolve();
   console.info(`Sentry initialized in ${sentryConfig.environment} environment`);
 }
 
 export function setUserContext(user) {
+  if (!Sentry) return;
+
   if (!user) {
     Sentry.setUser(null);
     return;
@@ -77,10 +87,12 @@ export function setUserContext(user) {
 }
 
 export function clearUserContext() {
+  if (!Sentry) return;
   Sentry.setUser(null);
 }
 
 export function addBreadcrumb(category, message, level = 'info', data = {}) {
+  if (!Sentry) return;
   Sentry.addBreadcrumb({
     category,
     message,
@@ -91,14 +103,18 @@ export function addBreadcrumb(category, message, level = 'info', data = {}) {
 }
 
 export function setTag(key, value) {
+  if (!Sentry) return;
   Sentry.setTag(key, value);
 }
 
 export function setContext(name, context) {
+  if (!Sentry) return;
   Sentry.setContext(name, context);
 }
 
 export function captureException(error, context = {}) {
+  if (!Sentry) return;
+
   const { tags, extra, user, level = 'error' } = context;
 
   if (tags) {
@@ -117,6 +133,8 @@ export function captureException(error, context = {}) {
 }
 
 export function captureMessage(message, level = 'info', context = {}) {
+  if (!Sentry) return;
+
   const { tags, extra } = context;
 
   if (tags) {
@@ -131,6 +149,7 @@ export function captureMessage(message, level = 'info', context = {}) {
 }
 
 export function withScope(callback) {
+  if (!Sentry) return;
   return Sentry.withScope(callback);
 }
 
@@ -155,9 +174,9 @@ class FallbackErrorBoundary extends React.Component {
   }
 }
 
-export const ErrorBoundary = Sentry.ErrorBoundary || FallbackErrorBoundary;
-export const withErrorBoundary = Sentry.withErrorBoundary;
-export const showReportDialog = Sentry.showReportDialog;
+export const ErrorBoundary = FallbackErrorBoundary;
+export const withErrorBoundary = (component) => component;
+export const showReportDialog = () => {};
 
 export default {
   init: initSentry,

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0d1117" />
+    <meta name="theme-color" content="#22212B" />
     <meta
       name="description"
       content="BANTAYOG ALERT - Real-time hazard and disaster reporting for Camarines Norte"
@@ -33,45 +33,36 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
 
-    <!-- Preconnect to critical third-party origins -->
-    <link rel="preconnect" href="https://firebase.googleapis.com" />
-    <link rel="preconnect" href="https://firestore.googleapis.com" />
-    <link rel="preconnect" href="https://api.openweathermap.org" />
+    <!-- Preconnect to critical third-party origins (max 3 for initial page load) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://tile.openstreetmap.org" />
+    <link rel="preconnect" href="https://firestore.googleapis.com" />
 
-    <!-- DNS prefetch for non-critical origins -->
+    <!-- DNS prefetch for resources loaded after initial render -->
+    <link rel="dns-prefetch" href="https://a.tile.openstreetmap.org" />
+    <link rel="dns-prefetch" href="https://b.tile.openstreetmap.org" />
+    <link rel="dns-prefetch" href="https://c.tile.openstreetmap.org" />
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
-    <link rel="dns-prefetch" href="https://firebase.googleapis.com" />
-    <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
     <link rel="dns-prefetch" href="https://api.openweathermap.org" />
-    <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
+    <link rel="dns-prefetch" href="https://firebase.googleapis.com" />
 
     <!-- Preload critical fonts with font-display: swap -->
     <link
       rel="preload"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       as="style"
-    />
-    <link
-      rel="preload"
-      as="font"
-      type="font/woff2"
-      href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2"
-      crossorigin
     />
 
     <!-- Load fonts with font-display: swap for better FCP -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <title>BANTAYOG ALERT</title>
     <style>
       /* Critical CSS for FCP optimization background */
       body {
-        background-color: #0d1117;
+        background-color: #fdf8f3;
       }
     </style>
   </head>
