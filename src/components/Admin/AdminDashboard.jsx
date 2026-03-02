@@ -213,7 +213,9 @@ export default function AdminDashboard() {
                 <line x1="6" y1="20" x2="6" y2="14" />
               </svg>
             </div>
-            <p className="font-semibold text-sm text-textLight dark:text-dark-textLight">Analytics Dashboard Coming Soon</p>
+            <p className="font-semibold text-sm text-textLight dark:text-dark-textLight">
+              Analytics Dashboard Coming Soon
+            </p>
             <p className="text-xs text-textLight dark:text-dark-textLight mt-1">
               Advanced analytics and reporting features are under development
             </p>

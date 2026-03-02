@@ -25,7 +25,9 @@ export default function WeatherTab() {
           >
             <path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" />
           </svg>
-          <h2 className="text-base font-bold tracking-wide text-primary dark:text-dark-text">WEATHER &mdash; Camarines Norte</h2>
+          <h2 className="text-base font-bold tracking-wide text-primary dark:text-dark-text">
+            WEATHER &mdash; Camarines Norte
+          </h2>
         </div>
         <p className="text-xs text-textMuted dark:text-dark-textMuted mt-1 ml-[30px]">
           Real-time conditions across all 12 municipalities

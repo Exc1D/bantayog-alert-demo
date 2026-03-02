@@ -49,7 +49,7 @@ export default function ReportForm({ formData, onChange }) {
       <div>
         <label
           htmlFor="report-description"
-          className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2"
+          className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-2"
         >
           What is happening? <span className="text-accent">*</span>
         </label>
@@ -58,8 +58,10 @@ export default function ReportForm({ formData, onChange }) {
           value={formData.description || ''}
           onChange={(e) => handleFieldChange('description', e.target.value)}
           placeholder="Describe what you see: location details, severity, and any immediate dangers..."
-          className={`w-full border rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none bg-white ${
-            descriptionWarning ? 'border-amber-400' : 'border-stone-300'
+          className={`w-full border rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none bg-white dark:bg-dark-card dark:text-dark-text dark:placeholder-dark-textMuted ${
+            descriptionWarning
+              ? 'border-amber-400 dark:border-amber-600'
+              : 'border-stone-300 dark:border-dark-border'
           }`}
           rows="3"
           required
@@ -77,7 +79,7 @@ export default function ReportForm({ formData, onChange }) {
         <div>
           <label
             htmlFor="report-barangay"
-            className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2"
+            className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-2"
           >
             Barangay
           </label>
@@ -87,15 +89,17 @@ export default function ReportForm({ formData, onChange }) {
             value={formData.barangay || ''}
             onChange={(e) => handleFieldChange('barangay', e.target.value)}
             placeholder="Optional"
-            className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white ${
-              barangayWarning ? 'border-amber-400' : 'border-stone-300'
+            className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white dark:bg-dark-card dark:text-dark-text dark:placeholder-dark-textMuted ${
+              barangayWarning
+                ? 'border-amber-400 dark:border-amber-600'
+                : 'border-stone-300 dark:border-dark-border'
             }`}
           />
         </div>
         <div>
           <label
             htmlFor="report-street"
-            className="block text-xs font-bold text-textLight uppercase tracking-wider mb-2"
+            className="block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-2"
           >
             Street/Landmark
           </label>
@@ -105,8 +109,10 @@ export default function ReportForm({ formData, onChange }) {
             value={formData.street || ''}
             onChange={(e) => handleFieldChange('street', e.target.value)}
             placeholder="Optional"
-            className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white ${
-              streetWarning ? 'border-amber-400' : 'border-stone-300'
+            className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white dark:bg-dark-card dark:text-dark-text dark:placeholder-dark-textMuted ${
+              streetWarning
+                ? 'border-amber-400 dark:border-amber-600'
+                : 'border-stone-300 dark:border-dark-border'
             }`}
           />
         </div>

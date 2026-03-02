@@ -84,7 +84,9 @@ export default function MapControls({
 
           <div className="ml-auto flex items-center gap-1.5 bg-border/40 dark:bg-dark-elevated rounded-full px-2.5 py-1">
             <span className="w-1.5 h-1.5 bg-accent rounded-full live-beacon" />
-            <span className="text-[10px] font-bold text-textLight dark:text-dark-textLight tracking-wide">{reportCount}</span>
+            <span className="text-[10px] font-bold text-textLight dark:text-dark-textLight tracking-wide">
+              {reportCount}
+            </span>
           </div>
         </div>
 
@@ -98,7 +100,9 @@ export default function MapControls({
               {legendItems.map((item) => (
                 <div key={item.type} className="flex items-center gap-2">
                   <span className={`w-3 h-3 rounded-full ${item.color}`} />
-                  <span className="text-[10px] text-textLight dark:text-dark-textLight">{item.label}</span>
+                  <span className="text-[10px] text-textLight dark:text-dark-textLight">
+                    {item.label}
+                  </span>
                 </div>
               ))}
             </div>

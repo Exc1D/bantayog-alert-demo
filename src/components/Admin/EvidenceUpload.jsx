@@ -63,7 +63,9 @@ export default function EvidenceUpload({ photos, onPhotosChange, maxPhotos = 5 }
           <circle cx="8.5" cy="8.5" r="1.5" />
           <polyline points="21 15 16 10 5 21" />
         </svg>
-        <span className="text-xs text-textLight dark:text-dark-textLight font-medium">Upload evidence photos</span>
+        <span className="text-xs text-textLight dark:text-dark-textLight font-medium">
+          Upload evidence photos
+        </span>
         <input type="file" accept="image/*" multiple onChange={handleAdd} className="hidden" />
       </label>
 

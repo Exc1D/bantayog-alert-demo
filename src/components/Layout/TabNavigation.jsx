@@ -1,7 +1,6 @@
 import { TABS } from '../../config/tabs';
 
 export default function TabNavigation({ activeTab, onTabChange }) {
-
   return (
     <nav
       className="sticky top-[60px] z-40 bg-white dark:bg-dark-card dark:backdrop-blur-sm border-b border-border/60 dark:border-dark-border"

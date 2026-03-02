@@ -84,7 +84,7 @@ export default function PrivacySettings() {
   };
 
   return (
-    <div className="bg-white rounded-xl p-5 shadow-card border border-stone-100">
+    <div className="bg-white dark:bg-dark-card rounded-xl p-5 shadow-card border border-stone-100 dark:border-dark-border">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
           <svg
@@ -103,23 +103,25 @@ export default function PrivacySettings() {
           </svg>
         </div>
         <div>
-          <h3 className="font-bold text-text">Privacy & Data</h3>
-          <p className="text-xs text-textLight">Manage your personal data</p>
+          <h3 className="font-bold text-text dark:text-dark-text">Privacy & Data</h3>
+          <p className="text-xs text-textLight dark:text-dark-textLight">
+            Manage your personal data
+          </p>
         </div>
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between py-2 border-b border-stone-100">
+        <div className="flex items-center justify-between py-2 border-b border-stone-100 dark:border-dark-border">
           <div>
-            <p className="text-sm font-medium text-text">Data Collection</p>
-            <p className="text-xs text-textLight">
+            <p className="text-sm font-medium text-text dark:text-dark-text">Data Collection</p>
+            <p className="text-xs text-textLight dark:text-dark-textLight">
               Allow us to collect usage data to improve the service
             </p>
           </div>
           <button
             onClick={handleDataCollectionToggle}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              dataCollectionEnabled ? 'bg-accent' : 'bg-stone-300'
+              dataCollectionEnabled ? 'bg-accent' : 'bg-stone-300 dark:bg-dark-border'
             }`}
             role="switch"
             aria-checked={dataCollectionEnabled}
@@ -153,7 +155,7 @@ export default function PrivacySettings() {
               Export My Data
             </span>
           </Button>
-          <p className="text-xs text-textLight text-center">
+          <p className="text-xs text-textLight dark:text-dark-textLight text-center">
             Download a copy of all your data stored in our system
           </p>
         </div>
@@ -188,8 +190,8 @@ export default function PrivacySettings() {
         </div>
       </div>
 
-      <div className="mt-4 pt-4 border-t border-stone-100">
-        <p className="text-xs text-textMuted">
+      <div className="mt-4 pt-4 border-t border-stone-100 dark:border-dark-border">
+        <p className="text-xs text-textMuted dark:text-dark-textMuted">
           Under GDPR, you have the right to access, rectify, port, and delete your data. Contact our
           Data Protection Officer for assistance.
         </p>
@@ -238,14 +240,14 @@ export default function PrivacySettings() {
             </ul>
           </div>
           <div>
-            <label className="block text-sm font-medium text-text mb-2">
+            <label className="block text-sm font-medium text-text dark:text-dark-text mb-2">
               Type <span className="font-mono font-bold">DELETE</span> to confirm
             </label>
             <input
               type="text"
               value={deleteConfirmation}
               onChange={(e) => setDeleteConfirmation(e.target.value.toUpperCase())}
-              className="w-full border border-stone-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-red-500/30 focus:border-red-500"
+              className="w-full border border-stone-300 dark:border-dark-border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-red-500/30 focus:border-red-500 bg-white dark:bg-dark-card text-text dark:text-dark-text"
               placeholder="DELETE"
             />
           </div>

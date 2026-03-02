@@ -7,7 +7,7 @@ const ThemeToggle = memo(function ThemeToggle({ isDark, onToggle }) {
   return (
     <button
       onClick={onToggle}
-      className="relative flex items-center w-[52px] h-7 rounded-full border border-border dark:border-dark-border bg-stone-100 dark:bg-dark-bg p-1 transition-colors hover:border-border dark:hover:border-dark-textMuted"
+      className="relative flex items-center w-[52px] h-7 rounded-full border border-border dark:border-dark-border bg-stone-100 dark:bg-dark-bg p-1 transition-colors hover:border-border dark:hover:border-dark-textMuted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-1"
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {/* Sliding thumb */}
@@ -22,7 +22,17 @@ const ThemeToggle = memo(function ThemeToggle({ isDark, onToggle }) {
           !isDark ? 'text-amber-500' : 'text-textMuted dark:text-dark-textMuted'
         }`}
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          aria-hidden="true"
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <circle cx="12" cy="12" r="5" />
           <line x1="12" y1="1" x2="12" y2="3" />
           <line x1="12" y1="21" x2="12" y2="23" />
@@ -40,7 +50,17 @@ const ThemeToggle = memo(function ThemeToggle({ isDark, onToggle }) {
           isDark ? 'text-indigo-300' : 'text-textMuted'
         }`}
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          aria-hidden="true"
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
         </svg>
       </span>

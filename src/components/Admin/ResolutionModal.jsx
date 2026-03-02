@@ -90,8 +90,8 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
         </p>
         <div className="text-xs space-y-1 text-textLight dark:text-dark-textLight">
           <p>
-            <span className="font-semibold text-text dark:text-dark-text">Type:</span> {disasterType.icon}{' '}
-            {disasterType.label}
+            <span className="font-semibold text-text dark:text-dark-text">Type:</span>{' '}
+            {disasterType.icon} {disasterType.label}
           </p>
           <p>
             <span className="font-semibold text-text dark:text-dark-text">Location:</span>{' '}
@@ -106,7 +106,9 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
             {formatDate(report.timestamp)}
           </p>
         </div>
-        <p className="text-xs text-textLight dark:text-dark-textLight mt-2">{report.disaster?.description}</p>
+        <p className="text-xs text-textLight dark:text-dark-textLight mt-2">
+          {report.disaster?.description}
+        </p>
       </div>
 
       <EvidenceUpload photos={evidencePhotos} onPhotosChange={setEvidencePhotos} />

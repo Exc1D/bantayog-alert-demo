@@ -109,7 +109,9 @@ export default function VerificationPanel({ report, onDone }) {
       <div className="bg-stone-50 dark:bg-dark-elevated border border-stone-200 dark:border-dark-border rounded-lg p-3">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-lg">{disasterType.icon}</span>
-          <h3 className="font-bold text-sm uppercase tracking-wide dark:text-dark-text">{disasterType.label}</h3>
+          <h3 className="font-bold text-sm uppercase tracking-wide dark:text-dark-text">
+            {disasterType.label}
+          </h3>
           <span
             className={`${sevStyle} px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide ml-auto`}
           >
