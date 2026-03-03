@@ -93,7 +93,7 @@ When you request account deletion:
 
 1. Your account credentials are removed from Firebase Authentication
 2. Your user profile is deleted from Firestore
-3. Your profile Storage picture is removed from
+3. Your profile Storage picture is removed from Firebase Storage
 4. Your submitted reports are anonymized (reporter info removed)
 5. An audit log entry is created for compliance purposes
 

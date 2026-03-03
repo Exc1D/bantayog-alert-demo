@@ -47,7 +47,7 @@ Risks with the previous approach:
 
 ## Confidence and limits
 - This evaluation is based on internal consistency and geometric sanity checks.
-- External authoritative boundary verification (e.g., PSA/NAMRIA/geoBoundaries cross-check) could not be fetched in this environment due outbound network restrictions.
+- External authoritative boundary verification (e.g., PSA/NAMRIA/geoBoundaries cross-check) could not be fetched in this environment due to outbound network restrictions.
 
 ## Recommendation
 For production/decision support use:
