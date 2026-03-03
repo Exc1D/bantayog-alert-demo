@@ -74,8 +74,7 @@ export function useAuth() {
   };
 
   const signUp = async (email, password, name, municipality) => {
-    const { authInstance, createUserWithEmailAndPassword, updateProfile } =
-      await getFirebaseAuth();
+    const { authInstance, createUserWithEmailAndPassword, updateProfile } = await getFirebaseAuth();
     const credential = await createUserWithEmailAndPassword(authInstance, email, password);
     await updateProfile(credential.user, { displayName: name });
 
