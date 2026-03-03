@@ -1,7 +1,5 @@
 import { initializeApp } from 'firebase/app';
 import { serverTimestamp, initializeFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { getStorage } from 'firebase/storage';
 import { getMessaging, isSupported } from 'firebase/messaging';
 import { firebaseConfig } from '../config';
 
@@ -112,9 +110,56 @@ async function isMessagingSupported() {
   return messagingSupported;
 }
 
+// Lazy-load Firebase Auth to reduce initial bundle size
+let authInstance = null;
+let authImportPromise = null;
+
+async function getAuthInstance() {
+  if (authInstance) return authInstance;
+
+  if (!authImportPromise) {
+    authImportPromise = import('firebase/auth').then(
+      ({ getAuth }) => {
+        authInstance = getAuth(app);
+        return authInstance;
+      },
+      (error) => {
+        console.error('Failed to load Firebase Auth:', error);
+        authImportPromise = null;
+        throw error;
+      }
+    );
+  }
+
+  return authImportPromise;
+}
+
+// Lazy-load Firebase Storage to reduce initial bundle size
+let storageInstance = null;
+let storageImportPromise = null;
+
+async function getStorageInstance() {
+  if (storageInstance) return storageInstance;
+
+  if (!storageImportPromise) {
+    storageImportPromise = import('firebase/storage').then(
+      ({ getStorage }) => {
+        storageInstance = getStorage(app);
+        return storageInstance;
+      },
+      (error) => {
+        console.error('Failed to load Firebase Storage:', error);
+        storageImportPromise = null;
+        throw error;
+      }
+    );
+  }
+
+  return storageImportPromise;
+}
+
 export { db, serverTimestamp, getMessagingInstance, isMessagingSupported };
-export const auth = getAuth(app);
-export const storage = getStorage(app);
+export { getAuthInstance, getStorageInstance };
 export const remoteConfig = {
   getInstance: getRemoteConfigInstance,
 };
