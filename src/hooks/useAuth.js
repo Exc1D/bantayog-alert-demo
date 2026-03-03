@@ -1,20 +1,27 @@
 import { useState, useEffect } from 'react';
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  updateProfile,
-  signInAnonymously,
-  sendPasswordResetEmail,
-  deleteUser,
-} from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { auth, db, storage } from '../utils/firebaseConfig';
+import { db, getAuthInstance, getStorageInstance } from '../utils/firebaseConfig';
 import { captureException, addBreadcrumb } from '../utils/sentry';
 import { getStoragePathFromUrl } from '../utils/firebaseStorage';
 import { logAuditEvent, AuditEvent, AuditEventType } from '../utils/auditLogger';
+
+// Lazy-load firebase/auth functions alongside the auth instance
+async function getFirebaseAuth() {
+  const [authModule, authInstance] = await Promise.all([
+    import('firebase/auth'),
+    getAuthInstance(),
+  ]);
+  return { authInstance, ...authModule };
+}
+
+// Lazy-load firebase/storage functions alongside the storage instance
+async function getFirebaseStorage() {
+  const [storageModule, storageInstance] = await Promise.all([
+    import('firebase/storage'),
+    getStorageInstance(),
+  ]);
+  return { storageInstance, ...storageModule };
+}
 
 export function useAuth() {
   const [user, setUser] = useState(null);
@@ -22,30 +29,46 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser);
+    let cancelled = false;
+    let unsubscribe = null;
 
-      if (firebaseUser) {
-        try {
-          const profileDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-          if (profileDoc.exists()) {
-            setUserProfile(profileDoc.data());
+    getFirebaseAuth()
+      .then(({ authInstance, onAuthStateChanged }) => {
+        if (cancelled) return;
+        unsubscribe = onAuthStateChanged(authInstance, async (firebaseUser) => {
+          setUser(firebaseUser);
+
+          if (firebaseUser) {
+            try {
+              const profileDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+              if (profileDoc.exists()) {
+                setUserProfile(profileDoc.data());
+              }
+            } catch (err) {
+              captureException(err, { tags: { component: 'useAuth', action: 'fetchProfile' } });
+            }
+          } else {
+            setUserProfile(null);
           }
-        } catch (err) {
-          captureException(err, { tags: { component: 'useAuth', action: 'fetchProfile' } });
-        }
-      } else {
-        setUserProfile(null);
-      }
 
-      setLoading(false);
-    });
+          setLoading(false);
+        });
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        captureException(err, { tags: { component: 'useAuth', action: 'init' } });
+        setLoading(false);
+      });
 
-    return () => unsubscribe();
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   const signIn = async (email, password) => {
-    const credential = await signInWithEmailAndPassword(auth, email, password);
+    const { authInstance, signInWithEmailAndPassword } = await getFirebaseAuth();
+    const credential = await signInWithEmailAndPassword(authInstance, email, password);
 
     logAuditEvent(
       new AuditEvent({
@@ -62,7 +85,8 @@ export function useAuth() {
   };
 
   const signUp = async (email, password, name, municipality) => {
-    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    const { authInstance, createUserWithEmailAndPassword, updateProfile } = await getFirebaseAuth();
+    const credential = await createUserWithEmailAndPassword(authInstance, email, password);
     await updateProfile(credential.user, { displayName: name });
 
     await setDoc(doc(db, 'users', credential.user.uid), {
@@ -103,7 +127,8 @@ export function useAuth() {
   };
 
   const signInAsGuest = async () => {
-    const credential = await signInAnonymously(auth);
+    const { authInstance, signInAnonymously } = await getFirebaseAuth();
+    const credential = await signInAnonymously(authInstance);
 
     logAuditEvent(
       new AuditEvent({
@@ -120,7 +145,8 @@ export function useAuth() {
   };
 
   const signOut = async () => {
-    const currentUser = auth.currentUser;
+    const { authInstance, signOut: firebaseSignOut } = await getFirebaseAuth();
+    const currentUser = authInstance.currentUser;
 
     if (currentUser && !currentUser.isAnonymous) {
       logAuditEvent(
@@ -135,27 +161,32 @@ export function useAuth() {
       );
     }
 
-    await firebaseSignOut(auth);
+    await firebaseSignOut(authInstance);
     setUser(null);
     setUserProfile(null);
   };
 
   const requestPasswordReset = async (email) => {
-    await sendPasswordResetEmail(auth, email);
+    const { authInstance, sendPasswordResetEmail } = await getFirebaseAuth();
+    await sendPasswordResetEmail(authInstance, email);
   };
 
   const updateProfilePicture = async (file) => {
-    if (!auth.currentUser) {
+    const { authInstance, updateProfile } = await getFirebaseAuth();
+    const { storageInstance, ref, uploadBytes, getDownloadURL, deleteObject } =
+      await getFirebaseStorage();
+
+    if (!authInstance.currentUser) {
       throw new Error('You must be signed in to update your profile picture.');
     }
 
     // Delete old avatar if it exists
-    const currentPhotoURL = auth.currentUser.photoURL || userProfile?.photoURL;
+    const currentPhotoURL = authInstance.currentUser.photoURL || userProfile?.photoURL;
     if (currentPhotoURL && currentPhotoURL.includes('/avatars%2F')) {
       const storagePath = getStoragePathFromUrl(currentPhotoURL);
       if (storagePath) {
         try {
-          await deleteObject(ref(storage, storagePath));
+          await deleteObject(ref(storageInstance, storagePath));
         } catch (error) {
           captureException(error, {
             tags: { component: 'useAuth', action: 'deleteOldAvatar' },
@@ -169,30 +200,36 @@ export function useAuth() {
       }
     }
 
-    const avatarRef = ref(storage, `avatars/${auth.currentUser.uid}/${Date.now()}-${file.name}`);
+    const avatarRef = ref(
+      storageInstance,
+      `avatars/${authInstance.currentUser.uid}/${Date.now()}-${file.name}`
+    );
     await uploadBytes(avatarRef, file);
     const photoURL = await getDownloadURL(avatarRef);
 
-    await updateProfile(auth.currentUser, { photoURL });
-    await setDoc(doc(db, 'users', auth.currentUser.uid), { photoURL }, { merge: true });
+    await updateProfile(authInstance.currentUser, { photoURL });
+    await setDoc(doc(db, 'users', authInstance.currentUser.uid), { photoURL }, { merge: true });
     setUserProfile((prev) => ({ ...(prev || {}), photoURL }));
 
     return photoURL;
   };
 
   const removeAccount = async () => {
-    if (!auth.currentUser) {
+    const { authInstance, deleteUser } = await getFirebaseAuth();
+
+    if (!authInstance.currentUser) {
       throw new Error('No signed in user found.');
     }
 
-    const uid = auth.currentUser.uid;
-    const currentPhotoURL = auth.currentUser.photoURL || userProfile?.photoURL;
+    const uid = authInstance.currentUser.uid;
+    const currentPhotoURL = authInstance.currentUser.photoURL || userProfile?.photoURL;
 
     if (currentPhotoURL && currentPhotoURL.includes('/avatars%2F')) {
+      const { storageInstance, ref, deleteObject } = await getFirebaseStorage();
       const storagePath = getStoragePathFromUrl(currentPhotoURL);
       if (storagePath) {
         try {
-          await deleteObject(ref(storage, storagePath));
+          await deleteObject(ref(storageInstance, storagePath));
         } catch (error) {
           captureException(error, {
             tags: { component: 'useAuth', action: 'deleteProfileImage' },
@@ -210,31 +247,33 @@ export function useAuth() {
       new AuditEvent({
         eventType: AuditEventType.DATA_DELETE,
         userId: uid,
-        userEmail: userProfile?.email || auth.currentUser.email || null,
+        userEmail: userProfile?.email || authInstance.currentUser.email || null,
         targetType: 'user',
         targetId: uid,
         metadata: { action: 'account_deletion' },
       })
     );
 
-    await deleteUser(auth.currentUser);
+    await deleteUser(authInstance.currentUser);
     await deleteDoc(doc(db, 'users', uid));
     setUser(null);
     setUserProfile(null);
   };
 
   const exportUserData = async () => {
-    if (!auth.currentUser) {
+    const { authInstance } = await getFirebaseAuth();
+
+    if (!authInstance.currentUser) {
       throw new Error('No signed in user found.');
     }
 
     logAuditEvent(
       new AuditEvent({
         eventType: AuditEventType.DATA_EXPORT,
-        userId: auth.currentUser.uid,
-        userEmail: userProfile?.email || auth.currentUser.email,
+        userId: authInstance.currentUser.uid,
+        userEmail: userProfile?.email || authInstance.currentUser.email,
         targetType: 'user',
-        targetId: auth.currentUser.uid,
+        targetId: authInstance.currentUser.uid,
         metadata: { action: 'user_data_export_request' },
       })
     );

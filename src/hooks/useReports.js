@@ -16,8 +16,7 @@ import {
   arrayRemove,
   runTransaction,
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage, serverTimestamp } from '../utils/firebaseConfig';
+import { db, getStorageInstance, serverTimestamp } from '../utils/firebaseConfig';
 import { compressImage, createThumbnail } from '../utils/imageCompression';
 import { fetchCurrentWeather } from '../utils/weatherAPI';
 import { resolveMunicipality } from '../utils/geoFencing';
@@ -135,6 +134,13 @@ export async function submitReport(reportData, evidenceFiles, user) {
   const imageFiles = evidenceFiles.filter((f) => f.type.startsWith('image/'));
   const videoFiles = evidenceFiles.filter((f) => f.type.startsWith('video/'));
 
+  // Lazy-load storage SDK alongside the instance
+  const [storageModule, storageInstance] = await Promise.all([
+    import('firebase/storage'),
+    getStorageInstance(),
+  ]);
+  const { ref, uploadBytes, getDownloadURL } = storageModule;
+
   // Start all three groups in parallel; each file fails independently
   const imageResultsPromise = Promise.all(
     imageFiles.map(async (photo, index) => {
@@ -146,8 +152,8 @@ export async function submitReport(reportData, evidenceFiles, user) {
 
         const ts = Date.now() + index;
         const safeName = safeFileName(photo.name);
-        const photoRef = ref(storage, `reports/${ts}_${safeName}`);
-        const thumbRef = ref(storage, `reports/thumbs/${ts}_${safeName}`);
+        const photoRef = ref(storageInstance, `reports/${ts}_${safeName}`);
+        const thumbRef = ref(storageInstance, `reports/thumbs/${ts}_${safeName}`);
 
         await Promise.all([uploadBytes(photoRef, compressed), uploadBytes(thumbRef, thumbnail)]);
 
@@ -169,7 +175,7 @@ export async function submitReport(reportData, evidenceFiles, user) {
       try {
         const ts = Date.now() + index;
         const safeName = safeFileName(video.name);
-        const videoRef = ref(storage, `reports/videos/${ts}_${safeName}`);
+        const videoRef = ref(storageInstance, `reports/videos/${ts}_${safeName}`);
         await uploadBytes(videoRef, video);
         return await getDownloadURL(videoRef);
       } catch (err) {
@@ -378,14 +384,20 @@ export async function resolveReport(
     throw new Error('Admin privileges required to resolve reports.');
   }
 
+  // Lazy-load storage for evidence upload
+  const [storageMod, storageInst] = await Promise.all([
+    import('firebase/storage'),
+    getStorageInstance(),
+  ]);
+
   // Upload evidence photos in parallel
   const evidenceUrls = await Promise.all(
     evidencePhotos.map(async (photo, index) => {
       const compressed = await compressImage(photo);
       const safeName = safeFileName(photo.name);
-      const photoRef = ref(storage, `evidence/${Date.now() + index}_${safeName}`);
-      await uploadBytes(photoRef, compressed);
-      return getDownloadURL(photoRef);
+      const photoRef = storageMod.ref(storageInst, `evidence/${Date.now() + index}_${safeName}`);
+      await storageMod.uploadBytes(photoRef, compressed);
+      return storageMod.getDownloadURL(photoRef);
     })
   );
 
