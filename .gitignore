@@ -75,3 +75,4 @@ coverage/
 .parcel-cache/
 .turbo/
 telemetry-id
+.tmp/
