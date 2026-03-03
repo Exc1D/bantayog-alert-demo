@@ -132,7 +132,26 @@ bantayog-alert/
 │   ├── PULL_REQUEST_TEMPLATE.md
 │   └── dependabot.yml
 ├── dist/                          # Production build output
+├── docs/                          # Project documentation
+│   ├── architecture-overview.md   # System architecture and data flow
+│   ├── boundary-accuracy-evaluation.md
+│   ├── privacy.md
+│   ├── security-checklist.md
+│   └── security-rules.md
+├── errors/                        # Error documentation and solutions
+│   ├── _template.md
+│   ├── csp-violations.md
+│   ├── firebase-permission-denied.md
+│   └── service-worker-cache-stale.md
 ├── nginx/                         # Nginx config for Docker deployment
+├── principles/                    # Architecture and coding principles
+│   ├── code-organization.md
+│   ├── firebase-serverless.md
+│   ├── frontend-coding-standards.md
+│   ├── pwa-offline-first.md
+│   ├── react-architecture.md
+│   ├── security.md
+│   └── testing.md
 ├── scripts/
 │   └── evaluateMunicipalityBoundaries.mjs
 ├── src/
@@ -151,6 +170,12 @@ bantayog-alert/
 │   ├── pages/                     # Tab pages (Map, Feed, Weather, Profile)
 │   ├── test/                      # Test utilities and fixtures
 │   └── utils/                     # Firebase config, geofencing, sanitization, rate limiting
+├── workflows/                     # Development SOPs
+│   ├── code-review.md
+│   ├── deployment.md
+│   ├── development-setup.md
+│   ├── error-handling.md
+│   └── testing.md
 ├── .env.example                   # Environment variable template
 ├── Dockerfile                     # Production Docker image (multi-stage)
 ├── Dockerfile.dev                 # Development Docker image
@@ -161,6 +186,15 @@ bantayog-alert/
 ├── vite.config.js                 # Vite + Vitest + Sentry plugin config
 └── eslint.config.js               # ESLint flat config
 ```
+
+## Documentation
+
+| Directory | Contents |
+| --------- | -------- |
+| [`docs/`](docs/) | Project documentation — architecture overview, security rules, privacy policy, boundary evaluation |
+| [`principles/`](principles/) | Architecture and coding principles — React patterns, Firebase model, security, PWA, testing standards |
+| [`workflows/`](workflows/) | Development SOPs — setup, deployment, testing, code review, error handling |
+| [`errors/`](errors/) | Error documentation — diagnosed errors with root cause and solution |
 
 ## Architecture Overview
 
