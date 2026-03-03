@@ -70,19 +70,24 @@ const ThemeToggle = memo(function ThemeToggle({ isDark, onToggle }) {
 
 const RoleBadge = memo(function RoleBadge({ role, color }) {
   return (
-    <span className={`${color} text-[10px] font-bold px-2 py-1 rounded tracking-wide`}>{role}</span>
+    <span
+      className={`${color} hidden sm:inline text-[10px] font-bold px-2 py-1 rounded tracking-wide whitespace-nowrap`}
+    >
+      {role}
+    </span>
   );
 });
 
 const ActiveIndicator = memo(function ActiveIndicator({ count }) {
   if (count <= 0) return null;
   return (
-    <div className="flex items-center gap-1.5 bg-primary/10 dark:bg-accent/10 border border-primary/20 dark:border-accent/25 rounded-full px-2.5 py-1">
-      <span className="w-2 h-2 bg-accent rounded-full live-beacon" aria-hidden="true" />
-      <span
-        className="text-[10px] font-bold text-primary dark:text-accent tracking-wide"
-        aria-live="polite"
-      >
+    <div
+      className="flex items-center gap-1.5 bg-primary/10 dark:bg-accent/10 border border-primary/20 dark:border-accent/25 rounded-full px-2 py-1 sm:px-2.5"
+      aria-live="polite"
+      aria-label={`${count} active reports`}
+    >
+      <span className="w-2 h-2 shrink-0 bg-accent rounded-full live-beacon" aria-hidden="true" />
+      <span className="hidden sm:inline text-[10px] font-bold text-primary dark:text-accent tracking-wide whitespace-nowrap">
         {count} ACTIVE
       </span>
     </div>

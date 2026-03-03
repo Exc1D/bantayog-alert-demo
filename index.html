@@ -53,19 +53,11 @@
       as="style"
     />
 
-    <!-- Load fonts non-render-blocking with media swap trick -->
+    <!-- Font stylesheet: preload hint above ensures it is fetched early; rel=stylesheet here is CSP-safe -->
     <link
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
-      media="print"
-      onload="this.media='all'"
     />
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-      />
-    </noscript>
     <title>BANTAYOG ALERT</title>
     <style>
       /* Critical CSS for FCP optimization background */

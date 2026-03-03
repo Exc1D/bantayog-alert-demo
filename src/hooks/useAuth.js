@@ -29,30 +29,41 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     let unsubscribe = null;
 
-    getFirebaseAuth().then(({ authInstance, onAuthStateChanged }) => {
-      unsubscribe = onAuthStateChanged(authInstance, async (firebaseUser) => {
-        setUser(firebaseUser);
+    getFirebaseAuth()
+      .then(({ authInstance, onAuthStateChanged }) => {
+        if (cancelled) return;
+        unsubscribe = onAuthStateChanged(authInstance, async (firebaseUser) => {
+          setUser(firebaseUser);
 
-        if (firebaseUser) {
-          try {
-            const profileDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-            if (profileDoc.exists()) {
-              setUserProfile(profileDoc.data());
+          if (firebaseUser) {
+            try {
+              const profileDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+              if (profileDoc.exists()) {
+                setUserProfile(profileDoc.data());
+              }
+            } catch (err) {
+              captureException(err, { tags: { component: 'useAuth', action: 'fetchProfile' } });
             }
-          } catch (err) {
-            captureException(err, { tags: { component: 'useAuth', action: 'fetchProfile' } });
+          } else {
+            setUserProfile(null);
           }
-        } else {
-          setUserProfile(null);
-        }
 
+          setLoading(false);
+        });
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        captureException(err, { tags: { component: 'useAuth', action: 'init' } });
         setLoading(false);
       });
-    });
 
-    return () => unsubscribe?.();
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   const signIn = async (email, password) => {
