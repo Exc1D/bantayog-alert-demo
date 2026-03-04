@@ -1,4 +1,8 @@
-export default function LoadingSpinner({ size = 'md', text = '', colorClassName = 'text-accent dark:text-dark-accent' }) {
+export default function LoadingSpinner({
+  size = 'md',
+  text = '',
+  colorClassName = 'text-accent dark:text-dark-accent',
+}) {
   const sizes = {
     sm: 'h-5 w-5',
     md: 'h-8 w-8',

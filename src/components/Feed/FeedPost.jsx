@@ -209,9 +209,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
       {/* Resolution Evidence */}
       {status === 'resolved' && report.verification?.resolution && (
         <div className="bg-green-50 p-3.5 border-t border-success/20">
-          <p className="text-[10px] font-bold text-success uppercase tracking-wider mb-2">
-            Update
-          </p>
+          <p className="text-[10px] font-bold text-success uppercase tracking-wider mb-2">Update</p>
           {report.verification.resolution.evidencePhotos?.length > 0 && (
             <div className="grid grid-cols-3 gap-2 mb-2">
               {getSafeMediaUrls(report.verification.resolution.evidencePhotos).map((photo, i) => (
