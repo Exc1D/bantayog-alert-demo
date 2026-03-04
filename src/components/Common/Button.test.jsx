@@ -19,10 +19,10 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveClass('bg-white');
 
     rerender(<Button variant="danger">Danger</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-red-600');
+    expect(screen.getByRole('button')).toHaveClass('bg-accent');
 
     rerender(<Button variant="success">Success</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-emerald-600');
+    expect(screen.getByRole('button')).toHaveClass('bg-success');
   });
 
   it('applies correct size classes', () => {
