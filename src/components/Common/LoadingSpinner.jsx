@@ -1,4 +1,4 @@
-export default function LoadingSpinner({ size = 'md', text = '' }) {
+export default function LoadingSpinner({ size = 'md', text = '', colorClassName = 'text-accent dark:text-dark-accent' }) {
   const sizes = {
     sm: 'h-5 w-5',
     md: 'h-8 w-8',
@@ -9,7 +9,7 @@ export default function LoadingSpinner({ size = 'md', text = '' }) {
     <div className="flex flex-col items-center justify-center py-8 gap-3">
       <svg
         aria-hidden="true"
-        className={`animate-spin ${sizes[size]} text-primary dark:text-dark-text`}
+        className={`animate-spin ${sizes[size]} ${colorClassName}`}
         viewBox="0 0 24 24"
       >
         <circle

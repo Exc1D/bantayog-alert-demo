@@ -51,9 +51,35 @@
 }
 
 /* ---- Stagger animation delay utility ---- */
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .animate-stagger-in {
   animation: stagger-in 0.4s ease-out both;
   animation-delay: calc(var(--stagger-index, 0) * 60ms);
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out both;
 }
 
 /* ---- Leaflet Map ---- */
@@ -287,7 +313,8 @@
   .emergency-pulse,
   .live-beacon,
   .critical-glow,
-  .animate-stagger-in {
+  .animate-stagger-in,
+  .animate-scale-in {
     animation: none !important;
   }
 
@@ -308,7 +335,8 @@
 .reduce-motion .emergency-pulse,
 .reduce-motion .live-beacon,
 .reduce-motion .critical-glow,
-.reduce-motion .animate-stagger-in {
+.reduce-motion .animate-stagger-in,
+.reduce-motion .animate-scale-in {
   animation: none !important;
 }
 
