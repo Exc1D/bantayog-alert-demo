@@ -65,7 +65,7 @@ export default function FeedList({
         <div className="text-center py-3">
           <button
             onClick={loadMore}
-            className="px-5 py-2 bg-white dark:bg-dark-card rounded-lg shadow-card border border-stone-200 dark:border-dark-border text-xs font-semibold text-textLight dark:text-dark-textLight hover:text-text dark:hover:text-dark-text hover:border-stone-300 dark:hover:border-dark-border transition-all"
+            className="px-5 py-2 bg-white dark:bg-dark-card rounded-xl shadow-card border border-border dark:border-dark-border text-xs font-semibold text-textLight dark:text-dark-textLight hover:text-text dark:hover:text-dark-text hover:border-primary/30 dark:hover:border-dark-border transition-all"
           >
             Load More Reports
           </button>

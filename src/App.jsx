@@ -117,7 +117,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-bg dark:bg-dark-bg flex flex-col transition-colors">
+    <div className="min-h-screen bg-topo dark:bg-topo flex flex-col transition-colors">
       {/* Skip to main content link for accessibility */}
       <a
         href="#main-content"
@@ -174,7 +174,7 @@ function AppContent() {
           <line x1="12" y1="9" x2="12" y2="13" />
           <line x1="12" y1="17" x2="12.01" y2="17" />
         </svg>
-        <span className="text-sm font-bold tracking-wide">REPORT</span>
+        <span className="text-sm font-display tracking-wide">REPORT</span>
       </button>
 
       {/* Report Modal */}

@@ -1,23 +1,23 @@
 const ALERT_COLORS = {
   watch: {
-    bg: 'bg-amber-50',
-    border: 'border-amber-400',
-    text: 'text-amber-800',
+    bg: 'bg-yellow-50',
+    border: 'border-warning',
+    text: 'text-warning',
     icon: '\u{1F7E1}',
   },
   warning: {
     bg: 'bg-orange-50',
-    border: 'border-orange-400',
-    text: 'text-orange-800',
+    border: 'border-warning',
+    text: 'text-warning',
     icon: '\u{1F7E0}',
   },
-  alert: { bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-800', icon: '\u{1F534}' },
+  alert: { bg: 'bg-red-50', border: 'border-accent', text: 'text-accent', icon: '\u{1F534}' },
 };
 
 export default function WeatherAlerts({ alerts = [] }) {
   if (alerts.length === 0) {
     return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3">
+      <div className="bg-green-50 border border-success rounded-xl p-3">
         <div className="flex items-center gap-2">
           <svg
             aria-hidden="true"
@@ -25,7 +25,7 @@ export default function WeatherAlerts({ alerts = [] }) {
             height="16"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#16a34a"
+            stroke="#2E7D32"
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -33,10 +33,10 @@ export default function WeatherAlerts({ alerts = [] }) {
             <polyline points="20 6 9 17 4 12" />
           </svg>
           <div>
-            <p className="font-bold text-emerald-800 text-xs uppercase tracking-wider">
+            <p className="font-bold text-success text-xs uppercase tracking-wider">
               No Active Weather Alerts
             </p>
-            <p className="text-[10px] text-emerald-600 mt-0.5">
+            <p className="text-[10px] text-green-700 mt-0.5">
               Conditions are normal across the province
             </p>
           </div>

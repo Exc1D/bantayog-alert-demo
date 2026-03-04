@@ -1,12 +1,12 @@
 const VARIANTS = {
-  primary: 'bg-accent text-white hover:bg-accentDark focus:ring-red-300',
+  primary: 'bg-accent text-white hover:bg-accentDark focus:ring-accent/30',
   secondary:
-    'bg-white text-text border border-border hover:bg-gray-50 focus:ring-gray-300 dark:bg-dark-card dark:text-dark-text dark:border-dark-border dark:hover:bg-stone-800',
-  danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-300',
-  success: 'bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-300',
-  warning: 'bg-warning text-white hover:bg-amber-600 focus:ring-amber-300',
+    'bg-white text-text border border-border hover:bg-surface focus:ring-primary/20 dark:bg-dark-card dark:text-dark-text dark:border-dark-border dark:hover:bg-dark-elevated',
+  danger: 'bg-accent text-white hover:bg-accentDark focus:ring-accent/30',
+  success: 'bg-success text-white hover:bg-green-700 focus:ring-success/30',
+  warning: 'bg-warning text-white hover:bg-orange-700 focus:ring-warning/30',
   ghost:
-    'text-textLight hover:text-text hover:bg-stone-100 dark:text-dark-textLight dark:hover:text-dark-text dark:hover:bg-stone-800/60',
+    'text-textLight hover:text-text hover:bg-surface dark:text-dark-textLight dark:hover:text-dark-text dark:hover:bg-dark-elevated',
 };
 
 const SIZES = {
@@ -32,9 +32,9 @@ export default function Button({
       onClick={onClick}
       disabled={disabled || loading}
       className={`
-        inline-flex items-center justify-center gap-2 rounded-lg font-semibold
+        inline-flex items-center justify-center gap-2 rounded-xl font-semibold
         transition-all duration-200 focus:outline-none focus:ring-2
-        disabled:opacity-40 disabled:cursor-not-allowed
+        active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed
         ${VARIANTS[variant]}
         ${SIZES[size]}
         ${className}

@@ -75,15 +75,15 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
 
       {/* Modal Content */}
       <div
-        className={`relative bg-white dark:bg-dark-card ${maxWidth} w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-2xl sm:rounded-xl shadow-dark animate-slide-up`}
+        className={`relative bg-white dark:bg-dark-card ${maxWidth} w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl shadow-dark animate-slide-up`}
       >
         {/* Header */}
         {title && (
-          <div className="sticky top-0 bg-primary dark:bg-secondary text-white px-5 py-3.5 flex items-center justify-between rounded-t-2xl sm:rounded-t-xl z-10">
-            <h2 className="text-base font-bold tracking-wide">{title}</h2>
+          <div className="sticky top-0 bg-primary dark:bg-secondary text-white px-5 py-3.5 flex items-center justify-between rounded-t-3xl sm:rounded-t-2xl z-10">
+            <h2 className="text-base font-display tracking-wide">{title}</h2>
             <button
               onClick={onClose}
-              className="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white text-lg transition-colors"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white text-lg transition-colors"
               aria-label="Close dialog"
             >
               &times;
