@@ -46,13 +46,13 @@ export default function FeedFilters({ filters, onFilterChange }) {
   }, []);
 
   const selectClass =
-    'flex-1 min-w-[130px] p-2 border border-stone-300 dark:border-stone-600 rounded-lg text-xs font-medium bg-white dark:bg-dark-card text-text dark:text-dark-text focus:ring-2 focus:ring-accent/30 focus:border-accent';
+    'flex-1 min-w-[130px] p-2 border border-border dark:border-dark-border rounded-xl text-xs font-medium bg-white dark:bg-dark-card text-text dark:text-dark-text focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-dark-text';
 
   const searchClass =
-    'w-full p-2 border border-stone-300 dark:border-stone-600 rounded-lg text-xs font-medium bg-white dark:bg-dark-card text-text dark:text-dark-text focus:ring-2 focus:ring-accent/30 focus:border-accent placeholder:text-textMuted dark:placeholder:text-dark-textMuted';
+    'w-full p-2 border border-border dark:border-dark-border rounded-xl text-xs font-medium bg-white dark:bg-dark-card text-text dark:text-dark-text focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-dark-text placeholder:text-textMuted dark:placeholder:text-dark-textMuted';
 
   return (
-    <div className="bg-white dark:bg-dark-card rounded-xl p-3 shadow-card mb-3 border border-stone-100 dark:border-dark-border">
+    <div className="bg-white dark:bg-dark-card rounded-xl p-3 shadow-card mb-3 border border-borderLight dark:border-dark-border">
       <div className="flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1 min-w-0">
           <svg

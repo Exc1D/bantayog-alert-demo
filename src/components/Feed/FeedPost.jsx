@@ -7,13 +7,13 @@ import ShareButton from '../Common/ShareButton';
 
 function SeverityBadge({ severity }) {
   const styles = {
-    critical: 'bg-red-600 text-white',
-    moderate: 'bg-amber-500 text-white',
-    minor: 'bg-emerald-600 text-white',
+    critical: 'bg-accent text-white',
+    moderate: 'bg-warning text-white',
+    minor: 'bg-success text-white',
   };
   return (
     <span
-      className={`${styles[severity] || styles.minor} px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide`}
+      className={`${styles[severity] || styles.minor} px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wide`}
     >
       {severity}
     </span>
@@ -22,14 +22,14 @@ function SeverityBadge({ severity }) {
 
 function StatusBadge({ status }) {
   const styles = {
-    pending: 'bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-300',
-    verified: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400',
-    rejected: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400',
-    resolved: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
+    pending: 'bg-surface text-text dark:bg-dark-elevated dark:text-dark-text',
+    verified: 'bg-blue-100 text-primary dark:bg-blue-900/40 dark:text-blue-400',
+    rejected: 'bg-red-100 text-accent dark:bg-red-900/40 dark:text-red-300',
+    resolved: 'bg-emerald-100 text-success dark:bg-emerald-900/40 dark:text-emerald-300',
   };
   return (
     <span
-      className={`${styles[status] || styles.pending} px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide`}
+      className={`${styles[status] || styles.pending} px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wide`}
     >
       {status}
     </span>
@@ -54,11 +54,12 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
 
   return (
     <div
-      className={`bg-white dark:bg-dark-card rounded-xl mb-3 shadow-card overflow-hidden hover:shadow-card-hover transition-shadow ${SEVERITY_BORDER[severity] || ''} ${isCritical ? 'critical-glow' : ''} status-stripe-${status}`}
+      className={`bg-white dark:bg-dark-card rounded-xl mb-3 shadow-card overflow-hidden hover:shadow-card-hover transition-shadow animate-stagger-in ${SEVERITY_BORDER[severity] || ''} ${isCritical ? 'critical-glow' : ''} status-stripe-${status}`}
+      style={{ '--stagger-index': 0 }}
     >
       {/* Resolved Banner */}
       {status === 'resolved' && (
-        <div className="bg-emerald-600 text-white py-1.5 text-center text-[10px] font-bold uppercase tracking-widest">
+        <div className="bg-success text-white py-1.5 text-center text-[10px] font-bold uppercase tracking-widest">
           RESOLVED
         </div>
       )}
@@ -78,7 +79,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
                   width="14"
                   height="14"
                   viewBox="0 0 24 24"
-                  fill="#2563eb"
+                  fill="#1B2A41"
                   stroke="white"
                   strokeWidth="2"
                 >
@@ -195,7 +196,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
 
         {/* Weather Context */}
         {report.weatherContext && (
-          <div className="bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 rounded-lg p-2 mt-2.5 text-[11px] text-textLight dark:text-dark-textLight">
+          <div className="bg-surface dark:bg-dark-elevated border border-borderLight dark:border-dark-border rounded-lg p-2 mt-2.5 text-[11px] text-textLight dark:text-dark-textLight">
             <span className="font-semibold">Weather:</span> {report.weatherContext.condition},{' '}
             {report.weatherContext.temperature}&deg;C
             {report.weatherContext.windSpeed
@@ -207,8 +208,8 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
 
       {/* Resolution Evidence */}
       {status === 'resolved' && report.verification?.resolution && (
-        <div className="bg-emerald-50 p-3.5 border-t border-emerald-200">
-          <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-2">
+        <div className="bg-green-50 p-3.5 border-t border-success/20">
+          <p className="text-[10px] font-bold text-success uppercase tracking-wider mb-2">
             Update
           </p>
           {report.verification.resolution.evidencePhotos?.length > 0 && (
@@ -218,7 +219,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
                   key={`${photo}-${i}`}
                   src={photo}
                   alt={`Evidence ${i + 1}`}
-                  className="w-full h-16 object-cover rounded-lg border border-emerald-200"
+                  className="w-full h-16 object-cover rounded-lg border border-success/20"
                   loading="lazy"
                 />
               ))}
@@ -246,7 +247,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
       />
 
       {showComments && (
-        <div className="p-3 border-t border-stone-100 dark:border-dark-border bg-stone-50 dark:bg-stone-800/50">
+        <div className="p-3 border-t border-borderLight dark:border-dark-border bg-surface dark:bg-dark-elevated">
           <p className="text-[11px] text-textMuted dark:text-dark-textMuted text-center">
             Comments coming soon
           </p>

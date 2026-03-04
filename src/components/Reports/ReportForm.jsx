@@ -58,10 +58,10 @@ export default function ReportForm({ formData, onChange }) {
           value={formData.description || ''}
           onChange={(e) => handleFieldChange('description', e.target.value)}
           placeholder="Describe what you see: location details, severity, and any immediate dangers..."
-          className={`w-full border rounded-lg p-3 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none bg-white dark:bg-dark-card dark:text-dark-text dark:placeholder-dark-textMuted ${
+          className={`w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none bg-white dark:bg-dark-card dark:text-dark-text dark:placeholder-dark-textMuted ${
             descriptionWarning
               ? 'border-amber-400 dark:border-amber-600'
-              : 'border-stone-300 dark:border-dark-border'
+              : 'border-border dark:border-dark-border'
           }`}
           rows="3"
           required
@@ -89,10 +89,10 @@ export default function ReportForm({ formData, onChange }) {
             value={formData.barangay || ''}
             onChange={(e) => handleFieldChange('barangay', e.target.value)}
             placeholder="Optional"
-            className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white dark:bg-dark-card dark:text-dark-text dark:placeholder-dark-textMuted ${
+            className={`w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white dark:bg-dark-card dark:text-dark-text dark:placeholder-dark-textMuted ${
               barangayWarning
                 ? 'border-amber-400 dark:border-amber-600'
-                : 'border-stone-300 dark:border-dark-border'
+                : 'border-border dark:border-dark-border'
             }`}
           />
         </div>
@@ -109,10 +109,10 @@ export default function ReportForm({ formData, onChange }) {
             value={formData.street || ''}
             onChange={(e) => handleFieldChange('street', e.target.value)}
             placeholder="Optional"
-            className={`w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent bg-white dark:bg-dark-card dark:text-dark-text dark:placeholder-dark-textMuted ${
+            className={`w-full border rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white dark:bg-dark-card dark:text-dark-text dark:placeholder-dark-textMuted ${
               streetWarning
                 ? 'border-amber-400 dark:border-amber-600'
-                : 'border-stone-300 dark:border-dark-border'
+                : 'border-border dark:border-dark-border'
             }`}
           />
         </div>

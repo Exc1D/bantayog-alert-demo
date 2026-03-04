@@ -250,10 +250,10 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
                     step > s.num
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-success text-white'
                       : step === s.num
                         ? 'bg-accent text-white'
-                        : 'bg-stone-200 text-stone-500 dark:bg-stone-700 dark:text-stone-400'
+                        : 'bg-surface text-textMuted dark:bg-dark-elevated dark:text-dark-textMuted'
                   }`}
                 >
                   {step > s.num ? (
@@ -277,7 +277,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
               </div>
               {idx < STEPS.length - 1 && (
                 <div
-                  className={`w-12 h-0.5 mx-2 ${step > s.num ? 'bg-green-500' : 'bg-stone-200 dark:bg-stone-700'}`}
+                  className={`w-12 h-0.5 mx-2 ${step > s.num ? 'bg-success' : 'bg-surface dark:bg-dark-elevated'}`}
                 />
               )}
             </div>
@@ -290,7 +290,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
         fallback={
           <FeatureFlagDisabled flag={FEATURE_FLAGS.NEW_REPORT_FLOW}>
             <div className="text-center py-6">
-              <div className="w-12 h-12 mx-auto mb-3 bg-stone-100 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto mb-3 bg-surface dark:bg-dark-elevated rounded-full flex items-center justify-center">
                 <svg
                   aria-hidden="true"
                   width="24"

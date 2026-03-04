@@ -6,12 +6,12 @@ export default function ReportTypeSelector({ onSelect }) {
         <button
           type="button"
           onClick={() => onSelect('emergency')}
-          className="flex items-center gap-4 p-4 rounded-xl border-2 border-red-200 bg-red-50 hover:border-red-400 hover:bg-red-100 transition-all active:scale-[0.98]"
+          className="flex items-center gap-4 p-5 rounded-xl border-2 border-accent/30 bg-accentSoft hover:border-accent/60 hover:bg-red-100 transition-all active:scale-[0.98]"
         >
           <span className="text-3xl">⚠️</span>
           <div className="text-left">
-            <p className="font-bold text-red-800 text-base">Emergency</p>
-            <p className="text-xs text-red-600 mt-0.5">
+            <p className="font-display text-accent text-base">Emergency</p>
+            <p className="text-xs text-accentDark mt-0.5">
               Immediate danger to life or property. Requires urgent response.
             </p>
           </div>
@@ -20,12 +20,12 @@ export default function ReportTypeSelector({ onSelect }) {
         <button
           type="button"
           onClick={() => onSelect('situation')}
-          className="flex items-center gap-4 p-4 rounded-xl border-2 border-amber-200 bg-amber-50 hover:border-amber-400 hover:bg-amber-100 transition-all active:scale-[0.98]"
+          className="flex items-center gap-4 p-5 rounded-xl border-2 border-warning/30 bg-yellow-50 hover:border-warning/60 hover:bg-yellow-100 transition-all active:scale-[0.98]"
         >
           <span className="text-3xl">ℹ</span>
           <div className="text-left">
-            <p className="font-bold text-amber-800 text-base">Situation</p>
-            <p className="text-xs text-amber-600 mt-0.5">
+            <p className="font-display text-warning text-base">Situation</p>
+            <p className="text-xs text-orange-800 mt-0.5">
               Something that needs attention but is not immediately life-threatening.
             </p>
           </div>

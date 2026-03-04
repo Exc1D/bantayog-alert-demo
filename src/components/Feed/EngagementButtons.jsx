@@ -75,17 +75,17 @@ export default function EngagementButtons({
   };
 
   const btnClass =
-    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors';
+    'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors';
 
   return (
-    <div className="px-2 py-2 border-t border-stone-100 dark:border-dark-border flex justify-around">
+    <div className="px-2 py-2 border-t border-borderLight dark:border-dark-border flex justify-around">
       <button
         onClick={handleUpvote}
         disabled={isUpvoting}
         className={`${btnClass} ${
           hasUpvoted
             ? 'bg-accent/10 text-accent'
-            : 'hover:bg-stone-50 dark:hover:bg-stone-800/60 text-textLight dark:text-dark-textLight'
+            : 'hover:bg-surface dark:hover:bg-dark-elevated text-textLight dark:text-dark-textLight'
         }`}
       >
         <svg
@@ -93,8 +93,8 @@ export default function EngagementButtons({
           width="16"
           height="16"
           viewBox="0 0 24 24"
-          fill={hasUpvoted ? '#e63946' : 'none'}
-          stroke={hasUpvoted ? '#e63946' : 'currentColor'}
+          fill={hasUpvoted ? '#C62828' : 'none'}
+          stroke={hasUpvoted ? '#C62828' : 'currentColor'}
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -106,7 +106,7 @@ export default function EngagementButtons({
 
       <button
         onClick={handleComments}
-        className={`${btnClass} hover:bg-stone-50 dark:hover:bg-stone-800/60 text-textLight dark:text-dark-textLight`}
+        className={`${btnClass} hover:bg-surface dark:hover:bg-dark-elevated text-textLight dark:text-dark-textLight`}
       >
         <svg
           aria-hidden="true"
@@ -126,7 +126,7 @@ export default function EngagementButtons({
 
       <button
         onClick={() => onViewMap && onViewMap(report)}
-        className={`${btnClass} hover:bg-stone-50 dark:hover:bg-stone-800/60 text-textLight dark:text-dark-textLight`}
+        className={`${btnClass} hover:bg-surface dark:hover:bg-dark-elevated text-textLight dark:text-dark-textLight`}
       >
         <svg
           aria-hidden="true"
@@ -147,7 +147,7 @@ export default function EngagementButtons({
 
       <button
         onClick={handleShare}
-        className={`${btnClass} hover:bg-stone-50 dark:hover:bg-stone-800/60 text-textLight dark:text-dark-textLight`}
+        className={`${btnClass} hover:bg-surface dark:hover:bg-dark-elevated text-textLight dark:text-dark-textLight`}
       >
         <svg
           aria-hidden="true"
