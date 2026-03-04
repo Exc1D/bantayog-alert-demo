@@ -76,4 +76,4 @@ coverage/
 .turbo/
 telemetry-id
 .tmp/
-.claude/settings.local.json
+.claude/settings.local.json.worktrees/
