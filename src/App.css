@@ -15,8 +15,45 @@
   }
 
   body {
-    background: #fdf8f3;
+    background: #F4F1EC;
   }
+}
+
+/* ---- Topographic Contour Background ---- */
+.bg-topo {
+  background-color: #F4F1EC;
+  background-image:
+    radial-gradient(ellipse 80px 40px at 20% 30%, transparent 60%, rgba(27, 42, 65, 0.035) 61%, transparent 62%),
+    radial-gradient(ellipse 120px 60px at 20% 30%, transparent 60%, rgba(27, 42, 65, 0.025) 61%, transparent 62%),
+    radial-gradient(ellipse 170px 85px at 20% 30%, transparent 60%, rgba(27, 42, 65, 0.018) 61%, transparent 62%),
+    radial-gradient(ellipse 60px 30px at 70% 65%, transparent 55%, rgba(27, 42, 65, 0.035) 56%, transparent 57%),
+    radial-gradient(ellipse 100px 50px at 70% 65%, transparent 55%, rgba(27, 42, 65, 0.025) 56%, transparent 57%),
+    radial-gradient(ellipse 150px 75px at 70% 65%, transparent 55%, rgba(27, 42, 65, 0.018) 56%, transparent 57%),
+    radial-gradient(ellipse 50px 25px at 45% 15%, transparent 50%, rgba(27, 42, 65, 0.03) 51%, transparent 52%),
+    radial-gradient(ellipse 90px 45px at 45% 15%, transparent 50%, rgba(27, 42, 65, 0.02) 51%, transparent 52%),
+    radial-gradient(ellipse 40px 20px at 85% 40%, transparent 50%, rgba(27, 42, 65, 0.028) 51%, transparent 52%),
+    radial-gradient(ellipse 75px 38px at 85% 40%, transparent 50%, rgba(27, 42, 65, 0.018) 51%, transparent 52%);
+}
+
+.dark .bg-topo {
+  background-color: #0F1923;
+  background-image:
+    radial-gradient(ellipse 80px 40px at 20% 30%, transparent 60%, rgba(225, 228, 232, 0.025) 61%, transparent 62%),
+    radial-gradient(ellipse 120px 60px at 20% 30%, transparent 60%, rgba(225, 228, 232, 0.018) 61%, transparent 62%),
+    radial-gradient(ellipse 170px 85px at 20% 30%, transparent 60%, rgba(225, 228, 232, 0.012) 61%, transparent 62%),
+    radial-gradient(ellipse 60px 30px at 70% 65%, transparent 55%, rgba(225, 228, 232, 0.025) 56%, transparent 57%),
+    radial-gradient(ellipse 100px 50px at 70% 65%, transparent 55%, rgba(225, 228, 232, 0.018) 56%, transparent 57%),
+    radial-gradient(ellipse 150px 75px at 70% 65%, transparent 55%, rgba(225, 228, 232, 0.012) 56%, transparent 57%),
+    radial-gradient(ellipse 50px 25px at 45% 15%, transparent 50%, rgba(225, 228, 232, 0.02) 51%, transparent 52%),
+    radial-gradient(ellipse 90px 45px at 45% 15%, transparent 50%, rgba(225, 228, 232, 0.014) 51%, transparent 52%),
+    radial-gradient(ellipse 40px 20px at 85% 40%, transparent 50%, rgba(225, 228, 232, 0.02) 51%, transparent 52%),
+    radial-gradient(ellipse 75px 38px at 85% 40%, transparent 50%, rgba(225, 228, 232, 0.013) 51%, transparent 52%);
+}
+
+/* ---- Stagger animation delay utility ---- */
+.animate-stagger-in {
+  animation: stagger-in 0.4s ease-out both;
+  animation-delay: calc(var(--stagger-index, 0) * 60ms);
 }
 
 /* ---- Leaflet Map ---- */
@@ -45,8 +82,8 @@
   height: 40px !important;
   line-height: 40px !important;
   font-size: 18px !important;
-  color: #292524 !important;
-  border-bottom: 1px solid #e7e5e4 !important;
+  color: #1B2A41 !important;
+  border-bottom: 1px solid #D6D0C4 !important;
 }
 
 .leaflet-control-zoom a:last-child {
@@ -54,18 +91,18 @@
 }
 
 .leaflet-control-zoom a:hover {
-  background-color: #f5f5f4 !important;
+  background-color: #EBE7E0 !important;
 }
 
 /* Dark mode Leaflet controls */
 .dark .leaflet-control-zoom a {
-  color: #e8e6f0 !important;
-  background-color: #22212b;
-  border-color: #33323e !important;
+  color: #E1E4E8 !important;
+  background-color: #182635;
+  border-color: #2A3F55 !important;
 }
 
 .dark .leaflet-control-zoom a:hover {
-  background-color: #2a2935 !important;
+  background-color: #1E3044 !important;
 }
 
 .custom-marker {
@@ -81,19 +118,19 @@
 
 .leaflet-popup-content {
   margin: 14px 16px !important;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-family: 'Atkinson Hyperlegible', system-ui, sans-serif !important;
 }
 
 /* ---- Emergency Pulse Effect (for report button) ---- */
 @keyframes emergency-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(217, 48, 37, 0.6);
+    box-shadow: 0 0 0 0 rgba(198, 40, 40, 0.6);
   }
   70% {
-    box-shadow: 0 0 0 14px rgba(217, 48, 37, 0);
+    box-shadow: 0 0 0 14px rgba(198, 40, 40, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(217, 48, 37, 0);
+    box-shadow: 0 0 0 0 rgba(198, 40, 40, 0);
   }
 }
 
@@ -122,12 +159,12 @@
 @keyframes critical-glow {
   0%,
   100% {
-    border-color: #dc2626;
-    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    border-color: #C62828;
+    box-shadow: 0 0 0 0 rgba(198, 40, 40, 0);
   }
   50% {
-    border-color: #ef4444;
-    box-shadow: 0 0 8px 0 rgba(220, 38, 38, 0.15);
+    border-color: #EF5350;
+    box-shadow: 0 0 8px 0 rgba(198, 40, 40, 0.15);
   }
 }
 
@@ -160,12 +197,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #b5a28e;
+  background: #9CA8B7;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #8b7355;
+  background: #5D6B7E;
 }
 
 /* ---- Touch optimization ---- */
@@ -183,52 +220,52 @@
 
 /* ---- Severity left-border utility ---- */
 .severity-border-critical {
-  border-left: 4px solid #dc2626;
+  border-left: 4px solid #C62828;
 }
 
 .severity-border-moderate {
-  border-left: 4px solid #d97706;
+  border-left: 4px solid #E65100;
 }
 
 .severity-border-minor {
-  border-left: 4px solid #16a34a;
+  border-left: 4px solid #2E7D32;
 }
 
 /* ---- Status stripe on top of cards ---- */
 .status-stripe-verified {
-  border-top: 3px solid #2563eb;
+  border-top: 3px solid #1B2A41;
 }
 
 .status-stripe-resolved {
-  border-top: 3px solid #16a34a;
+  border-top: 3px solid #2E7D32;
 }
 
 .status-stripe-pending {
-  border-top: 3px solid #a8a29e;
+  border-top: 3px solid #9CA8B7;
 }
 
 .status-stripe-rejected {
-  border-top: 3px solid #dc2626;
+  border-top: 3px solid #C62828;
 }
 
 /* ---- Modal backdrop ---- */
 .modal-backdrop {
   backdrop-filter: blur(4px);
-  background: rgba(34, 33, 43, 0.6);
+  background: rgba(15, 25, 35, 0.7);
 }
 
 /* ---- Emergency Report Button glow ---- */
 .report-btn-glow {
-  background: linear-gradient(135deg, #d93025 0%, #b71c1c 100%);
+  background: linear-gradient(135deg, #C62828 0%, #8E0000 100%);
   box-shadow:
-    0 4px 14px rgba(217, 48, 37, 0.4),
-    0 0 0 0 rgba(217, 48, 37, 0.3);
+    0 4px 14px rgba(198, 40, 40, 0.4),
+    0 0 0 0 rgba(198, 40, 40, 0.3);
 }
 
 .report-btn-glow:hover {
   box-shadow:
-    0 6px 20px rgba(217, 48, 37, 0.5),
-    0 0 0 0 rgba(217, 48, 37, 0.4);
+    0 6px 20px rgba(198, 40, 40, 0.5),
+    0 0 0 0 rgba(198, 40, 40, 0.4);
   transform: scale(1.03);
 }
 
@@ -249,7 +286,8 @@
 
   .emergency-pulse,
   .live-beacon,
-  .critical-glow {
+  .critical-glow,
+  .animate-stagger-in {
     animation: none !important;
   }
 
@@ -269,7 +307,8 @@
 
 .reduce-motion .emergency-pulse,
 .reduce-motion .live-beacon,
-.reduce-motion .critical-glow {
+.reduce-motion .critical-glow,
+.reduce-motion .animate-stagger-in {
   animation: none !important;
 }
 
@@ -303,14 +342,14 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid #1B2A41;
   outline-offset: 2px;
 }
 
 /* ---- High contrast mode support ---- */
 @media (prefers-contrast: high) {
   .report-btn-glow {
-    background: #dc2626;
+    background: #C62828;
     border: 2px solid #fff;
   }
 
@@ -329,6 +368,6 @@ textarea:focus-visible {
 
 /* ---- Dark mode select option styles ---- */
 .dark select option {
-  background-color: #22212b;
-  color: #f5ede4;
+  background-color: #182635;
+  color: #E1E4E8;
 }

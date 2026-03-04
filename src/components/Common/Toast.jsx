@@ -3,10 +3,10 @@ import { useState, useRef, useEffect, createContext, useContext, useCallback } f
 const ToastContext = createContext(null);
 
 const TOAST_TYPES = {
-  success: { bg: 'bg-emerald-600', icon: '\u2705' },
-  error: { bg: 'bg-red-600', icon: '\u274C' },
-  warning: { bg: 'bg-amber-600', icon: '\u26A0\uFE0F' },
-  info: { bg: 'bg-primary', icon: '\u2139\uFE0F' },
+  success: { bg: 'bg-success', border: 'border-l-[3px] border-green-300', icon: '\u2705' },
+  error: { bg: 'bg-accent', border: 'border-l-[3px] border-red-300', icon: '\u274C' },
+  warning: { bg: 'bg-warning', border: 'border-l-[3px] border-orange-300', icon: '\u26A0\uFE0F' },
+  info: { bg: 'bg-primary', border: 'border-l-[3px] border-blue-300', icon: '\u2139\uFE0F' },
 };
 
 export function ToastProvider({ children }) {
@@ -57,7 +57,7 @@ export function ToastProvider({ children }) {
           return (
             <div
               key={toast.id}
-              className={`${config.bg} text-white px-4 py-3 rounded-lg shadow-dark flex items-center gap-2.5 min-w-[280px] max-w-[360px] pointer-events-auto animate-slide-up`}
+              className={`${config.bg} ${config.border} text-white px-4 py-3 rounded-xl shadow-dark flex items-center gap-2.5 min-w-[280px] max-w-[360px] pointer-events-auto animate-slide-up`}
             >
               <span className="text-sm font-medium flex-1">{toast.message}</span>
               <button

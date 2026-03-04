@@ -77,7 +77,7 @@ const ConfirmDialog = memo(function ConfirmDialog({
       aria-labelledby="confirm-dialog-title"
     >
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-[rgba(15,25,35,0.7)] backdrop-blur-sm"
         onClick={!isLoading ? handleCancel : undefined}
         aria-hidden="true"
       />
@@ -131,7 +131,7 @@ const ConfirmDialog = memo(function ConfirmDialog({
         <div className="px-6 pb-6">
           <h3
             id="confirm-dialog-title"
-            className="text-lg font-bold text-text dark:text-dark-text text-center mb-2"
+            className="text-lg font-display text-text dark:text-dark-text text-center mb-2"
           >
             {title}
           </h3>
@@ -142,7 +142,7 @@ const ConfirmDialog = memo(function ConfirmDialog({
           <button
             onClick={handleCancel}
             disabled={isLoading}
-            className="flex-1 px-4 py-2.5 border border-stone-300 dark:border-stone-600 rounded-lg text-sm font-semibold text-text dark:text-dark-text hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 border border-border dark:border-dark-border rounded-xl text-sm font-semibold text-text dark:text-dark-text hover:bg-surface dark:hover:bg-dark-elevated transition-colors disabled:opacity-50"
           >
             {cancelText}
           </button>

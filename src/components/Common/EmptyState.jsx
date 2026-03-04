@@ -88,12 +88,12 @@ function EmptyState({
 }) {
   return (
     <div
-      className={`bg-white dark:bg-dark-card rounded-xl p-8 text-center shadow-card border border-stone-100 dark:border-dark-border ${className}`}
+      className={`bg-white dark:bg-dark-card rounded-xl p-8 text-center shadow-card border border-borderLight dark:border-dark-border ${className}`}
     >
-      <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center text-stone-400 dark:text-stone-500">
+      <div className="w-16 h-16 mx-auto mb-4 bg-surface dark:bg-dark-elevated rounded-full flex items-center justify-center text-textMuted dark:text-dark-textMuted">
         {ICONS[icon] || ICONS.empty}
       </div>
-      <h3 className="text-base font-bold text-text dark:text-dark-text mb-2">{title}</h3>
+      <h3 className="text-base font-display text-text dark:text-dark-text mb-2">{title}</h3>
       <p className="text-sm text-textLight dark:text-dark-textLight mb-4 max-w-sm mx-auto">
         {description}
       </p>

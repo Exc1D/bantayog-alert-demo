@@ -16,10 +16,10 @@ export default function TabNavigation({ activeTab, onTabChange }) {
               aria-selected={isActive}
               aria-controls={`tabpanel-${tab.id}`}
               onClick={() => onTabChange(tab.id)}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 py-3.5 text-xs font-semibold transition-all relative ${
+              className={`flex-1 flex flex-col items-center justify-center gap-1 py-4 text-xs transition-all relative ${
                 isActive
-                  ? 'text-primary dark:text-dark-text'
-                  : 'text-textLight hover:text-text dark:text-dark-textLight dark:hover:text-dark-text'
+                  ? 'text-primary dark:text-dark-text font-bold'
+                  : 'text-textLight hover:text-text dark:text-dark-textLight dark:hover:text-dark-text font-semibold'
               }`}
             >
               {tab.icon()}
