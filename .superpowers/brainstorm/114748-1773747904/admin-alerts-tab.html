@@ -1,0 +1,166 @@
+<h2>Admin — Alerts tab + Create form</h2>
+<p class="subtitle">4th tab in the admin section. Manage active announcements and create new ones.</p>
+
+<div style="display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;margin-top:1rem;align-items:flex-start">
+
+  <!-- Admin Alerts tab — list view -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8e8e93">Admin — Alerts tab (/admin/alerts)</div>
+    <div style="width:270px;background:#f2f2f7;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.12);border:1px solid rgba(0,0,0,0.06)">
+
+      <!-- Header -->
+      <div style="background:#1C1C1E;padding:10px 14px">
+        <span style="color:white;font-size:10px;font-weight:700;letter-spacing:0.8px">BANTAYOG ALERT — ADMIN</span>
+      </div>
+
+      <!-- Admin 4-tab nav -->
+      <div style="background:#1C1C1E;border-bottom:1px solid rgba(255,255,255,0.08);display:grid;grid-template-columns:repeat(4,1fr)">
+        <div style="text-align:center;padding:7px 2px"><span style="font-size:7px;color:rgba(255,255,255,0.4)">Queue</span></div>
+        <div style="text-align:center;padding:7px 2px"><span style="font-size:7px;color:rgba(255,255,255,0.4)">Live Map</span></div>
+        <div style="text-align:center;padding:7px 2px"><span style="font-size:7px;color:rgba(255,255,255,0.4)">Reports</span></div>
+        <div style="text-align:center;padding:7px 2px;border-bottom:2px solid #FF3B30"><span style="font-size:7px;color:white;font-weight:700">Alerts</span></div>
+      </div>
+
+      <div style="max-height:520px;overflow:hidden;padding:8px;display:flex;flex-direction:column;gap:6px">
+
+        <!-- Section label -->
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 2px">
+          <span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#8e8e93">Active · Daet (2)</span>
+          <div style="background:#FF3B30;border-radius:6px;padding:4px 10px">
+            <span style="font-size:8px;font-weight:700;color:white">+ New</span>
+          </div>
+        </div>
+
+        <!-- Announcement item — critical -->
+        <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+          <div style="background:#FF3B30;padding:5px 11px;display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:5px">
+              <span style="color:white;font-size:8px;font-weight:700">Evacuation Order</span>
+              <span style="background:rgba(255,255,255,0.2);color:white;font-size:7px;padding:1px 5px;border-radius:3px">Critical</span>
+            </div>
+            <span style="color:rgba(255,255,255,0.6);font-size:7px">Daet</span>
+          </div>
+          <div style="padding:8px 11px">
+            <div style="font-size:9px;font-weight:600;color:#1C1C1E;margin-bottom:2px">Mandatory evacuation — Brgy. Lag-on</div>
+            <div style="font-size:8px;color:#8e8e93;line-height:1.4">All residents in flood-prone zones must evacuate to the designated evacuation center at Daet National High School.</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+              <span style="font-size:7px;color:#8e8e93">Posted 12m ago</span>
+              <button style="background:none;border:1px solid #FF3B3040;border-radius:5px;padding:3px 8px;color:#FF3B30;font-size:7px;font-weight:600">Deactivate</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Announcement item — warning -->
+        <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+          <div style="background:#FF9500;padding:5px 11px;display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:5px">
+              <span style="color:white;font-size:8px;font-weight:700">Class Suspension</span>
+              <span style="background:rgba(255,255,255,0.2);color:white;font-size:7px;padding:1px 5px;border-radius:3px">Warning</span>
+            </div>
+            <span style="color:rgba(255,255,255,0.6);font-size:7px">Daet</span>
+          </div>
+          <div style="padding:8px 11px">
+            <div style="font-size:9px;font-weight:600;color:#1C1C1E;margin-bottom:2px">No classes — all levels</div>
+            <div style="font-size:8px;color:#8e8e93;line-height:1.4">DepEd order. Classes suspended due to Signal No. 2.</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+              <span style="font-size:7px;color:#8e8e93">Posted 1h ago</span>
+              <button style="background:none;border:1px solid #FF3B3040;border-radius:5px;padding:3px 8px;color:#FF3B30;font-size:7px;font-weight:600">Deactivate</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Provincial section (superadmin only — shown dimmed here) -->
+        <div style="padding:0 2px;margin-top:2px">
+          <span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#8e8e93">Provincial (1)</span>
+        </div>
+        <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);opacity:0.5">
+          <div style="background:#1C1C1E;padding:5px 11px;display:flex;align-items:center;justify-content:space-between">
+            <span style="color:white;font-size:8px;font-weight:700">Emergency Notice</span>
+            <span style="color:rgba(255,255,255,0.6);font-size:7px">Provincial</span>
+          </div>
+          <div style="padding:8px 11px">
+            <div style="font-size:9px;font-weight:600;color:#1C1C1E;margin-bottom:2px">Provincial DRRM operations activated</div>
+            <div style="font-size:8px;color:#8e8e93">Issued by superadmin. Read-only for municipal admins.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Create announcement form -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8e8e93">Create announcement sheet</div>
+    <div style="width:270px;background:#f2f2f7;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.12);border:1px solid rgba(0,0,0,0.06)">
+
+      <!-- Sheet header -->
+      <div style="background:#1C1C1E;padding:10px 14px;display:flex;align-items:center;gap:8px">
+        <span style="color:#8e8e93;font-size:14px">←</span>
+        <span style="color:white;font-size:10px;font-weight:600;flex:1">New announcement</span>
+        <span style="color:#8e8e93;font-size:9px">Daet</span>
+      </div>
+
+      <div style="max-height:520px;overflow:hidden;padding:10px;display:flex;flex-direction:column;gap:8px">
+
+        <!-- Type chips -->
+        <div>
+          <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#8e8e93;margin-bottom:5px">Type</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+            <div style="background:#1C1C1E;color:white;border-radius:20px;padding:4px 10px;font-size:8px;font-weight:600">Evacuation Order</div>
+            <div style="background:#f2f2f7;color:#3C3C43;border-radius:20px;padding:4px 10px;font-size:8px;border:1px solid #e5e7eb">Class Suspension</div>
+            <div style="background:#f2f2f7;color:#3C3C43;border-radius:20px;padding:4px 10px;font-size:8px;border:1px solid #e5e7eb">Work Suspension</div>
+            <div style="background:#f2f2f7;color:#3C3C43;border-radius:20px;padding:4px 10px;font-size:8px;border:1px solid #e5e7eb">Flood Advisory</div>
+            <div style="background:#f2f2f7;color:#3C3C43;border-radius:20px;padding:4px 10px;font-size:8px;border:1px solid #e5e7eb">Road Closure</div>
+            <div style="background:#f2f2f7;color:#3C3C43;border-radius:20px;padding:4px 10px;font-size:8px;border:1px solid #e5e7eb">Storm Surge</div>
+            <div style="background:#f2f2f7;color:#3C3C43;border-radius:20px;padding:4px 10px;font-size:8px;border:1px solid #e5e7eb">Health Advisory</div>
+            <div style="background:#f2f2f7;color:#3C3C43;border-radius:20px;padding:4px 10px;font-size:8px;border:1px solid #e5e7eb">Emergency Notice</div>
+          </div>
+        </div>
+
+        <!-- Severity chips -->
+        <div>
+          <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#8e8e93;margin-bottom:5px">Severity</div>
+          <div style="display:flex;gap:4px">
+            <div style="background:#FF3B3015;color:#FF3B30;border-radius:20px;padding:4px 12px;font-size:8px;font-weight:600;border:1.5px solid #FF3B30">Critical</div>
+            <div style="background:#f2f2f7;color:#3C3C43;border-radius:20px;padding:4px 12px;font-size:8px;border:1px solid #e5e7eb">Warning</div>
+            <div style="background:#f2f2f7;color:#3C3C43;border-radius:20px;padding:4px 12px;font-size:8px;border:1px solid #e5e7eb">Info</div>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div>
+          <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#8e8e93;margin-bottom:5px">Title</div>
+          <div style="background:white;border:1.5px solid #FF3B3060;border-radius:8px;padding:7px 10px">
+            <span style="font-size:9px;color:#1C1C1E">Mandatory evacuation — Brgy. Lag-on</span>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div>
+          <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#8e8e93;margin-bottom:5px">Details</div>
+          <div style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:7px 10px;min-height:52px">
+            <span style="font-size:8px;color:#3C3C43;line-height:1.5">All residents in flood-prone zones must evacuate to Daet National High School. Bring essentials and important documents.</span>
+          </div>
+        </div>
+
+        <!-- Scope — auto-filled, read-only for municipal admin -->
+        <div style="background:white;border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
+          <span style="font-size:9px;color:#1C1C1E">Scope</span>
+          <div style="display:flex;align-items:center;gap:4px">
+            <span style="font-size:9px;color:#8e8e93">Daet (auto)</span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+        </div>
+
+        <!-- Post button -->
+        <div style="background:#FF3B30;border-radius:10px;padding:10px;text-align:center">
+          <span style="color:white;font-size:10px;font-weight:700">Post announcement</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:2rem">Municipal admins see their own announcements + read-only view of provincial ones. Superadmin can deactivate any. Does this feel right?</p>

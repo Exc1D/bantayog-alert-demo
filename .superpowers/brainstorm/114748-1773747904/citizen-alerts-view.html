@@ -1,0 +1,132 @@
+<h2>Citizen — Alerts tab with announcements</h2>
+<p class="subtitle">AnnouncementCard replaces SuspensionCard. Same severity color coding — adapts to any type.</p>
+
+<div style="display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;margin-top:1rem;align-items:flex-start">
+
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8e8e93">Citizen — Alerts tab (/alerts)</div>
+    <div style="width:260px;background:#f2f2f7;border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.12);border:1px solid rgba(0,0,0,0.06)">
+
+      <div style="background:#1C1C1E;padding:10px 14px">
+        <span style="color:white;font-size:10px;font-weight:700;letter-spacing:0.8px">BANTAYOG ALERT</span>
+      </div>
+
+      <div style="max-height:560px;overflow:hidden;padding:10px;display:flex;flex-direction:column;gap:8px">
+
+        <!-- Critical announcement -->
+        <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+          <div style="background:#FF3B30;padding:6px 12px;display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;align-items:center;gap:5px">
+              <span style="color:white;font-size:9px;font-weight:700">Evacuation Order</span>
+              <span style="background:rgba(255,255,255,0.2);color:white;font-size:7px;padding:1px 6px;border-radius:3px">Critical</span>
+            </div>
+            <span style="color:rgba(255,255,255,0.65);font-size:7px">Daet · 12m ago</span>
+          </div>
+          <div style="padding:9px 12px">
+            <p style="font-size:10px;font-weight:600;color:#1C1C1E;margin:0 0 3px">Mandatory evacuation — Brgy. Lag-on</p>
+            <p style="font-size:9px;color:#3C3C43;line-height:1.5;margin:0">All residents in flood-prone zones must evacuate to Daet National High School. Bring essentials and important documents.</p>
+          </div>
+        </div>
+
+        <!-- Warning announcement -->
+        <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+          <div style="background:#FF9500;padding:6px 12px;display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;align-items:center;gap:5px">
+              <span style="color:white;font-size:9px;font-weight:700">Class Suspension</span>
+              <span style="background:rgba(255,255,255,0.2);color:white;font-size:7px;padding:1px 6px;border-radius:3px">Warning</span>
+            </div>
+            <span style="color:rgba(255,255,255,0.65);font-size:7px">Daet · 1h ago</span>
+          </div>
+          <div style="padding:9px 12px">
+            <p style="font-size:10px;font-weight:600;color:#1C1C1E;margin:0 0 3px">No classes — all levels</p>
+            <p style="font-size:9px;color:#3C3C43;line-height:1.5;margin:0">DepEd order. All public and private schools in Daet suspended due to Signal No. 2.</p>
+          </div>
+        </div>
+
+        <!-- Provincial info announcement -->
+        <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+          <div style="background:#1C1C1E;padding:6px 12px;display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;align-items:center;gap:5px">
+              <span style="color:white;font-size:9px;font-weight:700">Emergency Notice</span>
+              <span style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);font-size:7px;padding:1px 6px;border-radius:3px">Info</span>
+            </div>
+            <span style="color:rgba(255,255,255,0.4);font-size:7px">Provincial · 2h ago</span>
+          </div>
+          <div style="padding:9px 12px">
+            <p style="font-size:10px;font-weight:600;color:#1C1C1E;margin:0 0 3px">Provincial DRRM operations activated</p>
+            <p style="font-size:9px;color:#3C3C43;line-height:1.5;margin:0">Provincial Disaster Risk Reduction and Management Office has activated full operations in response to Typhoon Carina.</p>
+          </div>
+        </div>
+
+        <!-- Weather card -->
+        <div style="background:white;border-radius:12px;padding:11px 12px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+          <p style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#8e8e93;margin:0 0 4px">Current weather</p>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between">
+            <div>
+              <p style="font-size:22px;font-weight:700;color:#1C1C1E;margin:0">27°C</p>
+              <p style="font-size:9px;color:#3C3C43;margin:2px 0 0">Partly cloudy · Daet</p>
+            </div>
+            <span style="background:#FF950015;color:#FF9500;font-size:8px;font-weight:700;padding:3px 8px;border-radius:6px;border:1px solid #FF950030">Signal 2</span>
+          </div>
+        </div>
+
+        <!-- Nearest report card -->
+        <div style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:flex">
+          <div style="width:3px;background:#FF3B30;flex-shrink:0"></div>
+          <div style="padding:9px 12px;flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:start">
+              <div>
+                <p style="font-size:10px;font-weight:700;color:#1C1C1E;margin:0">Flood nearby</p>
+                <p style="font-size:8px;color:#8e8e93;margin:2px 0 0">Brgy. Lag-on, Daet</p>
+              </div>
+              <span style="font-size:9px;font-weight:600;color:#3C3C43">1.4 km</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Tab bar -->
+      <div style="background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border-top:0.5px solid rgba(0,0,0,0.12);display:grid;grid-template-columns:repeat(4,1fr);padding:10px 0 8px">
+        <div style="text-align:center"><div style="width:4px;height:4px;margin:0 auto 3px"></div><div style="font-size:8px;color:#8e8e93">Map</div></div>
+        <div style="text-align:center"><div style="width:4px;height:4px;margin:0 auto 3px"></div><div style="font-size:8px;color:#8e8e93">Feed</div></div>
+        <div style="text-align:center"><div style="width:4px;height:4px;background:#FF3B30;border-radius:50%;margin:0 auto 3px"></div><div style="font-size:8px;font-weight:600;color:#1C1C1E">Alerts</div></div>
+        <div style="text-align:center"><div style="width:4px;height:4px;margin:0 auto 3px"></div><div style="font-size:8px;color:#8e8e93">Profile</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Color key -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#8e8e93">Severity color key</div>
+    <div style="background:white;border-radius:16px;padding:20px 24px;box-shadow:0 2px 12px rgba(0,0,0,0.08);display:flex;flex-direction:column;gap:12px;width:200px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:20px;background:#FF3B30;border-radius:4px;flex-shrink:0"></div>
+        <div>
+          <p style="font-size:10px;font-weight:700;color:#1C1C1E;margin:0">Critical</p>
+          <p style="font-size:8px;color:#8e8e93;margin:1px 0 0">Evacuation, imminent danger</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:20px;background:#FF9500;border-radius:4px;flex-shrink:0"></div>
+        <div>
+          <p style="font-size:10px;font-weight:700;color:#1C1C1E;margin:0">Warning</p>
+          <p style="font-size:8px;color:#8e8e93;margin:1px 0 0">Suspensions, advisories</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:20px;background:#1C1C1E;border-radius:4px;flex-shrink:0"></div>
+        <div>
+          <p style="font-size:10px;font-weight:700;color:#1C1C1E;margin:0">Info</p>
+          <p style="font-size:8px;color:#8e8e93;margin:1px 0 0">General notices, updates</p>
+        </div>
+      </div>
+      <div style="border-top:0.5px solid #f2f2f7;padding-top:10px">
+        <p style="font-size:8px;color:#8e8e93;margin:0;line-height:1.5">Announcements stack above weather. Sorted by severity then time. Provincial announcements visible to all municipalities.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:2rem">Writing spec now...</p>
