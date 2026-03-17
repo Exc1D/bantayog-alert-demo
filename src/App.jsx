@@ -16,18 +16,37 @@ import SignUpPromptModal from './components/Common/SignUpPromptModal';
 
 const MapTab = lazy(() => import('./pages/MapTab'));
 const FeedTab = lazy(() => import('./pages/FeedTab'));
+const AlertsTab = lazy(() => import('./pages/AlertsTab'));
 const WeatherTab = lazy(() => import('./pages/WeatherTab'));
 const ProfileTab = lazy(() => import('./pages/ProfileTab'));
 const ReportModal = lazy(() => import('./components/Reports/ReportModal'));
+const AdminShell = lazy(() => import('./components/Admin/AdminShell'));
+const AdminGuard = lazy(() => import('./components/Admin/AdminGuard'));
 
-const VALID_TABS = ['map', 'feed', 'weather', 'profile'];
+const VALID_TABS = [
+  'map',
+  'feed',
+  'alerts',
+  'weather',
+  'profile',
+  'admin',
+  'admin-queue',
+  'admin-map',
+  'admin-reports',
+  'admin-alerts',
+];
 const noop = () => {};
 
 const TAB_TITLES = {
   map: 'Map - BANTAYOG ALERT',
   feed: 'Feed - BANTAYOG ALERT',
+  alerts: 'Alerts - BANTAYOG ALERT',
   weather: 'Weather - BANTAYOG ALERT',
   profile: 'Profile - BANTAYOG ALERT',
+  admin: 'Admin Queue - BANTAYOG ALERT',
+  'admin-map': 'Admin Map - BANTAYOG ALERT',
+  'admin-reports': 'Admin Reports - BANTAYOG ALERT',
+  'admin-alerts': 'Admin Alerts - BANTAYOG ALERT',
 };
 
 function getTabFromHash() {
@@ -103,10 +122,27 @@ function AppContent() {
         );
       case 'feed':
         return <FeedTab onViewMap={handleViewMap} onRequireSignUp={openSignUpPrompt} />;
+      case 'alerts':
+        return <AlertsTab />;
       case 'weather':
         return <WeatherTab />;
       case 'profile':
         return <ProfileTab />;
+      case 'admin':
+        return (
+          <AdminGuard onDenied={() => changeTab('map')}>
+            <AdminShell activeTab={activeTab} onTabChange={changeTab} />
+          </AdminGuard>
+        );
+      case 'admin-queue':
+      case 'admin-map':
+      case 'admin-reports':
+      case 'admin-alerts':
+        return (
+          <AdminGuard onDenied={() => changeTab('map')}>
+            <AdminShell activeTab={activeTab} onTabChange={changeTab} />
+          </AdminGuard>
+        );
       default:
         return (
           <MapErrorBoundary>

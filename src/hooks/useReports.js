@@ -361,14 +361,21 @@ export async function rejectReport(reportId, adminId, adminRole, notes = '') {
     throw new Error('Admin privileges required to reject reports.');
   }
 
+  // First, write audit log (before delete, so the record exists if delete fails)
+  await logAuditEvent(
+    new AuditEvent({
+      eventType: AuditEventType.REPORT_DELETE,
+      userId: adminId,
+      userRole: adminRole,
+      targetType: 'report',
+      targetId: reportId,
+      metadata: { reason: notes, action: 'report_rejected_and_deleted', adminRole },
+    })
+  );
+
+  // Then hard-delete the report document
   const reportRef = doc(db, 'reports', reportId);
-  await updateDoc(reportRef, {
-    'verification.status': 'rejected',
-    'verification.verifiedBy': adminId,
-    'verification.verifiedAt': serverTimestamp(),
-    'verification.verifierRole': adminRole,
-    'verification.notes': notes,
-  });
+  await deleteDoc(reportRef);
 }
 
 export async function resolveReport(
