@@ -5,6 +5,17 @@ export default {
   theme: {
     extend: {
       colors: {
+        // ── New design system tokens (rebuild) ──────────────────
+        urgent: '#FF3B30',       // primary action buttons, critical badges
+        moderate: '#FF9500',     // moderate severity
+        resolved: '#34C759',     // resolved status only
+        shell: '#1C1C1E',        // header / app shell
+        'app-bg': '#F2F2F7',     // page background
+        'text-primary': '#1C1C1E',
+        'text-secondary': '#3C3C43',
+        'text-tertiary': '#8E8E93',
+
+        // ── Legacy tokens (keep during transition) ───────────────
         primary: '#1B2A41',
         secondary: '#132031',
         accent: '#C62828',
@@ -23,7 +34,7 @@ export default {
         text: '#1B2A41',
         textLight: '#5D6B7E',
         textMuted: '#9CA8B7',
-        surface: '#EBE7E0',
+        surface: '#FFFFFF',
         alertRed: '#C62828',
         alertAmber: '#E65100',
         alertGreen: '#2E7D32',
@@ -39,7 +50,9 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Atkinson Hyperlegible', 'system-ui', 'sans-serif'],
+        // System stack — no font fetch, fastest possible render
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        // Legacy (used by existing components during transition)
         display: ['DM Serif Display', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
@@ -76,7 +89,9 @@ export default {
       },
       boxShadow: {
         emergency: '0 0 20px rgba(198, 40, 40, 0.3)',
-        card: '0 1px 3px rgba(27,42,65,0.08), 0 1px 2px rgba(27,42,65,0.06)',
+        card: '0 1px 4px rgba(0,0,0,0.08)',
+        'card-md': '0 2px 12px rgba(0,0,0,0.08)',
+        'card-lg': '0 8px 32px rgba(0,0,0,0.12)',
         'card-hover': '0 4px 12px rgba(27,42,65,0.1), 0 2px 4px rgba(27,42,65,0.06)',
         dark: '0 4px 16px rgba(0,0,0,0.35)',
       },
