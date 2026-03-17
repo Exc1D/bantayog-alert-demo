@@ -46,12 +46,13 @@ Each announcement is a standalone Firestore document.
   active: boolean,        // true = visible to citizens. false = deactivated (soft delete).
   createdAt: Timestamp,
   deactivatedAt: Timestamp | null,
+  deleteAt: Timestamp,    // createdAt + 90 days. Firestore TTL field — document auto-purged.
 }
 ```
 
 **Scope casing:** `scope` uses the same title-case format as `isValidMunicipality()` in `firestore.rules` and as returned by `detectMunicipality()` in `geoFencing.js` — e.g. `'Daet'`, `'Labo'`, `'Jose Panganiban'`. Province-wide announcements use `'Provincial'`. This ensures direct string equality against `userMunicipality` from `useGeolocation` without case conversion.
 
-**No hard deletes.** Deactivation sets `active: false` + `deactivatedAt: serverTimestamp()`. This preserves the audit trail and simplifies security rules (update only).
+**Soft deactivation + TTL hard delete.** Deactivation sets `active: false` + `deactivatedAt: serverTimestamp()` — this is a soft delete that keeps the document for audit trail purposes. Physical deletion is handled by Firestore's native TTL policy: every announcement document carries a `deleteAt` field set to `createdAt + 90 days`. Firestore auto-purges the document within 24–72 hours after that timestamp. No Cloud Functions needed.
 
 **User document prerequisite:** The `users/{uid}` document must include a `municipality` field (title-case) for every admin account — e.g. `{ role: 'admin_daet', municipality: 'Daet' }`. This field is used in Firestore security rules to validate scope without string manipulation. Set during admin account provisioning.
 
@@ -252,6 +253,9 @@ Full-screen page. Dark header: "New announcement" + admin's municipality label (
 **"Post announcement" button:** Red, full-width, disabled until type + severity + title + details are all filled. On submit:
 
 ```js
+// Compute deleteAt = now + 90 days (client-side; Firestore TTL uses this for auto-purge)
+const deleteAt = Timestamp.fromDate(new Date(Date.now() + 90 * 24 * 60 * 60 * 1000));
+
 await addDoc(collection(db, 'announcements'), {
   type,
   title: title.trim(),
@@ -263,6 +267,7 @@ await addDoc(collection(db, 'announcements'), {
   active: true,
   createdAt: serverTimestamp(),
   deactivatedAt: null,
+  deleteAt,  // TTL field — Firestore auto-purges document after this timestamp
 });
 await logAuditEvent(new AuditEvent({
   eventType: AuditEventType.ANNOUNCEMENT_CREATED,
@@ -289,14 +294,18 @@ match /announcements/{announcementId} {
   allow create: if isAdmin()
     && request.resource.data.keys().hasAll([
       'type', 'title', 'body', 'severity', 'scope',
-      'createdBy', 'createdByRole', 'active', 'createdAt', 'deactivatedAt'
+      'createdBy', 'createdByRole', 'active', 'createdAt', 'deactivatedAt', 'deleteAt'
     ])
     && request.resource.data.createdBy == request.auth.uid
-    && request.resource.data.createdByRole == userRole()
+    && request.resource.data.createdByRole == userData().role  // userData() not userRole() — avoids a second get() call
     && request.resource.data.active == true
+    && request.resource.data.createdAt == request.time       // prevents arbitrary past/future timestamps (serverTimestamp() guard)
+    && request.resource.data.deactivatedAt == null           // must be null at creation — not yet deactivated
+    && request.resource.data.deleteAt is timestamp           // ensures TTL field is a real timestamp, not a string
     && (isSuperAdmin()
         ? request.resource.data.scope == 'Provincial'
-        : request.resource.data.scope == userData().municipality);
+        : (request.resource.data.scope == userData().municipality
+           && isValidMunicipality(request.resource.data.scope)));
 
   // Deactivate only: only 'active' and 'deactivatedAt' may change
   allow update: if isAdmin()
@@ -306,8 +315,8 @@ match /announcements/{announcementId} {
     && (isSuperAdmin()
         || resource.data.scope == userData().municipality);
 
-  // No hard deletes (superadmin only, for data correction)
-  allow delete: if isSuperAdmin();
+  // No manual hard deletes — TTL handles physical deletion automatically
+  allow delete: if false;
 }
 ```
 
@@ -316,9 +325,70 @@ match /announcements/{announcementId} {
 **`isSuperAdmin()`** — verify this helper exists in `firestore.rules`. If not, add alongside existing helpers:
 ```
 function isSuperAdmin() {
-  return userRole().matches('superadmin.*');
+  return userRole().matches('^superadmin_.*');
 }
 ```
+The `^` anchor and `_` separator are required — consistent with `^admin_.*` used in the existing `isAdmin()` helper.
+
+---
+
+## Data Lifecycle
+
+### Announcements — 90-day TTL
+
+Every announcement document has a `deleteAt` field set to **creation time + 90 days** (computed client-side at `addDoc` time). Firestore's native TTL policy reads this field and auto-purges documents within 24–72 hours after the timestamp.
+
+**Firestore TTL policy configuration:**
+
+Add the TTL entry to the existing `"fieldOverrides": []` array in `firestore.indexes.json` (the same file that holds the composite indexes — do NOT create a new file):
+
+```json
+{
+  "collectionGroup": "announcements",
+  "fieldPath": "deleteAt",
+  "indexes": [],
+  "ttlPolicy": {}
+}
+```
+
+The full `fieldOverrides` array in `firestore.indexes.json` should look like:
+```json
+"fieldOverrides": [
+  {
+    "collectionGroup": "announcements",
+    "fieldPath": "deleteAt",
+    "indexes": [],
+    "ttlPolicy": {}
+  }
+]
+```
+
+Deploy with `firebase deploy --only firestore:indexes` to activate. Once deployed, the TTL policy can be verified in the Firebase Console under Firestore → Data → (collection) → TTL policies.
+
+TTL purge is free (no read/write charges). Soft-deactivated announcements are therefore retained for audit trail until `deleteAt`, then permanently deleted by Firestore.
+
+### Rejected Reports — Immediate Hard Delete
+
+When an admin rejects a report, the document is **immediately hard-deleted** from Firestore. This removes false reports from the system rather than marking them with a rejected status that would need ongoing management.
+
+**Rejection flow:**
+
+```js
+// Write audit log FIRST (before delete, so the record exists if delete fails)
+await logAuditEvent(new AuditEvent({
+  eventType: AuditEventType.REPORT_DELETE,
+  userId: user.uid,
+  targetId: reportId,
+  metadata: { reason: rejectionReason, type: report.type, municipality: report.municipality },
+}));
+
+// Then hard-delete the report document
+await deleteDoc(doc(db, 'reports', reportId));
+```
+
+**Firestore rules:** `allow delete: if isAdmin()` already exists for the `reports/{reportId}` match block (confirmed at `firestore.rules:272`). No rules change required.
+
+The audit log entry in `users/{uid}/audit/` is preserved indefinitely — only the report document itself is deleted.
 
 ---
 
@@ -346,13 +416,24 @@ function isSuperAdmin() {
 | `src/utils/auditLogger.js` | Add `ANNOUNCEMENT_CREATED` and `ANNOUNCEMENT_DEACTIVATED` to `AuditEventType` enum |
 | `src/pages/AlertsTab.jsx` | Replace `SuspensionCard` with `AnnouncementCard`; update hook usage |
 | `firestore.rules` | Add `announcements/{id}` match block; add `isSuperAdmin()` helper if missing |
-| `firestore.indexes.json` | Add composite index for `(active ASC, scope ASC, createdAt DESC)` |
+| `firestore.indexes.json` | Add two composite indexes: `(active ASC, scope ASC, createdAt DESC)` and `(active ASC, createdAt DESC)` |
+| `firestore.indexes.json` | Add TTL policy entry for `announcements.deleteAt` field in `fieldOverrides` array |
 
 ---
 
 ## Preserved Infrastructure
 
 - `auditLogger.js` — `AuditEvent` and `logAuditEvent` need no changes. The `AuditEventType` enum **must** be extended with two new entries (see Modify table): `ANNOUNCEMENT_CREATED` and `ANNOUNCEMENT_DEACTIVATED`. `AuditEvent` already uses `serverTimestamp()` internally (confirmed at `auditLogger.js:36`).
+
+- **Pre-existing bug fix required** — the `users/{userId}/audit/{auditId}` security rule in `firestore.rules` has a `hasAll(['eventType', 'timestamp', 'details'])` check that does not match the fields `AuditEvent.toFirestoreObject()` actually writes (it writes `metadata`, not `details`). This means all audit log writes currently fail silently. This implementation **must** fix the subcollection rule as part of the `firestore.rules` modification — change `'details'` to `'metadata'` in the `hasAll` check:
+  ```
+  // Before (broken):
+  request.resource.data.keys().hasAll(['eventType', 'timestamp', 'details'])
+  // After (correct):
+  request.resource.data.keys().hasAll(['eventType', 'timestamp', 'metadata'])
+  ```
+  Without this fix, `ANNOUNCEMENT_CREATED` and `ANNOUNCEMENT_DEACTIVATED` audit events will be silently swallowed, matching the pre-existing broken behavior of all other event types.
+
 - The `system/announcements` Firestore document can be left as-is but will no longer be read by the app. No migration needed.
 
 ---
@@ -375,3 +456,8 @@ function isSuperAdmin() {
 14. **FAB visibility:** "New Announcement" FAB appears on `/admin/alerts` only — not on Queue, Live Map, or All Reports
 15. **Real-time:** Admin creates announcement → citizen Alerts tab updates without page refresh
 16. **Empty state:** Admin with no active announcements in scope sees "No active announcements in {Municipality}"
+17. **TTL field set:** Inspect newly created announcement document in Firestore → `deleteAt` field present, is a Timestamp, and equals approximately `createdAt + 90 days`
+18. **TTL policy active:** Run `firebase deploy --only firestore:indexes` → Firebase Console → Firestore → TTL policies shows `announcements.deleteAt` with status "Active"
+19. **Rejected report hard delete:** Admin rejects a report → document no longer in Firestore `reports/` collection; audit log entry present in `users/{uid}/audit/` with `eventType: REPORT_DELETE`
+20. **Delete rule locked:** Attempt to `deleteDoc` on an `announcements/{id}` document from client → rejected by security rules
+21. **Audit log writes succeed:** Create an announcement → inspect `users/{uid}/audit/` in Firestore → document present with `eventType: ANNOUNCEMENT_CREATED` and `metadata` field. (This also verifies the `details` → `metadata` rule fix is deployed.)
