@@ -362,7 +362,7 @@ export async function rejectReport(reportId, adminId, adminRole, notes = '') {
   }
 
   // First, write audit log (before delete, so the record exists if delete fails)
-  logAuditEvent(
+  await logAuditEvent(
     new AuditEvent({
       eventType: AuditEventType.REPORT_DELETE,
       userId: adminId,

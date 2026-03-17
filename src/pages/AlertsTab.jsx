@@ -13,7 +13,7 @@ export default function AlertsTab() {
       return null;
     }
     const result = resolveMunicipality(location.lat, location.lng);
-    return result.municipality;
+    return result.municipality === 'Unknown' ? null : result.municipality;
   }, [location]);
 
   // Fetch announcements with scope
