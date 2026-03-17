@@ -108,11 +108,12 @@ Facebook-inspired card pattern — citizens already know how to read it.
 
 Merged replacement for the Weather tab. Stacked card layout, scroll if needed.
 
-**1. Suspension card (conditional):**
-- Renders only when `system/announcements` Firestore doc has `suspensions` array with at least one entry where `active: true`
-- Red header bar (`#FF3B30`) with label "Class Suspension" or "Work Suspension"
-- Body: issuing authority (e.g., "DepEd · Camarines Norte"), scope (e.g., "All levels"), timestamp
-- Multiple active suspensions stack as separate cards
+**1. Announcement cards (conditional, 0–N):**
+- Reads from `announcements/` Firestore collection — see `docs/superpowers/specs/2026-03-17-announcement-management-design.md` for full data model and scope rules.
+- Renders one `AnnouncementCard` per active announcement scoped to the user's municipality or `'Provincial'`.
+- Header color: `#FF3B30` (critical), `#FF9500` (warning), `#1C1C1E` (info).
+- Multiple active announcements stack as separate cards, sorted by severity then time.
+- Geolocation failure: show all active announcements when municipality cannot be determined.
 
 **2. Weather card (always present):**
 - Temperature, weather description, humidity, wind speed — from existing `useWeather` hook / `weatherAPI.js`
