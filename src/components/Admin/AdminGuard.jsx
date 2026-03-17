@@ -1,10 +1,15 @@
-import { Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { isAdminRole } from '../../utils/rbac';
 import LoadingSpinner from '../Common/LoadingSpinner';
 
-export default function AdminGuard({ children }) {
-  const { user, userData, loading } = useAuth();
+export default function AdminGuard({ children, onDenied }) {
+  const { user, loading, isAdmin } = useAuth();
+
+  useEffect(() => {
+    if (!loading && (!user || !isAdmin)) {
+      onDenied?.();
+    }
+  }, [loading, user, isAdmin, onDenied]);
 
   if (loading) {
     return (
@@ -15,9 +20,7 @@ export default function AdminGuard({ children }) {
     );
   }
 
-  if (!user || !userData?.role || !isAdminRole(userData.role)) {
-    return <Navigate to="/" replace />;
-  }
+  if (!user || !isAdmin) return null;
 
   return children;
 }

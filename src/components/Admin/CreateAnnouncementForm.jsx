@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { addDoc, collection, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { db } from '../../utils/firebaseConfig';
 import { useAuth } from '../../hooks/useAuth';
 import { logAuditEvent, AuditEvent, AuditEventType } from '../../utils/auditLogger';
-import { Button } from '../Common/Button';
+import Button from '../Common/Button';
 
 const ANNOUNCEMENT_TYPES = [
   { value: 'class-suspension', label: 'Class Suspension' },
@@ -39,9 +38,8 @@ const severityButtonClasses = {
   },
 };
 
-export default function CreateAnnouncementForm() {
-  const navigate = useNavigate();
-  const { user, userData } = useAuth();
+export default function CreateAnnouncementForm({ onBack }) {
+  const { user, userProfile } = useAuth();
   const [submitting, setSubmitting] = useState(false);
 
   const [type, setType] = useState('');
@@ -66,9 +64,9 @@ export default function CreateAnnouncementForm() {
         title: title.trim(),
         body: body.trim(),
         severity,
-        scope: userData?.municipality || 'Provincial',
+        scope: userProfile?.municipality || 'Provincial',
         createdBy: user.uid,
-        createdByRole: userData?.role,
+        createdByRole: userProfile?.role,
         active: true,
         createdAt: serverTimestamp(),
         deactivatedAt: null,
@@ -81,11 +79,11 @@ export default function CreateAnnouncementForm() {
           eventType: AuditEventType.ANNOUNCEMENT_CREATED,
           userId: user.uid,
           targetId: docRef.id,
-          metadata: { type, severity, scope: userData?.municipality || 'Provincial' },
+          metadata: { type, severity, scope: userProfile?.municipality || 'Provincial' },
         })
       );
 
-      navigate('/admin/alerts');
+      onBack();
     } catch (error) {
       console.error('Failed to create announcement:', error);
       setSubmitting(false);
@@ -96,7 +94,7 @@ export default function CreateAnnouncementForm() {
     <div className="max-w-2xl mx-auto p-4">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold">New Announcement</h1>
-        <Button variant="ghost" onClick={() => navigate('/admin/alerts')}>
+        <Button variant="ghost" onClick={onBack}>
           Cancel
         </Button>
       </div>
@@ -173,7 +171,7 @@ export default function CreateAnnouncementForm() {
         {/* Scope display */}
         <div className="text-sm text-gray-500">
           📍 This announcement will be scoped to:{' '}
-          <strong>{userData?.municipality || 'Provincial'}</strong>
+          <strong>{userProfile?.municipality || 'Provincial'}</strong>
         </div>
 
         {/* Submit */}

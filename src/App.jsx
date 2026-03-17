@@ -119,7 +119,7 @@ function AppContent() {
         return <ProfileTab />;
       case 'admin':
         return (
-          <AdminGuard>
+          <AdminGuard onDenied={() => changeTab('map')}>
             <AdminShell activeTab={activeTab} onTabChange={changeTab} />
           </AdminGuard>
         );
@@ -128,7 +128,7 @@ function AppContent() {
       case 'admin-reports':
       case 'admin-alerts':
         return (
-          <AdminGuard>
+          <AdminGuard onDenied={() => changeTab('map')}>
             <AdminShell activeTab={activeTab} onTabChange={changeTab} />
           </AdminGuard>
         );

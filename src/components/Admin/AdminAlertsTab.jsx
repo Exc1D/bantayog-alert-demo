@@ -1,11 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../../utils/firebaseConfig';
 import { useAuth } from '../../hooks/useAuth';
-import { isAdminRole } from '../../utils/rbac';
 import AnnouncementItem from './AnnouncementItem';
-import { Button } from '../Common/Button';
+import CreateAnnouncementForm from './CreateAnnouncementForm';
+import Button from '../Common/Button';
 
 // Sort by severity (critical first), then by date
 function sortBySeverityAndDate(announcements) {
@@ -43,19 +42,23 @@ function useAdminAnnouncements(municipality, isSuperAdmin) {
 }
 
 export default function AdminAlertsTab() {
-  const navigate = useNavigate();
-  const { userData } = useAuth();
-  const isSuperAdmin = isAdminRole(userData?.role) && userData?.role === 'superadmin_provincial';
-  const { announcements, loading } = useAdminAnnouncements(userData?.municipality, isSuperAdmin);
+  const [view, setView] = useState('list');
+  const { userProfile } = useAuth();
+  const isSuperAdmin = userProfile?.role === 'superadmin_provincial';
+  const { announcements, loading } = useAdminAnnouncements(userProfile?.municipality, isSuperAdmin);
 
   // Separate into municipal and provincial sections
   const { municipal, provincial } = useMemo(() => {
     const sorted = sortBySeverityAndDate(announcements);
     return {
-      municipal: sorted.filter((a) => a.scope === userData?.municipality),
+      municipal: sorted.filter((a) => a.scope === userProfile?.municipality),
       provincial: sorted.filter((a) => a.scope === 'Provincial'),
     };
-  }, [announcements, userData?.municipality]);
+  }, [announcements, userProfile?.municipality]);
+
+  if (view === 'new') {
+    return <CreateAnnouncementForm onBack={() => setView('list')} />;
+  }
 
   if (loading) {
     return <div className="p-4">Loading...</div>;
@@ -72,7 +75,7 @@ export default function AdminAlertsTab() {
 
       {totalCount === 0 ? (
         <div className="text-center py-12 text-gray-500">
-          No active announcements in {userData?.municipality || 'your scope'}
+          No active announcements in {userProfile?.municipality || 'your scope'}
         </div>
       ) : (
         <div className="space-y-6">
@@ -80,7 +83,7 @@ export default function AdminAlertsTab() {
           {municipal.length > 0 && (
             <section>
               <h2 className="text-lg font-semibold mb-3">
-                Active · {userData?.municipality} ({municipal.length})
+                Active · {userProfile?.municipality} ({municipal.length})
               </h2>
               <div className="space-y-3">
                 {municipal.map((announcement) => (
@@ -126,7 +129,7 @@ export default function AdminAlertsTab() {
       {/* FAB for new announcement */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2">
         <Button
-          onClick={() => navigate('/admin/alerts/new')}
+          onClick={() => setView('new')}
           className="px-6 py-3 rounded-full font-medium shadow-lg"
         >
           New Announcement

@@ -4,7 +4,7 @@ import { db } from '../../utils/firebaseConfig';
 import { logAuditEvent, AuditEvent, AuditEventType } from '../../utils/auditLogger';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../Common/Button';
-import { ConfirmDialog } from '../Common/ConfirmDialog';
+import ConfirmDialog from '../Common/ConfirmDialog';
 
 const SEVERITY_STYLES = {
   critical: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
