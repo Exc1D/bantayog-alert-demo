@@ -24,8 +24,16 @@ const AdminShell = lazy(() => import('./components/Admin/AdminShell'));
 const AdminGuard = lazy(() => import('./components/Admin/AdminGuard'));
 
 const VALID_TABS = [
-  'map', 'feed', 'alerts', 'weather', 'profile',
-  'admin', 'admin-queue', 'admin-map', 'admin-reports', 'admin-alerts',
+  'map',
+  'feed',
+  'alerts',
+  'weather',
+  'profile',
+  'admin',
+  'admin-queue',
+  'admin-map',
+  'admin-reports',
+  'admin-alerts',
 ];
 const noop = () => {};
 
