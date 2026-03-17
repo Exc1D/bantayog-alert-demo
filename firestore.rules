@@ -27,6 +27,10 @@ service cloud.firestore {
       );
     }
 
+    function isSuperAdmin() {
+      return userRole().matches('^superadmin_.*');
+    }
+
     function isModerator() {
       let role = userRole();
       return isSignedIn() && (
@@ -307,6 +311,43 @@ service cloud.firestore {
     }
 
     // ============================================
+    // ANNOUNCEMENTS COLLECTION
+    // ============================================
+
+    match /announcements/{announcementId} {
+      // Any signed-in user can read (citizens need real-time access)
+      allow read: if isSignedIn();
+
+      // Any admin can create — scope and role must match the authenticated user
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasAll([
+          'type', 'title', 'body', 'severity', 'scope',
+          'createdBy', 'createdByRole', 'active', 'createdAt', 'deactivatedAt', 'deleteAt'
+        ])
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdByRole == userData().role
+        && request.resource.data.active == true
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.deactivatedAt == null
+        && request.resource.data.deleteAt is timestamp
+        && (isSuperAdmin()
+            ? request.resource.data.scope == 'Provincial'
+            : (request.resource.data.scope == userData().municipality
+               && isValidMunicipality(request.resource.data.scope)));
+
+      // Deactivate only: only 'active' and 'deactivatedAt' may change
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['active', 'deactivatedAt'])
+        && request.resource.data.active == false
+        && (isSuperAdmin()
+            || resource.data.scope == userData().municipality);
+
+      // No manual hard deletes — TTL handles physical deletion automatically
+      allow delete: if false;
+    }
+
+    // ============================================
     // SYSTEM COLLECTIONS (for future use)
     // ============================================
 
@@ -334,9 +375,9 @@ service cloud.firestore {
       // Users can read their own audit logs, admins can read all
       allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       // Users can create audit entries for their own actions
-      allow create: if isSignedIn() 
+      allow create: if isSignedIn()
         && request.auth.uid == userId
-        && request.resource.data.keys().hasAll(['eventType', 'timestamp', 'details'])
+        && request.resource.data.keys().hasAll(['eventType', 'timestamp', 'metadata'])
         && request.resource.data.timestamp == request.time;
     }
   }
