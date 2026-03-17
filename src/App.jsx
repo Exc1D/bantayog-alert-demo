@@ -16,19 +16,21 @@ import SignUpPromptModal from './components/Common/SignUpPromptModal';
 
 const MapTab = lazy(() => import('./pages/MapTab'));
 const FeedTab = lazy(() => import('./pages/FeedTab'));
+const AlertsTab = lazy(() => import('./pages/AlertsTab'));
 const WeatherTab = lazy(() => import('./pages/WeatherTab'));
 const ProfileTab = lazy(() => import('./pages/ProfileTab'));
 const ReportModal = lazy(() => import('./components/Reports/ReportModal'));
 const AdminShell = lazy(() => import('./components/Admin/AdminShell'));
 const AdminGuard = lazy(() => import('./components/Admin/AdminGuard'));
 
-const VALID_TABS = ['map', 'feed', 'weather', 'profile', 'admin'];
+const VALID_TABS = ['map', 'feed', 'alerts', 'weather', 'profile', 'admin'];
 const ADMIN_TABS = ['admin-queue', 'admin-map', 'admin-reports', 'admin-alerts'];
 const noop = () => {};
 
 const TAB_TITLES = {
   map: 'Map - BANTAYOG ALERT',
   feed: 'Feed - BANTAYOG ALERT',
+  alerts: 'Alerts - BANTAYOG ALERT',
   weather: 'Weather - BANTAYOG ALERT',
   profile: 'Profile - BANTAYOG ALERT',
   admin: 'Admin Queue - BANTAYOG ALERT',
@@ -110,6 +112,8 @@ function AppContent() {
         );
       case 'feed':
         return <FeedTab onViewMap={handleViewMap} onRequireSignUp={openSignUpPrompt} />;
+      case 'alerts':
+        return <AlertsTab />;
       case 'weather':
         return <WeatherTab />;
       case 'profile':
