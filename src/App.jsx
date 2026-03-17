@@ -19,8 +19,11 @@ const FeedTab = lazy(() => import('./pages/FeedTab'));
 const WeatherTab = lazy(() => import('./pages/WeatherTab'));
 const ProfileTab = lazy(() => import('./pages/ProfileTab'));
 const ReportModal = lazy(() => import('./components/Reports/ReportModal'));
+const AdminShell = lazy(() => import('./components/Admin/AdminShell'));
+const AdminGuard = lazy(() => import('./components/Admin/AdminGuard'));
 
-const VALID_TABS = ['map', 'feed', 'weather', 'profile'];
+const VALID_TABS = ['map', 'feed', 'weather', 'profile', 'admin'];
+const ADMIN_TABS = ['admin-queue', 'admin-map', 'admin-reports', 'admin-alerts'];
 const noop = () => {};
 
 const TAB_TITLES = {
@@ -28,6 +31,10 @@ const TAB_TITLES = {
   feed: 'Feed - BANTAYOG ALERT',
   weather: 'Weather - BANTAYOG ALERT',
   profile: 'Profile - BANTAYOG ALERT',
+  admin: 'Admin Queue - BANTAYOG ALERT',
+  'admin-map': 'Admin Map - BANTAYOG ALERT',
+  'admin-reports': 'Admin Reports - BANTAYOG ALERT',
+  'admin-alerts': 'Admin Alerts - BANTAYOG ALERT',
 };
 
 function getTabFromHash() {
@@ -107,6 +114,21 @@ function AppContent() {
         return <WeatherTab />;
       case 'profile':
         return <ProfileTab />;
+      case 'admin':
+        return (
+          <AdminGuard>
+            <AdminShell activeTab={activeTab} onTabChange={changeTab} />
+          </AdminGuard>
+        );
+      case 'admin-queue':
+      case 'admin-map':
+      case 'admin-reports':
+      case 'admin-alerts':
+        return (
+          <AdminGuard>
+            <AdminShell activeTab={activeTab} onTabChange={changeTab} />
+          </AdminGuard>
+        );
       default:
         return (
           <MapErrorBoundary>
