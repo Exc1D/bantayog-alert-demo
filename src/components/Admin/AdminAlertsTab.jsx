@@ -1,12 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-} from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../../utils/firebaseConfig';
 import { useAuth } from '../../hooks/useAuth';
 import { isAdminRole } from '../../utils/rbac';
@@ -37,14 +31,10 @@ function useAdminAnnouncements(municipality, isSuperAdmin) {
       conditions.push(where('scope', 'in', [municipality, 'Provincial']));
     }
 
-    const q = query(
-      collection(db, 'announcements'),
-      ...conditions,
-      orderBy('createdAt', 'desc')
-    );
+    const q = query(collection(db, 'announcements'), ...conditions, orderBy('createdAt', 'desc'));
 
     return onSnapshot(q, (snapshot) => {
-      setAnnouncements(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setAnnouncements(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       setLoading(false);
     });
   }, [municipality, isSuperAdmin]);
@@ -62,8 +52,8 @@ export default function AdminAlertsTab() {
   const { municipal, provincial } = useMemo(() => {
     const sorted = sortBySeverityAndDate(announcements);
     return {
-      municipal: sorted.filter(a => a.scope === userData?.municipality),
-      provincial: sorted.filter(a => a.scope === 'Provincial'),
+      municipal: sorted.filter((a) => a.scope === userData?.municipality),
+      provincial: sorted.filter((a) => a.scope === 'Provincial'),
     };
   }, [announcements, userData?.municipality]);
 
@@ -110,9 +100,7 @@ export default function AdminAlertsTab() {
           {/* Provincial section (read-only for municipal admins) */}
           {provincial.length > 0 && (
             <section className={!isSuperAdmin ? 'opacity-50' : ''}>
-              <h2 className="text-lg font-semibold mb-3">
-                Provincial ({provincial.length})
-              </h2>
+              <h2 className="text-lg font-semibold mb-3">Provincial ({provincial.length})</h2>
               <div className="space-y-3">
                 {provincial.map((announcement) => (
                   <AnnouncementItem

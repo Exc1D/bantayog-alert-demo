@@ -76,12 +76,14 @@ export default function CreateAnnouncementForm() {
       });
 
       // Audit log
-      await logAuditEvent(new AuditEvent({
-        eventType: AuditEventType.ANNOUNCEMENT_CREATED,
-        userId: user.uid,
-        targetId: docRef.id,
-        metadata: { type, severity, scope: userData?.municipality || 'Provincial' },
-      }));
+      await logAuditEvent(
+        new AuditEvent({
+          eventType: AuditEventType.ANNOUNCEMENT_CREATED,
+          userId: user.uid,
+          targetId: docRef.id,
+          metadata: { type, severity, scope: userData?.municipality || 'Provincial' },
+        })
+      );
 
       navigate('/admin/alerts');
     } catch (error) {
@@ -111,7 +113,9 @@ export default function CreateAnnouncementForm() {
           >
             <option value="">Select type...</option>
             {ANNOUNCEMENT_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>{t.label}</option>
+              <option key={t.value} value={t.value}>
+                {t.label}
+              </option>
             ))}
           </select>
         </div>
@@ -168,15 +172,12 @@ export default function CreateAnnouncementForm() {
 
         {/* Scope display */}
         <div className="text-sm text-gray-500">
-          📍 This announcement will be scoped to: <strong>{userData?.municipality || 'Provincial'}</strong>
+          📍 This announcement will be scoped to:{' '}
+          <strong>{userData?.municipality || 'Provincial'}</strong>
         </div>
 
         {/* Submit */}
-        <Button
-          type="submit"
-          disabled={!isValid || submitting}
-          className="w-full"
-        >
+        <Button type="submit" disabled={!isValid || submitting} className="w-full">
           {submitting ? 'Posting...' : 'Post announcement'}
         </Button>
       </form>

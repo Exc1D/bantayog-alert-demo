@@ -14,15 +14,11 @@ export default function AdminShell() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const currentTab = TABS.find(t => location.pathname.startsWith(t.path)) || TABS[0];
+  const currentTab = TABS.find((t) => location.pathname.startsWith(t.path)) || TABS[0];
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <AdminNav
-        tabs={TABS}
-        currentTab={currentTab.path}
-        onTabChange={(path) => navigate(path)}
-      />
+      <AdminNav tabs={TABS} currentTab={currentTab.path} onTabChange={(path) => navigate(path)} />
       <main className="p-4">
         <Suspense fallback={<LoadingSpinner />}>
           <Outlet />

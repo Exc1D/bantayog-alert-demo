@@ -3,7 +3,7 @@ import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../utils/firebaseConfig';
 import { logAuditEvent, AuditEvent, AuditEventType } from '../../utils/auditLogger';
 import { useAuth } from '../../hooks/useAuth';
-import { Button } from '../Common/Button';
+import Button from '../Common/Button';
 import { ConfirmDialog } from '../Common/ConfirmDialog';
 
 const SEVERITY_STYLES = {
@@ -27,12 +27,14 @@ export default function AnnouncementItem({ announcement, canDeactivate, onUpdate
       });
 
       // Audit log
-      await logAuditEvent(new AuditEvent({
-        eventType: AuditEventType.ANNOUNCEMENT_DEACTIVATED,
-        userId: user.uid,
-        targetId: announcement.id,
-        metadata: { type: announcement.type, scope: announcement.scope },
-      }));
+      await logAuditEvent(
+        new AuditEvent({
+          eventType: AuditEventType.ANNOUNCEMENT_DEACTIVATED,
+          userId: user.uid,
+          targetId: announcement.id,
+          metadata: { type: announcement.type, scope: announcement.scope },
+        })
+      );
 
       onUpdate();
     } catch (error) {
@@ -56,7 +58,9 @@ export default function AnnouncementItem({ announcement, canDeactivate, onUpdate
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <span className={`px-2 py-0.5 rounded text-xs font-medium ${SEVERITY_STYLES[announcement.severity]}`}>
+              <span
+                className={`px-2 py-0.5 rounded text-xs font-medium ${SEVERITY_STYLES[announcement.severity]}`}
+              >
                 {announcement.severity.toUpperCase()}
               </span>
               <span className="text-xs text-gray-500">{announcement.scope}</span>

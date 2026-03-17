@@ -1,11 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-} from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../utils/firebaseConfig';
 
 // Client-side sort: Critical first, then Warning, then Info, then by date
@@ -34,9 +28,10 @@ export function useAnnouncements(municipality) {
         where('active', '==', true),
         orderBy('createdAt', 'desc')
       );
-      return onSnapshot(q,
+      return onSnapshot(
+        q,
         (snapshot) => {
-          setAnnouncements(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+          setAnnouncements(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
           setLoading(false);
         },
         (err) => {
@@ -54,9 +49,10 @@ export function useAnnouncements(municipality) {
       orderBy('createdAt', 'desc')
     );
 
-    return onSnapshot(q,
+    return onSnapshot(
+      q,
       (snapshot) => {
-        setAnnouncements(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        setAnnouncements(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
         setLoading(false);
       },
       (err) => {
@@ -67,10 +63,7 @@ export function useAnnouncements(municipality) {
   }, [municipality]);
 
   // Apply client-side severity sorting
-  const sortedAnnouncements = useMemo(
-    () => sortBySeverityAndDate(announcements),
-    [announcements]
-  );
+  const sortedAnnouncements = useMemo(() => sortBySeverityAndDate(announcements), [announcements]);
 
   return { announcements: sortedAnnouncements, loading, error };
 }
