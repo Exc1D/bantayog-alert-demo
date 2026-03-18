@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useReports } from '../hooks/useReports';
-import { useGeolocation } from '../hooks/useGeolocation';
 import CriticalAlertBanner from '../components/Map/CriticalAlertBanner';
 import MapSkeleton from '../components/Map/MapSkeleton';
 
-// LeafletMap is only imported once the page chunk is active.
-// Vite splits it into vendor-map chunk automatically because react-leaflet
-// imports leaflet, which is a large dependency.
+// LeafletMap is imported statically but the route is lazy-loaded (React.lazy
+// in App.jsx), so Leaflet only parses when the Map tab is first visited.
+// The 50ms delay gives MapSkeleton one paint frame before the heavier
+// Leaflet render begins.
 import LeafletMap from '../components/Map/LeafletMap';
 
 export default function MapTab({ onViewReport }) {
   const [mapReady, setMapReady] = useState(false);
   const { reports } = useReports();
-  const { municipality } = useGeolocation();
 
   useEffect(() => {
     // Small delay to let the skeleton paint before the heavier map render begins
@@ -28,7 +27,7 @@ export default function MapTab({ onViewReport }) {
       {/* Map container */}
       <div className="flex-1 relative overflow-hidden">
         {!mapReady && <MapSkeleton />}
-        {mapReady && <LeafletMap reports={reports} municipality={municipality} onReportClick={onViewReport} />}
+        {mapReady && <LeafletMap reports={reports} onReportClick={onViewReport} />}
       </div>
 
       {/* Floating report button */}
