@@ -1,10 +1,6 @@
 export default function CriticalAlertBanner({ reports = [] }) {
   const criticalActive = reports
-    .filter(
-      (r) =>
-        r.disaster?.severity === 'critical' &&
-        r.verification?.status !== 'resolved'
-    )
+    .filter((r) => r.disaster?.severity === 'critical' && r.verification?.status !== 'resolved')
     .sort((a, b) => (b.timestamp?.seconds ?? 0) - (a.timestamp?.seconds ?? 0));
 
   if (criticalActive.length === 0) return null;
