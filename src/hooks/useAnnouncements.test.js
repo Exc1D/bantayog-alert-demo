@@ -9,11 +9,12 @@ vi.mock('../utils/firebaseConfig', () => ({
 
 vi.mock('firebase/firestore', () => ({
   collection: vi.fn(() => 'announcements'),
+  doc: vi.fn(() => 'system/announcements'),
   query: vi.fn((...args) => args),
   where: vi.fn((col, field, op, val) => ({ col, field, op, val })),
   orderBy: vi.fn((field, dir) => ({ field, dir })),
   onSnapshot: vi.fn((query, callback) => {
-    callback({ docs: [] });
+    callback({ docs: [], exists: () => false });
     return vi.fn();
   }),
 }));

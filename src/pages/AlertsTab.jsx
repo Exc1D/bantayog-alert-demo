@@ -1,44 +1,36 @@
 import { useMemo } from 'react';
-import AnnouncementCard from '../components/Alerts/AnnouncementCard';
-import { useAnnouncements } from '../hooks/useAnnouncements';
 import { useGeolocation } from '../hooks/useGeolocation';
+import { useWeather } from '../hooks/useWeather';
+import { useReports } from '../hooks/useReports';
+import { useAnnouncements } from '../hooks/useAnnouncements';
+import { useNearestReport } from '../hooks/useNearestReport';
 import { resolveMunicipality } from '../utils/geoFencing';
+import SuspensionCard from '../components/Alerts/SuspensionCard';
+import WeatherCard from '../components/Alerts/WeatherCard';
+import NearestReportCard from '../components/Alerts/NearestReportCard';
 
 export default function AlertsTab() {
   const { location } = useGeolocation();
 
-  // Resolve municipality from geolocation
+  // Derive municipality string from GPS coordinates
   const municipality = useMemo(() => {
-    if (!location?.lat || !location?.lng) {
-      return null;
-    }
+    if (!location?.lat || !location?.lng) return null;
     const result = resolveMunicipality(location.lat, location.lng);
     return result.municipality === 'Unknown' ? null : result.municipality;
   }, [location]);
 
-  // Fetch announcements with scope
-  const { announcements, loading: announcementsLoading } = useAnnouncements(municipality);
+  const { weather, loading: weatherLoading } = useWeather(municipality);
+  const { suspensions } = useAnnouncements(municipality);
+  const { reports } = useReports();
+  const nearestReport = useNearestReport(reports);
 
   return (
-    <div className="max-w-[800px] mx-auto lg:max-w-none px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">Active Alerts</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {municipality ? `Showing alerts for ${municipality}` : 'Locating you...'}
-        </p>
+    <div className="h-full overflow-y-auto bg-app-bg">
+      <div className="flex flex-col gap-3 p-4">
+        <SuspensionCard suspensions={suspensions} />
+        <WeatherCard weather={weather} loading={weatherLoading} />
+        <NearestReportCard report={nearestReport} />
       </div>
-
-      {announcementsLoading ? (
-        <p className="text-gray-500 text-center py-4">Loading alerts...</p>
-      ) : announcements.length > 0 ? (
-        <div className="space-y-3">
-          {announcements.map((announcement) => (
-            <AnnouncementCard key={announcement.id} announcement={announcement} />
-          ))}
-        </div>
-      ) : (
-        <p className="text-gray-500 text-center py-4">No active alerts</p>
-      )}
     </div>
   );
 }
