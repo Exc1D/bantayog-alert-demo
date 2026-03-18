@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import { useMapPanel } from '../contexts/MapPanelContext';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { useWeather } from '../hooks/useWeather';
 import { useReports } from '../hooks/useReports';
@@ -10,6 +11,9 @@ import WeatherCard from '../components/Alerts/WeatherCard';
 import NearestReportCard from '../components/Alerts/NearestReportCard';
 
 export default function AlertsTab() {
+  const { setMapMode } = useMapPanel();
+  useEffect(() => setMapMode('zones'), [setMapMode]);
+
   const { location } = useGeolocation();
 
   // Derive municipality string from GPS coordinates

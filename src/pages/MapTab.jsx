@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useReports } from '../hooks/useReports';
 import CriticalAlertBanner from '../components/Map/CriticalAlertBanner';
 import MapSkeleton from '../components/Map/MapSkeleton';
+import { useMapPanel } from '../contexts/MapPanelContext';
+import useIsLg from '../hooks/useIsLg';
 
 // LeafletMap is imported statically but the route is lazy-loaded (React.lazy
 // in App.jsx), so Leaflet only parses when the Map tab is first visited.
@@ -13,6 +15,10 @@ import LeafletMap from '../components/Map/LeafletMap';
 export default function MapTab() {
   const [mapReady, setMapReady] = useState(false);
   const { reports } = useReports();
+  const { setMapMode } = useMapPanel();
+  const isLg = useIsLg();
+
+  useEffect(() => setMapMode('full'), [setMapMode]);
 
   useEffect(() => {
     // Small delay to let the skeleton paint before the heavier map render begins
@@ -24,14 +30,16 @@ export default function MapTab() {
     <div className="flex flex-col h-full relative">
       <CriticalAlertBanner reports={reports} />
 
-      {/* Map container */}
-      <div className="flex-1 relative overflow-hidden">
-        {!mapReady && <MapSkeleton />}
-        {mapReady && <LeafletMap reports={reports} />}
-      </div>
+      {/* Map container — hidden on lg+ (map lives in PersistentMapPanel) */}
+      {!isLg && (
+        <div className="flex-1 relative overflow-hidden">
+          {!mapReady && <MapSkeleton />}
+          {mapReady && <LeafletMap reports={reports} />}
+        </div>
+      )}
 
       {/* Floating report button */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000]">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] lg:left-auto lg:right-6 lg:translate-x-0">
         <Link
           to="/report"
           className="bg-urgent text-white font-bold text-sm px-6 py-3 rounded-full shadow-lg

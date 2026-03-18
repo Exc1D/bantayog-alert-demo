@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useMapPanel } from '../contexts/MapPanelContext';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -25,6 +26,9 @@ function Toggle({ value, onChange }) {
 }
 
 export default function ProfileTab() {
+  const { setMapMode } = useMapPanel();
+  useEffect(() => setMapMode('hidden'), [setMapMode]);
+
   const navigate = useNavigate();
   const { user, userProfile, signOut, isAdmin, updateProfilePicture } = useAuthContext();
   const { isDark, toggleTheme } = useTheme();
