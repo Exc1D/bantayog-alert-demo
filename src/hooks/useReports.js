@@ -103,7 +103,31 @@ export function useReports(filters = {}) {
     }
   }, [lastDoc, hasMore, filters.municipality]);
 
-  return { reports, loading, error, loadMore, hasMore };
+  async function verifyReport(id, dispatchData) {
+    const { verifiedBy, verifierRole, responseAction, assignedUnit, notes } = dispatchData;
+    await updateDoc(doc(db, 'reports', id), {
+      'verification.status': 'verified',
+      'verification.verifiedBy': verifiedBy,
+      'verification.verifiedAt': serverTimestamp(),
+      'verification.verifierRole': verifierRole,
+      'verification.responseAction': responseAction,
+      'verification.assignedUnit': assignedUnit,
+      'verification.notes': notes ?? '',
+    });
+    await logAuditEvent(AuditEventType.REPORT_VERIFIED, { reportId: id, ...dispatchData });
+  }
+
+  async function rejectReport(id, { rejectedBy, reason }) {
+    await updateDoc(doc(db, 'reports', id), {
+      'verification.status': 'rejected',
+      'verification.rejectedBy': rejectedBy,
+      'verification.rejectedAt': serverTimestamp(),
+      'verification.rejectionReason': reason,
+    });
+    await logAuditEvent(AuditEventType.REPORT_REJECTED, { reportId: id, rejectedBy, reason });
+  }
+
+  return { reports, loading, error, loadMore, hasMore, verifyReport, rejectReport };
 }
 
 export async function submitReport(reportData, evidenceFiles, user) {
