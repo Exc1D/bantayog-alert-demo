@@ -4,10 +4,7 @@ export default function PhotoStep({ photoFile, onPhotoSelect, onNext }) {
   const inputRef = useRef(null);
 
   // Derive the blob URL from photoFile — no useState needed.
-  const preview = useMemo(
-    () => (photoFile ? URL.createObjectURL(photoFile) : null),
-    [photoFile]
-  );
+  const preview = useMemo(() => (photoFile ? URL.createObjectURL(photoFile) : null), [photoFile]);
 
   // Revoke the blob URL when photoFile changes or the component unmounts.
   useEffect(() => {

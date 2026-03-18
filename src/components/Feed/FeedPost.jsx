@@ -112,9 +112,7 @@ export default function FeedPost({ report, onViewResolution }) {
       </div>
 
       {/* Photo grid — full bleed */}
-      {(media.photos?.length ?? 0) > 0 && (
-        <PhotoGrid photos={getSafeMediaUrls(media.photos)} />
-      )}
+      {(media.photos?.length ?? 0) > 0 && <PhotoGrid photos={getSafeMediaUrls(media.photos)} />}
 
       {/* Engagement bar */}
       <div className="px-4 py-2.5 flex items-center gap-4 border-t border-black/5">
