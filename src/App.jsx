@@ -9,9 +9,9 @@ import AppShell from './components/Layout/AppShell';
 import AdminGuard from './components/Admin/AdminGuard';
 
 // Citizen pages — lazy loaded per route
-const MapTab     = lazy(() => import('./pages/MapTab'));
-const FeedTab    = lazy(() => import('./pages/FeedTab'));
-const AlertsTab  = lazy(() => import('./pages/AlertsTab'));
+const MapTab = lazy(() => import('./pages/MapTab'));
+const FeedTab = lazy(() => import('./pages/FeedTab'));
+const AlertsTab = lazy(() => import('./pages/AlertsTab'));
 const ProfileTab = lazy(() => import('./pages/ProfileTab'));
 
 // Admin — separate lazy chunk (zero bytes for citizens)
@@ -25,16 +25,16 @@ const router = createBrowserRouter([
   {
     element: <AppShell />,
     children: [
-      { index: true,     element: <MapTab /> },
-      { path: 'feed',    element: <FeedTab /> },
-      { path: 'alerts',  element: <AlertsTab /> },
+      { index: true, element: <MapTab /> },
+      { path: 'feed', element: <FeedTab /> },
+      { path: 'alerts', element: <AlertsTab /> },
       { path: 'profile', element: <ProfileTab /> },
       {
         path: 'admin',
         element: <AdminGuard />,
         children: [
           { index: true, element: <AdminShell /> },
-          { path: '*',   element: <AdminShell /> },
+          { path: '*', element: <AdminShell /> },
         ],
       },
     ],
