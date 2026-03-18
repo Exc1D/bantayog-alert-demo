@@ -205,6 +205,8 @@ The context is the message bus for the entire large-screen layout. Every tab wri
 
 All setters MUST use `useCallback` so tabs can include them in `useEffect` deps without infinite loops.
 
+**Intentional deviation from spec:** The design spec includes `alertZones` and `setAlertZones` in the context shape. These are intentionally omitted here because `useAnnouncements()` returns text-based announcements with no geographic bounds — there is no zone polygon data to render. AlertsTab uses `mapMode('zones')` and passes `reportLocations` only. If geographic zone data is added to Firestore in the future, `alertZones`/`setAlertZones` can be added to the context at that point.
+
 - [ ] **Step 1: Write the failing tests**
 
 Create `src/contexts/MapPanelContext.test.jsx`:
@@ -212,7 +214,7 @@ Create `src/contexts/MapPanelContext.test.jsx`:
 ```jsx
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { MapPanelProvider, useMapPanel } from './MapPanelContext';
 
 function TestConsumer() {
@@ -584,37 +586,72 @@ Adds a prop-driven `flyTo` mechanism. When `flyToReportId` changes to a non-null
 
 Read `src/components/Map/LeafletMap.jsx` in full to understand prop signature and where `mapRef` is declared.
 
-- [ ] **Step 2: Write failing tests for the new behavior**
+- [ ] **Step 2: Create `src/components/Map/LeafletMap.test.jsx`**
 
-Add to the existing `LeafletMap.test.jsx` (or create if absent — check with `ls src/components/Map/`):
+`LeafletMap.test.jsx` does not exist yet. Create it as a new file. The key challenge is that `react-leaflet` requires a real DOM environment that jsdom does not provide — we mock the entire library at module scope. `vi.mock` is hoisted by Vitest and must NOT be placed inside a test case.
 
 ```jsx
-// Add to existing LeafletMap describe block:
+import { render } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-it('calls flyTo when flyToReportId changes to a matching report id', async () => {
-  const flyToMock = vi.fn();
-  // The MapRefCapture component sets mapRef.current to the Leaflet map instance.
-  // In tests, we can't get a real Leaflet instance, so we mock useMap().
-  // LeafletMap uses react-leaflet's useMap() inside MapRefCapture.
-  // Mock it to return an object with flyTo.
-  vi.mock('react-leaflet', async (importOriginal) => {
-    const actual = await importOriginal();
-    return {
-      ...actual,
-      useMap: () => ({ flyTo: flyToMock, on: vi.fn(), off: vi.fn() }),
-    };
+// flyToMock must be declared at module scope so vi.mock factory can reference it.
+// Vitest hoists vi.mock calls to the top of the file — any variables referenced in
+// the factory must be defined before the mock executes, i.e., at module scope.
+const flyToMock = vi.fn();
+
+// Mock react-leaflet at module scope. useMap() returns a fake map instance with flyTo.
+vi.mock('react-leaflet', () => ({
+  MapContainer: ({ children }) => <div data-testid="map-container">{children}</div>,
+  TileLayer: () => null,
+  useMap: () => ({ flyTo: flyToMock, on: vi.fn(), off: vi.fn() }),
+  useMapEvents: () => null,
+}));
+
+// Mock heavy Leaflet-dependent child components
+vi.mock('./MarkerClusterGroup', () => ({ default: ({ children }) => <>{children}</> }));
+vi.mock('./DisasterMarker', () => ({ default: () => null }));
+vi.mock('./CriticalAlertBanner', () => ({ default: () => null }));
+vi.mock('./MapSkeleton', () => ({ default: () => <div data-testid="map-skeleton" /> }));
+
+import LeafletMap from './LeafletMap';
+
+const REPORTS = [
+  {
+    id: 'r1',
+    location: { lat: 14.5, lng: 121.0, municipality: 'Test' },
+    disasterType: 'flood',
+    severity: 'critical',
+    status: 'pending',
+    reportedAt: null,
+  },
+];
+
+describe('LeafletMap', () => {
+  beforeEach(() => flyToMock.mockClear());
+
+  it('renders without errors', () => {
+    render(<LeafletMap reports={[]} />);
+    // If it renders without throwing, the basic mount works
   });
 
-  const reports = [
-    { id: 'r1', location: { lat: 14.5, lng: 121.0, municipality: 'Test' }, disasterType: 'flood', severity: 'critical', status: 'pending', reportedAt: null },
-  ];
-  const { rerender } = render(<LeafletMap reports={reports} flyToReportId={null} />);
-  rerender(<LeafletMap reports={reports} flyToReportId="r1" />);
-  expect(flyToMock).toHaveBeenCalledWith([14.5, 121.0], 15);
+  it('calls flyTo when flyToReportId changes to a matching report id', () => {
+    const { rerender } = render(<LeafletMap reports={REPORTS} flyToReportId={null} />);
+    rerender(<LeafletMap reports={REPORTS} flyToReportId="r1" />);
+    expect(flyToMock).toHaveBeenCalledWith([14.5, 121.0], 15);
+  });
+
+  it('does not call flyTo when flyToReportId is null', () => {
+    render(<LeafletMap reports={REPORTS} flyToReportId={null} />);
+    expect(flyToMock).not.toHaveBeenCalled();
+  });
+
+  it('does not call flyTo when no report matches flyToReportId', () => {
+    const { rerender } = render(<LeafletMap reports={REPORTS} flyToReportId={null} />);
+    rerender(<LeafletMap reports={REPORTS} flyToReportId="nonexistent" />);
+    expect(flyToMock).not.toHaveBeenCalled();
+  });
 });
 ```
-
-**Note:** If `LeafletMap.test.jsx` does not exist yet, create it as a new file with just this test inside a `describe('LeafletMap', ...)` block. Import `{ render }` from `'@testing-library/react'` and mock `react-leaflet` and `../Map/MarkerClusterGroup` (which has Leaflet deps).
 
 - [ ] **Step 3: Run the test to verify it fails**
 
@@ -684,11 +721,10 @@ Create `src/components/Map/PersistentMapPanel.test.jsx`:
 
 ```jsx
 import { render, screen } from '@testing-library/react';
+import { useState, useEffect } from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { MapPanelProvider } from '../../contexts/MapPanelContext';
-import { useMapPanel } from '../../contexts/MapPanelContext';
 
-// Mock LeafletMap — it requires a real DOM with Leaflet
+// vi.mock must be at module scope — Vitest hoists it to the top of the file
 vi.mock('./LeafletMap', () => ({
   default: ({ reports, flyToReportId }) => (
     <div data-testid="leaflet-map" data-report-count={reports.length} data-fly-to={flyToReportId ?? ''} />
@@ -696,81 +732,10 @@ vi.mock('./LeafletMap', () => ({
 }));
 
 import PersistentMapPanel from './PersistentMapPanel';
+import { MapPanelProvider, useMapPanel } from '../../contexts/MapPanelContext';
 
-function Wrapper({ children, initialMode = 'pins', reportLocations = [] }) {
-  return (
-    <MapPanelProvider>
-      <ModeInitializer mode={initialMode} locs={reportLocations} />
-      {children}
-    </MapPanelProvider>
-  );
-}
-
-// Helper: sets mapMode + reportLocations in context before rendering PersistentMapPanel
-function ModeInitializer({ mode, locs }) {
-  const { setMapMode, setReportLocations } = useMapPanel();
-  // Use layout effect to set before first paint
-  import { useLayoutEffect } from 'react';
-  useLayoutEffect(() => {
-    setMapMode(mode);
-    setReportLocations(locs);
-  }, []);
-  return null;
-}
-
-const LOCS = [{ id: 'r1', lat: 14.5, lng: 121.0, severity: 'critical' }];
-
-describe('PersistentMapPanel', () => {
-  it('renders null when mapMode is hidden', () => {
-    const { container } = render(<PersistentMapPanel />, {
-      wrapper: ({ children }) => <Wrapper initialMode="hidden">{children}</Wrapper>,
-    });
-    expect(container.firstChild).toBeNull();
-  });
-
-  it('renders LeafletMap when mapMode is pins', () => {
-    render(<PersistentMapPanel />, {
-      wrapper: ({ children }) => <Wrapper initialMode="pins" reportLocations={LOCS}>{children}</Wrapper>,
-    });
-    expect(screen.getByTestId('leaflet-map')).toBeInTheDocument();
-  });
-
-  it('renders LeafletMap when mapMode is zones', () => {
-    render(<PersistentMapPanel />, {
-      wrapper: ({ children }) => <Wrapper initialMode="zones">{children}</Wrapper>,
-    });
-    expect(screen.getByTestId('leaflet-map')).toBeInTheDocument();
-  });
-
-  it('renders LeafletMap when mapMode is full', () => {
-    render(<PersistentMapPanel />, {
-      wrapper: ({ children }) => <Wrapper initialMode="full">{children}</Wrapper>,
-    });
-    expect(screen.getByTestId('leaflet-map')).toBeInTheDocument();
-  });
-
-  it('passes reportLocations as reports to LeafletMap', () => {
-    render(<PersistentMapPanel />, {
-      wrapper: ({ children }) => <Wrapper initialMode="pins" reportLocations={LOCS}>{children}</Wrapper>,
-    });
-    expect(screen.getByTestId('leaflet-map')).toHaveAttribute('data-report-count', '1');
-  });
-});
-```
-
-**Note on the test helper:** The `ModeInitializer` pattern above is a way to set context state before the component under test renders. If the `useLayoutEffect` import pattern causes issues in the test file, inline it differently: render a wrapper component that calls the setters in its body before rendering children.
-
-Simpler alternative for the wrapper (use this if the above is tricky):
-
-```jsx
-function Wrapper({ children, initialMode = 'pins', reportLocations = [] }) {
-  return (
-    <MapPanelProvider>
-      <SetupAndRender mode={initialMode} locs={reportLocations} children={children} />
-    </MapPanelProvider>
-  );
-}
-
+// SetupAndRender: sets context state via effects, then renders children once ready.
+// This avoids calling setters during render (which would cause React warnings).
 function SetupAndRender({ mode, locs, children }) {
   const { setMapMode, setReportLocations } = useMapPanel();
   const [ready, setReady] = useState(false);
@@ -778,10 +743,62 @@ function SetupAndRender({ mode, locs, children }) {
     setMapMode(mode);
     setReportLocations(locs);
     setReady(true);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   if (!ready) return null;
   return children;
 }
+
+function Wrapper({ children, initialMode = 'pins', reportLocations = [] }) {
+  return (
+    <MapPanelProvider>
+      <SetupAndRender mode={initialMode} locs={reportLocations}>
+        {children}
+      </SetupAndRender>
+    </MapPanelProvider>
+  );
+}
+
+const LOCS = [{ id: 'r1', lat: 14.5, lng: 121.0, severity: 'critical' }];
+
+describe('PersistentMapPanel', () => {
+  it('renders null when mapMode is hidden', async () => {
+    const { container } = render(<PersistentMapPanel />, {
+      wrapper: ({ children }) => <Wrapper initialMode="hidden">{children}</Wrapper>,
+    });
+    // Wait for SetupAndRender effect to fire
+    await screen.findByTestId('leaflet-map').catch(() => null);
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('renders LeafletMap when mapMode is pins', async () => {
+    render(<PersistentMapPanel />, {
+      wrapper: ({ children }) => <Wrapper initialMode="pins" reportLocations={LOCS}>{children}</Wrapper>,
+    });
+    expect(await screen.findByTestId('leaflet-map')).toBeInTheDocument();
+  });
+
+  it('renders LeafletMap when mapMode is zones', async () => {
+    render(<PersistentMapPanel />, {
+      wrapper: ({ children }) => <Wrapper initialMode="zones">{children}</Wrapper>,
+    });
+    expect(await screen.findByTestId('leaflet-map')).toBeInTheDocument();
+  });
+
+  it('renders LeafletMap when mapMode is full', async () => {
+    render(<PersistentMapPanel />, {
+      wrapper: ({ children }) => <Wrapper initialMode="full">{children}</Wrapper>,
+    });
+    expect(await screen.findByTestId('leaflet-map')).toBeInTheDocument();
+  });
+
+  it('passes reportLocations as reports to LeafletMap', async () => {
+    render(<PersistentMapPanel />, {
+      wrapper: ({ children }) => <Wrapper initialMode="pins" reportLocations={LOCS}>{children}</Wrapper>,
+    });
+    const map = await screen.findByTestId('leaflet-map');
+    expect(map).toHaveAttribute('data-report-count', '1');
+  });
+});
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -950,6 +967,9 @@ function AppShellInner() {
             <PersistentMapPanel />
           </div>
         )}
+        {/* Use CSS `hidden` (not conditional render) when mapMode==='full'.
+            React needs <main> in the tree so MapTab's useEffect runs and
+            the REPORT EMERGENCY button can render as a fixed overlay. */}
         <main className={`flex-1 overflow-hidden relative ${mapMode === 'full' ? 'hidden' : ''}`}>
           <Suspense fallback={<PageFallback />}>
             <Outlet />
@@ -981,13 +1001,33 @@ export default function AppShell() {
 }
 ```
 
-- [ ] **Step 5: Run full test suite**
+- [ ] **Step 5: Update existing AppShell tests to mock `useIsLg`**
+
+After the rewrite, `AppShell` calls `useIsLg()`. In jsdom, `window.matchMedia` is undefined, so `useIsLg` will throw unless mocked. The existing tests in `AppShell.test.jsx` test the mobile layout — add this module-level mock so they keep working:
+
+At the **top of `AppShell.test.jsx`** (before imports), add:
+
+```jsx
+import { vi } from 'vitest';
+
+// Must be at module scope — Vitest hoists vi.mock
+vi.mock('../../hooks/useIsLg', () => ({ default: vi.fn().mockReturnValue(false) }));
+```
+
+Also mock `PersistentMapPanel` and `IconSidebar` to prevent their Leaflet/NavLink deps from running in these shell-level tests:
+
+```jsx
+vi.mock('../Map/PersistentMapPanel', () => ({ default: () => <div data-testid="persistent-map" /> }));
+vi.mock('./IconSidebar', () => ({ default: () => <nav aria-label="Main navigation" /> }));
+```
+
+Then run the full suite:
 
 ```bash
 npx vitest run
 ```
 
-Expected: All tests pass. Fix any test that now fails due to the shell restructure (e.g., tests that render AppShell and now need `useIsLg` mocked).
+Expected: All tests pass.
 
 - [ ] **Step 6: Commit**
 
@@ -1026,9 +1066,10 @@ useEffect(() => {
 }, [setMapMode, setHighlightedReportId]);
 
 useEffect(() => {
+  // Severity lives at r.disaster?.severity in Firestore, not r.severity
   const locs = reports
     .filter((r) => r.location?.lat && r.location?.lng)
-    .map((r) => ({ id: r.id, lat: r.location.lat, lng: r.location.lng, severity: r.severity }));
+    .map((r) => ({ id: r.id, lat: r.location.lat, lng: r.location.lng, severity: r.disaster?.severity }));
   setReportLocations(locs);
 }, [reports, setReportLocations]);
 ```
@@ -1054,9 +1095,10 @@ useEffect(() => {
 
 // AlertsTab already calls useReports() — pass those to the map panel:
 useEffect(() => {
+  // Severity lives at r.disaster?.severity in Firestore, not r.severity
   const locs = reports
     .filter((r) => r.location?.lat && r.location?.lng)
-    .map((r) => ({ id: r.id, lat: r.location.lat, lng: r.location.lng, severity: r.severity }));
+    .map((r) => ({ id: r.id, lat: r.location.lat, lng: r.location.lng, severity: r.disaster?.severity }));
   setReportLocations(locs);
 }, [reports, setReportLocations]);
 ```
