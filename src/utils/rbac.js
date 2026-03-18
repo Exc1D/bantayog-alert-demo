@@ -90,7 +90,11 @@ export function isAdminRole(role) {
   return hasPermission(role, PERMISSIONS.MANAGE_SETTINGS);
 }
 
-export function isAdmin(role) {
+/**
+ * Returns true if the role has access to the admin dashboard.
+ * Broader than isAdminRole — includes all municipal admin_* roles.
+ */
+export function hasAdminDashboardAccess(role) {
   if (!role) return false;
   return role.startsWith('admin_') || role === 'superadmin_provincial';
 }

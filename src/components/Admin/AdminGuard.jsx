@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
 import LoadingSpinner from '../Common/LoadingSpinner';
-import { isAdmin } from '../../utils/rbac';
+import { hasAdminDashboardAccess } from '../../utils/rbac';
 
 export default function AdminGuard() {
   const { loading, userProfile } = useAuthContext();
@@ -14,7 +14,7 @@ export default function AdminGuard() {
     );
   }
 
-  if (!userProfile || !isAdmin(userProfile.role)) {
+  if (!userProfile || !hasAdminDashboardAccess(userProfile.role)) {
     return <Navigate to="/profile" replace />;
   }
 

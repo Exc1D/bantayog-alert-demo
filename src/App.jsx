@@ -1,11 +1,10 @@
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ReportsProvider } from './contexts/ReportsContext';
 import { ToastProvider } from './components/Common/Toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ErrorBoundary from './components/Common/ErrorBoundary';
-import LoadingSpinner from './components/Common/LoadingSpinner';
 import AppShell from './components/Layout/AppShell';
 import AdminGuard from './components/Admin/AdminGuard';
 
@@ -22,30 +21,20 @@ const ProfileTab = lazy(() => import('./pages/ProfileTab'));
 // admin tab routing will be rebuilt in Phase 3 using nested React Router routes.
 const AdminShell = lazy(() => import('./components/Admin/AdminShell'));
 
-function PageFallback() {
-  return (
-    <div className="flex items-center justify-center h-full">
-      <LoadingSpinner />
-    </div>
-  );
-}
-
 const router = createBrowserRouter([
   {
     element: <AppShell />,
     children: [
-      { index: true,     element: <Suspense fallback={<PageFallback />}><MapTab /></Suspense> },
-      { path: 'feed',    element: <Suspense fallback={<PageFallback />}><FeedTab /></Suspense> },
-      { path: 'alerts',  element: <Suspense fallback={<PageFallback />}><AlertsTab /></Suspense> },
-      { path: 'profile', element: <Suspense fallback={<PageFallback />}><ProfileTab /></Suspense> },
+      { index: true,     element: <MapTab /> },
+      { path: 'feed',    element: <FeedTab /> },
+      { path: 'alerts',  element: <AlertsTab /> },
+      { path: 'profile', element: <ProfileTab /> },
       {
         path: 'admin',
         element: <AdminGuard />,
         children: [
-          {
-            path: '*',
-            element: <Suspense fallback={<PageFallback />}><AdminShell /></Suspense>,
-          },
+          { index: true, element: <AdminShell /> },
+          { path: '*',   element: <AdminShell /> },
         ],
       },
     ],
