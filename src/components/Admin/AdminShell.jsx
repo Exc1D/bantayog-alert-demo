@@ -18,7 +18,7 @@ function PageFallback() {
 
 export default function AdminShell() {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-app-bg">
       <AdminNav />
       <div className="flex-1 overflow-hidden">
         <Suspense fallback={<PageFallback />}>
