@@ -72,4 +72,33 @@ describe('DispatchForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /reject/i }));
     expect(onReject).toHaveBeenCalled();
   });
+
+  it('shows Dispatching… when submitting', () => {
+    render(
+      <DispatchForm
+        {...defaultProps}
+        responseAction="deploy-team"
+        assignedUnit="mdrrmo"
+        submitting={true}
+      />
+    );
+    expect(screen.getByText('Dispatching…')).toBeInTheDocument();
+  });
+
+  it('Verify + Dispatch is disabled when submitting', () => {
+    render(
+      <DispatchForm
+        {...defaultProps}
+        responseAction="deploy-team"
+        assignedUnit="mdrrmo"
+        submitting={true}
+      />
+    );
+    expect(screen.getByRole('button', { name: /verify.*dispatch/i })).toBeDisabled();
+  });
+
+  it('Reject is disabled when submitting', () => {
+    render(<DispatchForm {...defaultProps} submitting={true} />);
+    expect(screen.getByRole('button', { name: /reject/i })).toBeDisabled();
+  });
 });

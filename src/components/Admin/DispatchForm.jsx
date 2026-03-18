@@ -14,7 +14,7 @@ const UNITS = [
   { label: 'Provincial', value: 'provincial' },
 ];
 
-function ChipGroup({ options, selected, onChange, label }) {
+function ChipGroup({ options, selected, onChange, label, disabled }) {
   return (
     <div className="mb-4">
       <p className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary mb-2">
@@ -28,7 +28,9 @@ function ChipGroup({ options, selected, onChange, label }) {
               key={value}
               type="button"
               onClick={() => onChange(value)}
+              disabled={disabled}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors
+                disabled:opacity-50 disabled:cursor-not-allowed
                 ${isActive ? 'bg-shell text-white' : 'bg-app-bg text-text-secondary'}`}
             >
               {optLabel}
@@ -60,6 +62,7 @@ export default function DispatchForm({
         selected={responseAction}
         onChange={onResponseActionChange}
         label="Response action"
+        disabled={submitting}
       />
 
       <ChipGroup
@@ -67,6 +70,7 @@ export default function DispatchForm({
         selected={assignedUnit}
         onChange={onAssignedUnitChange}
         label="Assign to unit"
+        disabled={submitting}
       />
 
       <div className="mb-4">
