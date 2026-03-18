@@ -21,8 +21,10 @@ export default function AlertsTab() {
 
   const { weather, loading: weatherLoading } = useWeather(municipality);
   const { suspensions } = useAnnouncements(municipality);
+  const lat = location?.lat;
+  const lng = location?.lng;
   const { reports } = useReports();
-  const nearestReport = useNearestReport(reports);
+  const nearestReport = useNearestReport(reports, lat, lng);
 
   return (
     <div className="h-full overflow-y-auto bg-app-bg">

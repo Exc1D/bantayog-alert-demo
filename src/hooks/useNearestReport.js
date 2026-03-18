@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useGeolocation } from './useGeolocation';
 
 /**
  * Haversine distance in kilometres between two lat/lng points.
@@ -22,11 +21,7 @@ function haversineKm(lat1, lng1, lat2, lng2) {
  * augmented with a `distanceKm` field.  Returns null when location is
  * unavailable or there are no unresolved reports with coordinates.
  */
-export function useNearestReport(reports = []) {
-  const { location } = useGeolocation();
-  const lat = location?.lat;
-  const lng = location?.lng;
-
+export function useNearestReport(reports = [], lat, lng) {
   return useMemo(() => {
     if (lat == null || lng == null) return null;
 

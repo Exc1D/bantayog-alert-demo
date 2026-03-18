@@ -13,8 +13,11 @@ vi.mock('firebase/firestore', () => ({
   query: vi.fn((...args) => args),
   where: vi.fn((col, field, op, val) => ({ col, field, op, val })),
   orderBy: vi.fn((field, dir) => ({ field, dir })),
-  onSnapshot: vi.fn((query, callback) => {
-    callback({ docs: [], exists: () => false });
+  onSnapshot: vi.fn((ref, callback) => {
+    // doc() returns a string; query() returns an array — respond with the
+    // correct snapshot shape for each so the hook never sees a mismatched shape.
+    const snapshot = typeof ref === 'string' ? { exists: () => false } : { docs: [] };
+    callback(snapshot);
     return vi.fn();
   }),
 }));
