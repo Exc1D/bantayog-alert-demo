@@ -13,8 +13,7 @@ function renderWithMapMode(
   { highlightedReportId = null, reportLocations = [], reports = [] } = {}
 ) {
   function Setup() {
-    const { setMapMode, setHighlightedReportId, setReportLocations, setReports } =
-      useMapPanel();
+    const { setMapMode, setHighlightedReportId, setReportLocations, setReports } = useMapPanel();
     useEffect(() => {
       setMapMode(mapMode);
       setHighlightedReportId(highlightedReportId);
