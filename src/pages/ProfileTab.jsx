@@ -36,8 +36,19 @@ export default function ProfileTab() {
     try {
       const compressed = await compressImage(file);
       await updateProfilePicture(compressed);
+    } catch (err) {
+      console.error('Avatar upload failed:', err);
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function handleSignOut() {
+    try {
+      await signOut();
+      navigate('/');
+    } catch (err) {
+      console.error('Sign out failed:', err);
     }
   }
 
@@ -130,10 +141,7 @@ export default function ProfileTab() {
             {
               label: 'Sign out',
               destructive: true,
-              onPress: () => {
-                signOut();
-                navigate('/');
-              },
+              onPress: handleSignOut,
             },
             {
               label: 'Delete account',

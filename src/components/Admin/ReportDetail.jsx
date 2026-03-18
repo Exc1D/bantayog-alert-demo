@@ -13,7 +13,7 @@ function formatTimestamp(seconds) {
 export default function ReportDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { reports, verifyReport, rejectReport } = useReports();
+  const { reports, loading, verifyReport, rejectReport } = useReports();
   const { userProfile, user } = useAuth();
 
   const [responseAction, setResponseAction] = useState(null);
@@ -27,7 +27,11 @@ export default function ReportDetail() {
   if (!report) {
     return (
       <div className="flex items-center justify-center h-full">
-        <LoadingSpinner />
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
+          <p className="text-text-tertiary text-sm">Report not found.</p>
+        )}
       </div>
     );
   }
@@ -57,8 +61,12 @@ export default function ReportDetail() {
   async function handleReject() {
     const reason = window.prompt('Rejection reason (required):');
     if (!reason?.trim()) return;
-    await rejectReport(id, { rejectedBy: user.uid, reason });
-    navigate('/admin');
+    try {
+      await rejectReport(id, { rejectedBy: user.uid, reason });
+      navigate('/admin');
+    } catch (err) {
+      console.error('Reject failed:', err);
+    }
   }
 
   return (
