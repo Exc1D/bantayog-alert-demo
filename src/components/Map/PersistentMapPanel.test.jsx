@@ -53,8 +53,6 @@ describe('PersistentMapPanel', () => {
   it('passes highlightedReportId as flyToReportId to LeafletMap', () => {
     const reportLocations = [{ id: 'r1', lat: 14.5, lng: 121.0, severity: 'high' }];
     renderWithMapMode('pins', { highlightedReportId: 'r1', reportLocations });
-    expect(mockLeafletMap).toHaveBeenCalledWith(
-      expect.objectContaining({ flyToReportId: 'r1' })
-    );
+    expect(mockLeafletMap).toHaveBeenCalledWith(expect.objectContaining({ flyToReportId: 'r1' }));
   });
 });

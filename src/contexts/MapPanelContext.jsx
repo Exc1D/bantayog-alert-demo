@@ -13,7 +13,14 @@ export function MapPanelProvider({ children }) {
 
   return (
     <MapPanelContext.Provider
-      value={{ mapMode, setMapMode, highlightedReportId, setHighlightedReportId, reportLocations, setReportLocations }}
+      value={{
+        mapMode,
+        setMapMode,
+        highlightedReportId,
+        setHighlightedReportId,
+        reportLocations,
+        setReportLocations,
+      }}
     >
       {children}
     </MapPanelContext.Provider>

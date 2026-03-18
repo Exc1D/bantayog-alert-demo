@@ -26,10 +26,7 @@ function AppShellInner() {
         <IconSidebar />
         <div className="flex h-full overflow-hidden">
           <PersistentMapPanel className={mapMode === 'full' ? 'flex-1' : 'w-[45%]'} />
-          <main
-            role="main"
-            className={mapMode === 'full' ? 'hidden' : 'flex-1 overflow-auto'}
-          >
+          <main role="main" className={mapMode === 'full' ? 'hidden' : 'flex-1 overflow-auto'}>
             <Suspense fallback={<PageFallback />}>
               <Outlet />
             </Suspense>

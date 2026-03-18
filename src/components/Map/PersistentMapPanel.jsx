@@ -8,10 +8,7 @@ export default function PersistentMapPanel({ className }) {
 
   return (
     <div className={`relative ${className ?? ''}`}>
-      <LeafletMap
-        reportLocations={reportLocations}
-        flyToReportId={highlightedReportId}
-      />
+      <LeafletMap reportLocations={reportLocations} flyToReportId={highlightedReportId} />
     </div>
   );
 }

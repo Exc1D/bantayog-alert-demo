@@ -4,8 +4,12 @@ import { useEffect } from 'react';
 
 const mockUseIsLg = vi.fn(() => false);
 vi.mock('../../hooks/useIsLg', () => ({ default: () => mockUseIsLg() }));
-vi.mock('../Map/PersistentMapPanel', () => ({ default: () => <div data-testid="persistent-map-panel" /> }));
-vi.mock('./IconSidebar', () => ({ default: () => <nav aria-label="icon sidebar" data-testid="icon-sidebar" /> }));
+vi.mock('../Map/PersistentMapPanel', () => ({
+  default: () => <div data-testid="persistent-map-panel" />,
+}));
+vi.mock('./IconSidebar', () => ({
+  default: () => <nav aria-label="icon sidebar" data-testid="icon-sidebar" />,
+}));
 
 import AppShell from './AppShell';
 import { useMapPanel } from '../../contexts/MapPanelContext';
@@ -79,7 +83,9 @@ describe('AppShell', () => {
     it('renders IconSidebar and not TabNavigation on lg screens', () => {
       renderAppShell();
       expect(screen.getByTestId('icon-sidebar')).toBeInTheDocument();
-      expect(screen.queryByRole('navigation', { name: /main navigation/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('navigation', { name: /main navigation/i })
+      ).not.toBeInTheDocument();
     });
 
     it('renders PersistentMapPanel on lg screens', () => {
