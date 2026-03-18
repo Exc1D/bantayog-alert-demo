@@ -1,26 +1,22 @@
-import { useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import { Navigate, Outlet } from 'react-router-dom';
+import useAuthContext from '../../hooks/useAuthContext';
 import LoadingSpinner from '../Common/LoadingSpinner';
+import { isAdmin } from '../../utils/rbac';
 
-export default function AdminGuard({ children, onDenied }) {
-  const { user, loading, isAdmin } = useAuth();
-
-  useEffect(() => {
-    if (!loading && (!user || !isAdmin)) {
-      onDenied?.();
-    }
-  }, [loading, user, isAdmin, onDenied]);
+export default function AdminGuard() {
+  const { loading, userProfile } = useAuthContext();
 
   if (loading) {
     return (
-      <div role="status" className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center h-full" role="status">
         <LoadingSpinner />
-        <span className="sr-only">Loading...</span>
       </div>
     );
   }
 
-  if (!user || !isAdmin) return null;
+  if (!userProfile || !isAdmin(userProfile.role)) {
+    return <Navigate to="/profile" replace />;
+  }
 
-  return children;
+  return <Outlet />;
 }

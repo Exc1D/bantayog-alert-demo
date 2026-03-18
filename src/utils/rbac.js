@@ -89,3 +89,8 @@ export function isModerator(role) {
 export function isAdminRole(role) {
   return hasPermission(role, PERMISSIONS.MANAGE_SETTINGS);
 }
+
+export function isAdmin(role) {
+  if (!role) return false;
+  return role.startsWith('admin_') || role === 'superadmin_provincial';
+}
