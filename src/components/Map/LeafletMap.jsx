@@ -127,9 +127,15 @@ function MapResizeHandler() {
   return null;
 }
 
-export default function LeafletMap({ reports = [] }) {
+export default function LeafletMap({ reports = [], reportLocations = [], flyToReportId = null }) {
   const navigate = useNavigate();
   const mapRef = useRef(null);
+
+  useEffect(() => {
+    if (!flyToReportId || !mapRef.current) return;
+    const loc = reportLocations.find((r) => r.id === flyToReportId);
+    if (loc) mapRef.current.flyTo([loc.lat, loc.lng], 15);
+  }, [flyToReportId, reportLocations]);
   const [currentTileIndex, setCurrentTileIndex] = useState(0);
   const [activeLayer, setActiveLayer] = useState('streets');
   const [filters, setFilters] = useState({
