@@ -84,13 +84,15 @@ Context + provider + `useMapPanel` hook.
 
 Default: `mapMode = 'hidden'`, `highlightedReportId = null`.
 
+**Important:** `setMapMode` and `setHighlightedReportId` MUST be wrapped in `useCallback` in the provider so they are referentially stable. Tabs use `[setMapMode]` in their `useEffect` dependency arrays.
+
 **`src/components/Layout/IconSidebar.jsx`**
 
 44px vertical navigation bar for `lg+`.
 
 - App name/logo at top (replaces Header on desktop)
 - 4 `NavLink` items: Feed, Alerts, Map, Profile — icon only, no labels
-- Active state: accent background tint matching tab color
+- Active state: `bg-urgent` dot indicator (same pattern as existing `TabNavigation` — single accent color, not per-tab)
 - User avatar at bottom (tapping navigates to `/profile`)
 - `aria-label` on nav, `aria-current="page"` via NavLink
 
@@ -103,7 +105,15 @@ Wrapper around `LeafletMap` that reacts to context.
 - When `mapMode === 'hidden'`: renders `null` (caller hides the slot)
 - When `highlightedReportId` changes: calls `map.flyTo(pin coords)` — guards against null `mapRef`
 - Pin rendering: `'pins'` mode shows report pins; `'zones'` mode shows alert zone overlays
-- Data: reads from `useReports()` and `useAnnouncements()` (already used in MapTab + AlertsTab)
+- Data: reads from `useReports()` and `useAnnouncements()`. Both hooks open Firestore real-time listeners; calling them in `PersistentMapPanel` alongside a tab that also calls them opens duplicate listeners. To avoid this, `PersistentMapPanel` should NOT call these hooks directly — instead, the data (report locations, zone data) must be passed down via `MapPanelContext`. Tabs that set `mapMode('pins')` or `mapMode('zones')` also call `setReportLocations(reports)` / `setAlertZones(zones)` to push their already-fetched data into context.
+
+Add to `MapPanelContext` shape:
+```ts
+reportLocations: Array<{ id: string, lat: number, lng: number, severity: string }>,
+setReportLocations: (locs) => void,
+alertZones: Array<{ id: string, bounds: LatLngBounds, severity: string }>,
+setAlertZones: (zones) => void,
+```
 
 **`src/hooks/useIsLg.js`**
 
@@ -121,39 +131,55 @@ Wrapper around `LeafletMap` that reacts to context.
 - At `lg+`: render `<IconSidebar>` + left panel slot + `<Outlet />` in a CSS grid
 - Left panel slot: renders `<PersistentMapPanel>` when `mapMode !== 'hidden'`, otherwise the slot collapses
 - On mobile: existing layout unchanged
-- Hide `<Header>` at `lg+` via `hidden lg:hidden` (app name is in sidebar)
+- Hide `<Header>` at `lg+` via `lg:hidden` (app name is in sidebar)
 - Hide `<TabNavigation>` at `lg+` via `lg:hidden`
 
 **`src/pages/FeedTab.jsx`**
 
 ```js
-const { setMapMode, setHighlightedReportId } = useMapPanel();
-useEffect(() => { setMapMode('pins'); }, []);
+const { setMapMode, setHighlightedReportId, setReportLocations } = useMapPanel();
+useEffect(() => {
+  setMapMode('pins');
+  setHighlightedReportId(null);
+  // Push report location data into context for PersistentMapPanel
+  setReportLocations(reports.map(r => ({ id: r.id, lat: r.location.lat, lng: r.location.lng, severity: r.severity })));
+}, [setMapMode, setHighlightedReportId, setReportLocations, reports]);
 // On report card tap: setHighlightedReportId(report.id)
 ```
 
 **`src/pages/AlertsTab.jsx`**
 
 ```js
-const { setMapMode } = useMapPanel();
-useEffect(() => { setMapMode('zones'); }, []);
+const { setMapMode, setHighlightedReportId, setAlertZones } = useMapPanel();
+useEffect(() => {
+  setMapMode('zones');
+  setHighlightedReportId(null);
+  setAlertZones(/* derived from announcements */);
+}, [setMapMode, setHighlightedReportId, setAlertZones]);
 ```
 
 **`src/pages/MapTab.jsx`**
 
 ```js
-const { setMapMode } = useMapPanel();
+const { setMapMode, setHighlightedReportId } = useMapPanel();
 const isLg = useIsLg();
-useEffect(() => { setMapMode('full'); }, []);
+useEffect(() => {
+  setMapMode('full');
+  setHighlightedReportId(null);
+}, [setMapMode, setHighlightedReportId]);
 // On lg+: render only the floating "REPORT EMERGENCY" button
+//   Position: fixed bottom-4 right-4, z-50 (floats over PersistentMapPanel which is in the grid)
 // On mobile: render existing LeafletMap (unchanged)
 ```
 
 **`src/pages/ProfileTab.jsx`**
 
 ```js
-const { setMapMode } = useMapPanel();
-useEffect(() => { setMapMode('hidden'); }, []);
+const { setMapMode, setHighlightedReportId } = useMapPanel();
+useEffect(() => {
+  setMapMode('hidden');
+  setHighlightedReportId(null);
+}, [setMapMode, setHighlightedReportId]);
 // No other changes
 ```
 
@@ -189,9 +215,10 @@ User navigates to Profile tab
 
 - **Rapid tab switching**: `setMapMode` calls are last-write-wins setState — no debounce needed.
 - **`highlightedReportId` fires before map init**: `PersistentMapPanel` guards with `if (!mapRef.current) return` before `flyTo`.
-- **Live resize across lg breakpoint**: `useIsLg` uses a `matchMedia` change listener — layout switches live. Leaflet re-initializes once when crossing mobile→lg (acceptable).
+- **Live resize across lg breakpoint**: `useIsLg` uses a `matchMedia` change listener — layout switches live. Leaflet re-initializes once when crossing mobile→lg (acceptable). Map view state (zoom/center) is NOT preserved across breakpoint crossings — the map resets to the default view on each mount. This is acceptable for a field PWA where map state is ephemeral.
 - **Admin routes** (`/admin/*`): context default is `'hidden'` — admin pages get full-width layout with no changes required.
-- **Stale `highlightedReportId` on tab switch**: clear `highlightedReportId` in each tab's `setMapMode` effect.
+- **Stale `highlightedReportId` on tab switch**: each tab's mount effect calls `setHighlightedReportId(null)` (shown in component snippets above).
+- **REPORT EMERGENCY button positioning on desktop**: on `mapMode='full'`, the right panel slot is hidden. The button is rendered as `fixed bottom-4 right-4 z-50` so it floats over the full-width `PersistentMapPanel` regardless of grid layout.
 
 ---
 
@@ -208,6 +235,7 @@ User navigates to Profile tab
 | `AlertsTab` mount | Assert `mapMode` becomes `'zones'` |
 | `MapTab` at lg | Assert Leaflet not rendered; REPORT EMERGENCY button present |
 | `MapTab` at mobile | Assert existing LeafletMap renders |
+| Feed → map highlight | Tap a FeedPost card; assert `highlightedReportId` updates in context; assert `PersistentMapPanel` calls `flyTo` with correct coordinates |
 
 ---
 
