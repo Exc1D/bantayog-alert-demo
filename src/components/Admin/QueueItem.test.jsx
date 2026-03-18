@@ -31,7 +31,7 @@ describe('QueueItem', () => {
 
   it('renders photo count', () => {
     renderItem();
-    expect(screen.getByText(/2/)).toBeInTheDocument();
+    expect(screen.getByText(/2 photos/i)).toBeInTheDocument();
   });
 
   it('calls onVerify when Verify button is clicked', () => {

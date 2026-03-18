@@ -4,7 +4,7 @@ import { formatTimeAgo } from '../../utils/timeUtils';
 const STRIP = {
   critical: 'bg-urgent',
   moderate: 'bg-moderate',
-  minor: 'bg-moderate',
+  minor: 'bg-text-tertiary',
 };
 
 function normalizeTimestamp(ts) {

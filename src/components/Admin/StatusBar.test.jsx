@@ -19,4 +19,10 @@ describe('StatusBar', () => {
     expect(screen.getByText('7')).toBeInTheDocument();
     expect(screen.getByText(/resolved/i)).toBeInTheDocument();
   });
+
+  it('shows total active count', () => {
+    render(<StatusBar pending={0} criticalActive={0} totalActive={10} resolvedToday={0} />);
+    expect(screen.getByText('10')).toBeInTheDocument();
+    expect(screen.getByText(/total/i)).toBeInTheDocument();
+  });
 });
