@@ -1,8 +1,18 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 export default function PhotoStep({ photoFile, onPhotoSelect, onNext }) {
   const inputRef = useRef(null);
-  const preview = photoFile ? URL.createObjectURL(photoFile) : null;
+  const [preview, setPreview] = useState(null);
+
+  useEffect(() => {
+    if (!photoFile) {
+      setPreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(photoFile);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [photoFile]);
 
   return (
     <div className="h-full overflow-y-auto bg-app-bg p-4 flex flex-col gap-4">

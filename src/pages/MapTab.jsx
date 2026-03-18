@@ -10,7 +10,7 @@ import MapSkeleton from '../components/Map/MapSkeleton';
 // Leaflet render begins.
 import LeafletMap from '../components/Map/LeafletMap';
 
-export default function MapTab({ onViewReport }) {
+export default function MapTab() {
   const [mapReady, setMapReady] = useState(false);
   const { reports } = useReports();
 
@@ -27,7 +27,7 @@ export default function MapTab({ onViewReport }) {
       {/* Map container */}
       <div className="flex-1 relative overflow-hidden">
         {!mapReady && <MapSkeleton />}
-        {mapReady && <LeafletMap reports={reports} onReportClick={onViewReport} />}
+        {mapReady && <LeafletMap reports={reports} />}
       </div>
 
       {/* Floating report button */}

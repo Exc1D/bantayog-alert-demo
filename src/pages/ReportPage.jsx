@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { submitReport } from '../hooks/useReports';
 import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../components/Common/Toast';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { resolveMunicipality } from '../utils/geoFencing';
 import ReportTypeStep from '../components/Reports/ReportTypeStep';
@@ -13,6 +14,7 @@ const TOTAL_STEPS = 3;
 export default function ReportPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { addToast } = useToast();
   const { location } = useGeolocation();
   const lat = location?.lat;
   const lng = location?.lng;
@@ -54,6 +56,7 @@ export default function ReportPage() {
       navigate('/feed');
     } catch (err) {
       console.error('Report submission failed:', err);
+      addToast(err?.message ?? 'Failed to submit report. Please try again.', 'error');
     } finally {
       setSubmitting(false);
     }

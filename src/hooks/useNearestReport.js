@@ -33,8 +33,8 @@ export function useNearestReport(reports = [], lat, lng) {
     let minDist = Infinity;
 
     for (const r of unresolved) {
-      const rLat = r.location?.coordinates?.lat;
-      const rLng = r.location?.coordinates?.lng;
+      const rLat = r.location?.lat;
+      const rLng = r.location?.lng;
       if (rLat == null || rLng == null) continue;
       const dist = haversineKm(lat, lng, rLat, rLng);
       if (dist < minDist) {

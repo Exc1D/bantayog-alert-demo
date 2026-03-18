@@ -5,7 +5,7 @@ import { renderHook } from '@testing-library/react';
 
 const mkReport = (id, lat, lng, status = 'verified') => ({
   id,
-  location: { coordinates: { lat, lng } },
+  location: { lat, lng },
   verification: { status },
 });
 
