@@ -114,7 +114,16 @@ export function useReports(filters = {}) {
       'verification.assignedUnit': assignedUnit,
       'verification.notes': notes ?? '',
     });
-    await logAuditEvent(AuditEventType.REPORT_VERIFIED, { reportId: id, ...dispatchData });
+    await logAuditEvent(
+      new AuditEvent({
+        eventType: AuditEventType.REPORT_VERIFIED,
+        userId: verifiedBy,
+        userRole: verifierRole,
+        targetId: id,
+        targetType: 'report',
+        metadata: { responseAction, assignedUnit, notes },
+      })
+    );
   }
 
   async function rejectReport(id, { rejectedBy, reason }) {
@@ -124,7 +133,15 @@ export function useReports(filters = {}) {
       'verification.rejectedAt': serverTimestamp(),
       'verification.rejectionReason': reason,
     });
-    await logAuditEvent(AuditEventType.REPORT_REJECTED, { reportId: id, rejectedBy, reason });
+    await logAuditEvent(
+      new AuditEvent({
+        eventType: AuditEventType.REPORT_REJECTED,
+        userId: rejectedBy,
+        targetId: id,
+        targetType: 'report',
+        metadata: { reason },
+      })
+    );
   }
 
   return { reports, loading, error, loadMore, hasMore, verifyReport, rejectReport };
