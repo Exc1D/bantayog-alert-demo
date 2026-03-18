@@ -7,6 +7,7 @@ import {
   getPermissions,
   isModerator,
   isAdminRole,
+  hasAdminDashboardAccess,
   normalizeRole,
 } from '../utils/rbac';
 
@@ -236,6 +237,32 @@ describe('rbac.js', () => {
 
     it('should return false for null', () => {
       expect(isAdminRole(null)).toBe(false);
+    });
+  });
+
+  describe('hasAdminDashboardAccess', () => {
+    it('returns false for null/undefined role', () => {
+      expect(hasAdminDashboardAccess(null)).toBe(false);
+      expect(hasAdminDashboardAccess(undefined)).toBe(false);
+    });
+
+    it('returns false for regular user role', () => {
+      expect(hasAdminDashboardAccess('user')).toBe(false);
+    });
+
+    it('returns true for admin_* roles', () => {
+      expect(hasAdminDashboardAccess('admin_daet')).toBe(true);
+      expect(hasAdminDashboardAccess('admin_camarines_norte')).toBe(true);
+    });
+
+    it('returns true for superadmin_provincial', () => {
+      expect(hasAdminDashboardAccess('superadmin_provincial')).toBe(true);
+    });
+
+    it('returns false for other superadmin variants (known limitation)', () => {
+      // superadmin_city is not currently recognized by hasAdminDashboardAccess.
+      // This is a known limitation — only superadmin_provincial is supported.
+      expect(hasAdminDashboardAccess('superadmin_city')).toBe(false);
     });
   });
 

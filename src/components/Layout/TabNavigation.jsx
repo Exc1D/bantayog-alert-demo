@@ -1,36 +1,44 @@
-import { TABS } from '../../config/tabs';
+import { NavLink } from 'react-router-dom';
 
-export default function TabNavigation({ activeTab, onTabChange }) {
+const TABS = [
+  { label: 'Map', href: '/' },
+  { label: 'Feed', href: '/feed' },
+  { label: 'Alerts', href: '/alerts' },
+  { label: 'Profile', href: '/profile' },
+];
+
+export default function TabNavigation() {
   return (
     <nav
-      className="sticky top-[60px] z-40 bg-white dark:bg-dark-card dark:backdrop-blur-sm border-b border-border/60 dark:border-dark-border"
       aria-label="Main navigation"
+      className="bg-white/90 backdrop-blur border-t border-black/10 grid grid-cols-4"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <div className="max-w-[1400px] mx-auto px-3 lg:px-6 flex" role="tablist">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              role="tab"
-              aria-selected={isActive}
-              aria-controls={`tabpanel-${tab.id}`}
-              onClick={() => onTabChange(tab.id)}
-              className={`flex-1 flex flex-col items-center justify-center gap-1 py-4 text-xs transition-all relative ${
-                isActive
-                  ? 'text-primary dark:text-dark-text font-bold'
-                  : 'text-textLight hover:text-text dark:text-dark-textLight dark:hover:text-dark-text font-semibold'
-              }`}
-            >
-              {tab.icon()}
-              <span className="tracking-wide">{tab.label}</span>
-              {isActive && (
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-[3px] bg-primary dark:bg-dark-accent rounded-full" />
-              )}
-            </button>
-          );
-        })}
-      </div>
+      {TABS.map(({ label, href }) => (
+        <NavLink
+          key={href}
+          to={href}
+          end={href === '/'}
+          aria-label={label}
+          className={({ isActive }) =>
+            `flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-medium
+             transition-colors focus-visible:outline-none focus-visible:ring-2
+             focus-visible:ring-urgent focus-visible:ring-inset
+             ${isActive ? 'text-text-primary' : 'text-text-tertiary'}`
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <span
+                aria-hidden="true"
+                className={`w-1 h-1 rounded-full transition-colors
+                  ${isActive ? 'bg-urgent' : 'bg-transparent'}`}
+              />
+              <span>{label}</span>
+            </>
+          )}
+        </NavLink>
+      ))}
     </nav>
   );
 }
