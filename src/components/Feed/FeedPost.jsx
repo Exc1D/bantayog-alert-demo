@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import PhotoGrid from './PhotoGrid';
+import { formatTimeAgo } from '../../utils/timeUtils';
 
 const SEVERITY_STRIP = {
   critical: 'bg-urgent',
@@ -21,15 +22,6 @@ const STATUS_BADGE = {
   resolved: 'bg-resolved/10 text-resolved',
 };
 
-function formatTimeAgo(seconds) {
-  if (!seconds) return '';
-  const diff = Math.floor(Date.now() / 1000) - seconds;
-  if (diff < 60) return 'Just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
-}
-
 export default function FeedPost({ report, onViewResolution }) {
   const {
     id,
@@ -39,13 +31,16 @@ export default function FeedPost({ report, onViewResolution }) {
     timestamp,
     photoUrls = [],
     upvotes = [],
-    reporter = {},
   } = report;
 
   const isResolved = verification.status === 'resolved';
   const severity = isResolved ? 'resolved' : (disaster.severity ?? 'default');
   const stripColor = SEVERITY_STRIP[severity] ?? SEVERITY_STRIP.default;
-  const timeAgo = formatTimeAgo(timestamp?.seconds);
+  const normalizedTimestamp =
+    timestamp && !timestamp.toDate && timestamp.seconds
+      ? new Date(timestamp.seconds * 1000)
+      : timestamp;
+  const timeAgo = formatTimeAgo(normalizedTimestamp);
 
   return (
     <article className="bg-surface shadow-card overflow-hidden">
