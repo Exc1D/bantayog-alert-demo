@@ -18,9 +18,21 @@ export default function ResolutionSheet({ report, onClose }) {
             Close
           </button>
         </div>
-        <p className="text-sm text-text-secondary">
-          {report.verification?.resolution?.notes ?? 'No resolution notes provided.'}
-        </p>
+        {report.verification?.resolution?.resolutionNotes && (
+          <p className="text-sm text-text-secondary mb-3">
+            {report.verification.resolution.resolutionNotes}
+          </p>
+        )}
+        {report.verification?.resolution?.actionsTaken && (
+          <p className="text-sm text-text-secondary">
+            <span className="font-semibold">Actions taken: </span>
+            {report.verification.resolution.actionsTaken}
+          </p>
+        )}
+        {!report.verification?.resolution?.resolutionNotes &&
+          !report.verification?.resolution?.actionsTaken && (
+            <p className="text-sm text-text-secondary">No resolution notes provided.</p>
+          )}
       </div>
     </div>
   );

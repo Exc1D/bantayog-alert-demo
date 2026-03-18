@@ -11,6 +11,9 @@ import DetailsStep from '../components/Reports/DetailsStep';
 
 const TOTAL_STEPS = 3;
 
+// Note: the `/report/:id` route renders this creation wizard for now.
+// Phase 3 will add a ReportDetailPage that handles the `:id` param and shows
+// the existing report instead of the creation flow.
 export default function ReportPage() {
   const navigate = useNavigate();
   const { user } = useAuth();

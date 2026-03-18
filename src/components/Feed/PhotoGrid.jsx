@@ -31,7 +31,7 @@ export default function PhotoGrid({ photos = [], onPhotoPress }) {
       <div className="grid grid-cols-2 gap-0.5">
         {photos.map((src, i) => (
           <button
-            key={src}
+            key={`${src}-${i}`}
             type="button"
             onClick={() => handleClick(i)}
             aria-label={`View photo ${i + 1}`}
