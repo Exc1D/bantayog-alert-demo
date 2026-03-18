@@ -20,11 +20,7 @@ export default function PhotoGrid({ photos = [], onPhotoPress }) {
         onClick={() => handleClick(0)}
         aria-label="View photo"
       >
-        <img
-          src={photos[0]}
-          alt="Report photo"
-          className="w-full h-40 object-cover"
-        />
+        <img src={photos[0]} alt="Report photo" className="w-full h-40 object-cover" />
       </button>
     );
   }

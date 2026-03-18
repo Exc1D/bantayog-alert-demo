@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useReports } from '../hooks/useReports';
 import FeedPost from '../components/Feed/FeedPost';
-import ResolutionModal from '../components/Feed/ResolutionModal';
+import ResolutionSheet from '../components/Feed/ResolutionSheet';
 
 export default function FeedTab() {
   const { reports, loading } = useReports();
@@ -35,7 +35,7 @@ export default function FeedTab() {
       </div>
 
       {resolutionReport && (
-        <ResolutionModal report={resolutionReport} onClose={() => setResolutionReport(null)} />
+        <ResolutionSheet report={resolutionReport} onClose={() => setResolutionReport(null)} />
       )}
     </>
   );
