@@ -16,6 +16,10 @@ const AlertsTab  = lazy(() => import('./pages/AlertsTab'));
 const ProfileTab = lazy(() => import('./pages/ProfileTab'));
 
 // Admin — separate lazy chunk (zero bytes for citizens)
+// NOTE: AdminShell is the pre-existing component, not the Phase 3 stub.
+// Its internal tab navigation (activeTab/onTabChange props) is non-functional
+// under the new router — it always renders AdminDashboard. This is intentional:
+// admin tab routing will be rebuilt in Phase 3 using nested React Router routes.
 const AdminShell = lazy(() => import('./components/Admin/AdminShell'));
 
 function PageFallback() {

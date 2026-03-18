@@ -9,6 +9,7 @@ export default function AppShell() {
       <main className="flex-1 overflow-hidden relative">
         <Outlet />
       </main>
+      {/* TODO Phase 2+: Replace with sidebar on lg+ breakpoint for desktop layout */}
       <TabNavigation />
     </div>
   );

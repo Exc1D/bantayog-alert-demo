@@ -7,6 +7,7 @@ import {
   getPermissions,
   isModerator,
   isAdminRole,
+  isAdmin,
   normalizeRole,
 } from '../utils/rbac';
 
@@ -236,6 +237,32 @@ describe('rbac.js', () => {
 
     it('should return false for null', () => {
       expect(isAdminRole(null)).toBe(false);
+    });
+  });
+
+  describe('isAdmin', () => {
+    it('returns false for null/undefined role', () => {
+      expect(isAdmin(null)).toBe(false);
+      expect(isAdmin(undefined)).toBe(false);
+    });
+
+    it('returns false for regular user role', () => {
+      expect(isAdmin('user')).toBe(false);
+    });
+
+    it('returns true for admin_* roles', () => {
+      expect(isAdmin('admin_daet')).toBe(true);
+      expect(isAdmin('admin_camarines_norte')).toBe(true);
+    });
+
+    it('returns true for superadmin_provincial', () => {
+      expect(isAdmin('superadmin_provincial')).toBe(true);
+    });
+
+    it('returns false for other superadmin variants (known limitation)', () => {
+      // superadmin_city is not currently recognized by isAdmin.
+      // This is a known limitation — only superadmin_provincial is supported.
+      expect(isAdmin('superadmin_city')).toBe(false);
     });
   });
 

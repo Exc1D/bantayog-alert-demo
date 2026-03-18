@@ -3,11 +3,11 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import AdminGuard from './AdminGuard';
 
 // Mock auth context
-vi.mock('../../hooks/useAuthContext', () => ({
-  default: vi.fn(),
+vi.mock('../../contexts/AuthContext', () => ({
+  useAuthContext: vi.fn(),
 }));
 
-import useAuthContext from '../../hooks/useAuthContext';
+import { useAuthContext } from '../../contexts/AuthContext';
 
 function renderWithRouter(authState, path = '/admin') {
   useAuthContext.mockReturnValue(authState);
