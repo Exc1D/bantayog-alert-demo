@@ -111,10 +111,7 @@ export default function ProfileTab() {
         {/* Preferences */}
         <SettingsGroup
           items={[
-            {
-              label: 'Notifications',
-              rightElement: <Toggle value={true} onChange={() => {}} />,
-            },
+            { label: 'Notifications', rightLabel: 'Coming soon' },
             {
               label: 'Dark mode',
               rightElement: <Toggle value={isDark} onChange={toggleTheme} />,

@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../utils/firebaseConfig';
 import { useReports } from '../../hooks/useReports';
 import { useAuth } from '../../hooks/useAuth';
 import DispatchForm from './DispatchForm';
@@ -21,8 +23,23 @@ export default function ReportDetail() {
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [photoIndex, _setPhotoIndex] = useState(0);
+  const [fetchedReport, setFetchedReport] = useState(null);
 
-  const report = reports.find((r) => r.id === id);
+  const listReport = reports.find((r) => r.id === id);
+
+  // Fallback: fetch directly when the report isn't in the paginated list
+  useEffect(() => {
+    if (listReport || loading) return;
+    let active = true;
+    getDoc(doc(db, 'reports', id)).then((snap) => {
+      if (active && snap.exists()) setFetchedReport({ id: snap.id, ...snap.data() });
+    });
+    return () => {
+      active = false;
+    };
+  }, [id, listReport, loading]);
+
+  const report = listReport ?? fetchedReport;
 
   if (!report) {
     return (
@@ -59,13 +76,17 @@ export default function ReportDetail() {
   }
 
   async function handleReject() {
+    if (submitting) return;
     const reason = window.prompt('Rejection reason (required):');
     if (!reason?.trim()) return;
+    setSubmitting(true);
     try {
       await rejectReport(id, { rejectedBy: user.uid, reason });
       navigate('/admin');
     } catch (err) {
       console.error('Reject failed:', err);
+    } finally {
+      setSubmitting(false);
     }
   }
 

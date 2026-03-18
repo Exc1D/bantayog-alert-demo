@@ -26,6 +26,7 @@ export default function AvatarUpload({ name, photoUrl, onUpload, uploading }) {
   function handleFileChange(e) {
     const file = e.target.files?.[0];
     if (file) onUpload(file);
+    e.target.value = '';
   }
 
   return (

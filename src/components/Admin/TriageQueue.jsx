@@ -37,7 +37,7 @@ export default function TriageQueue() {
   }
 
   function handleReject(id) {
-    navigate(`/admin/report/${id}?action=reject`);
+    navigate(`/admin/report/${id}`);
   }
 
   return (
