@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useReportsContext } from '../contexts/ReportsContext';
+import { useReports } from '../hooks/useReports';
+import { useGeolocation } from '../hooks/useGeolocation';
 import CriticalAlertBanner from '../components/Map/CriticalAlertBanner';
 import MapSkeleton from '../components/Map/MapSkeleton';
 
@@ -11,7 +12,8 @@ import LeafletMap from '../components/Map/LeafletMap';
 
 export default function MapTab({ onViewReport }) {
   const [mapReady, setMapReady] = useState(false);
-  const { reports } = useReportsContext();
+  const { reports } = useReports();
+  const { municipality } = useGeolocation();
 
   useEffect(() => {
     // Small delay to let the skeleton paint before the heavier map render begins
@@ -26,7 +28,7 @@ export default function MapTab({ onViewReport }) {
       {/* Map container */}
       <div className="flex-1 relative overflow-hidden">
         {!mapReady && <MapSkeleton />}
-        {mapReady && <LeafletMap reports={reports} onReportClick={onViewReport} />}
+        {mapReady && <LeafletMap reports={reports} municipality={municipality} onReportClick={onViewReport} />}
       </div>
 
       {/* Floating report button */}
