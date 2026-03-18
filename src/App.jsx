@@ -13,6 +13,7 @@ const MapTab = lazy(() => import('./pages/MapTab'));
 const FeedTab = lazy(() => import('./pages/FeedTab'));
 const AlertsTab = lazy(() => import('./pages/AlertsTab'));
 const ProfileTab = lazy(() => import('./pages/ProfileTab'));
+const ReportPage = lazy(() => import('./pages/ReportPage'));
 
 // Admin — separate lazy chunk (zero bytes for citizens)
 // NOTE: AdminShell is the pre-existing component, not the Phase 3 stub.
@@ -29,6 +30,8 @@ const router = createBrowserRouter([
       { path: 'feed', element: <FeedTab /> },
       { path: 'alerts', element: <AlertsTab /> },
       { path: 'profile', element: <ProfileTab /> },
+      { path: 'report', element: <ReportPage /> },
+      { path: 'report/:id', element: <ReportPage /> },
       {
         path: 'admin',
         element: <AdminGuard />,

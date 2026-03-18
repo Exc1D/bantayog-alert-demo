@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from './MarkerClusterGroup';
 import 'leaflet/dist/leaflet.css';
@@ -126,7 +127,8 @@ function MapResizeHandler() {
   return null;
 }
 
-export default function LeafletMap({ reports = [], onReportClick }) {
+export default function LeafletMap({ reports = [] }) {
+  const navigate = useNavigate();
   const mapRef = useRef(null);
   const [currentTileIndex, setCurrentTileIndex] = useState(0);
   const [activeLayer, setActiveLayer] = useState('streets');
@@ -169,9 +171,9 @@ export default function LeafletMap({ reports = [], onReportClick }) {
 
   const handleMarkerClick = useCallback(
     (report) => {
-      if (onReportClick) onReportClick(report);
+      navigate(`/report/${report.id}`);
     },
-    [onReportClick]
+    [navigate]
   );
 
   const handleLocate = () => {

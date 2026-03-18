@@ -1,256 +1,186 @@
-import { useState, memo } from 'react';
-import { getDisasterType } from '../../data/disasterTypes';
+import { Link } from 'react-router-dom';
+import PhotoGrid from './PhotoGrid';
 import { formatTimeAgo } from '../../utils/timeUtils';
-import EngagementButtons from './EngagementButtons';
 import { getSafeMediaUrls } from '../../utils/mediaSafety';
-import ShareButton from '../Common/ShareButton';
 
-function SeverityBadge({ severity }) {
-  const styles = {
-    critical: 'bg-accent text-white',
-    moderate: 'bg-warning text-white',
-    minor: 'bg-success text-white',
-  };
-  return (
-    <span
-      className={`${styles[severity] || styles.minor} px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wide`}
-    >
-      {severity}
-    </span>
-  );
-}
-
-function StatusBadge({ status }) {
-  const styles = {
-    pending: 'bg-surface text-text dark:bg-dark-elevated dark:text-dark-text',
-    verified: 'bg-blue-100 text-primary dark:bg-blue-900/40 dark:text-blue-400',
-    rejected: 'bg-red-100 text-accent dark:bg-red-900/40 dark:text-red-300',
-    resolved: 'bg-emerald-100 text-success dark:bg-emerald-900/40 dark:text-emerald-300',
-  };
-  return (
-    <span
-      className={`${styles[status] || styles.pending} px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wide`}
-    >
-      {status}
-    </span>
-  );
-}
-
-const SEVERITY_BORDER = {
-  critical: 'severity-border-critical',
-  moderate: 'severity-border-moderate',
-  minor: 'severity-border-minor',
+const SEVERITY_STRIP = {
+  critical: 'bg-urgent',
+  moderate: 'bg-moderate',
+  minor: 'bg-moderate',
+  resolved: 'bg-resolved',
+  default: 'bg-text-tertiary',
 };
 
-export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
-  const [showComments, setShowComments] = useState(false);
-  const [imageIndex, setImageIndex] = useState(0);
+const SEVERITY_BADGE = {
+  critical: 'bg-urgent/10 text-urgent',
+  moderate: 'bg-moderate/10 text-moderate',
+  minor: 'bg-moderate/10 text-moderate',
+};
 
-  const disasterType = getDisasterType(report.disaster?.type);
-  const photos = getSafeMediaUrls(report.media?.photos);
-  const severity = report.disaster?.severity || 'minor';
-  const status = report.verification?.status || 'pending';
-  const isCritical = severity === 'critical' && status !== 'resolved';
+const STATUS_BADGE = {
+  verified: 'bg-shell/10 text-text-secondary',
+  pending: 'bg-text-tertiary/10 text-text-tertiary',
+  resolved: 'bg-resolved/10 text-resolved',
+};
+
+export default function FeedPost({ report, onViewResolution }) {
+  const {
+    id,
+    disaster = {},
+    location = {},
+    verification = {},
+    timestamp,
+    media = {},
+    upvotes = [],
+  } = report;
+
+  const isResolved = verification.status === 'resolved';
+  const severity = isResolved ? 'resolved' : (disaster.severity ?? 'default');
+  const stripColor = SEVERITY_STRIP[severity] ?? SEVERITY_STRIP.default;
+  const normalizedTimestamp =
+    timestamp && !timestamp.toDate && timestamp.seconds
+      ? new Date(timestamp.seconds * 1000)
+      : timestamp;
+  const timeAgo = formatTimeAgo(normalizedTimestamp);
 
   return (
-    <div
-      className={`bg-white dark:bg-dark-card rounded-xl mb-3 shadow-card overflow-hidden hover:shadow-card-hover transition-shadow animate-stagger-in ${SEVERITY_BORDER[severity] || ''} ${isCritical ? 'critical-glow' : ''} status-stripe-${status}`}
-      style={{ '--stagger-index': 0 }}
-    >
-      {/* Resolved Banner */}
-      {status === 'resolved' && (
-        <div className="bg-success text-white py-1.5 text-center text-[10px] font-bold uppercase tracking-widest">
-          RESOLVED
-        </div>
-      )}
+    <article className="bg-surface shadow-card overflow-hidden">
+      {/* 3px severity strip */}
+      <div className={`h-1 ${stripColor}`} aria-hidden="true" />
 
-      {/* Post Header */}
-      <div className="p-3.5">
-        <div className="flex justify-between items-start gap-2">
+      <div className="px-4 pt-3 pb-2">
+        {/* Header row */}
+        <div className="flex items-start gap-3 mb-2">
+          {/* Type icon circle */}
+          <div
+            className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
+              ${SEVERITY_BADGE[disaster.severity ?? 'minor'] ?? 'bg-text-tertiary/10 text-text-tertiary'}`}
+          >
+            {/* Alert triangle */}
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          </div>
+
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-lg">{disasterType.icon}</span>
-              <span className="font-bold text-sm uppercase tracking-wide truncate dark:text-dark-text">
-                {disasterType.label}
-              </span>
-              {status === 'verified' && (
-                <svg
-                  aria-hidden="true"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="#1B2A41"
-                  stroke="white"
-                  strokeWidth="2"
+            <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+              <span className="font-bold text-sm text-text-primary">{disaster.type}</span>
+              {disaster.severity && !isResolved && (
+                <span
+                  className={`text-[10px] font-semibold px-1.5 py-0.5 rounded capitalize
+                  ${SEVERITY_BADGE[disaster.severity] ?? ''}`}
                 >
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="9 12 11.5 14.5 16 10" />
-                </svg>
+                  {disaster.severity}
+                </span>
               )}
-            </div>
-            <div className="text-xs text-textLight dark:text-dark-textLight mt-1 flex items-center gap-1">
-              <svg
-                aria-hidden="true"
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              <span className="truncate">
-                {report.location?.municipality}
-                {report.location?.barangay && `, ${report.location.barangay}`}
-              </span>
-            </div>
-            <div className="text-[11px] text-textMuted dark:text-dark-textMuted mt-0.5 flex items-center gap-1.5">
-              <span>{formatTimeAgo(report.timestamp)}</span>
-              <span className="text-border">&bull;</span>
-              <span>{report.reporter?.name || 'Anonymous'}</span>
-            </div>
-          </div>
-          <div className="flex flex-col items-end gap-1 shrink-0">
-            <SeverityBadge severity={severity} />
-            <StatusBadge status={status} />
-            <ShareButton report={report} />
-          </div>
-        </div>
-      </div>
-
-      {/* Photo */}
-      {photos.length > 0 && (
-        <div className="relative">
-          <img
-            src={photos[imageIndex]}
-            alt="Report"
-            className="w-full max-h-80 object-cover"
-            loading="lazy"
-          />
-          {photos.length > 1 && (
-            <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] font-mono px-2 py-0.5 rounded-full">
-              {imageIndex + 1}/{photos.length}
-            </div>
-          )}
-          {photos.length > 1 && (
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-              {photos.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setImageIndex(i)}
-                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                    i === imageIndex ? 'bg-white' : 'bg-white/40'
-                  }`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Content */}
-      <div className="px-3.5 py-3">
-        <p className="text-sm leading-relaxed dark:text-dark-text">
-          {report.disaster?.description}
-        </p>
-
-        {/* Type-specific details */}
-        {report.disaster?.waterLevel && (
-          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 rounded-lg p-2 mt-2.5 text-xs flex items-center gap-2">
-            <span className="font-bold text-blue-700 dark:text-blue-400">Water Level</span>
-            <span className="text-blue-600 dark:text-blue-400">{report.disaster.waterLevel}cm</span>
-          </div>
-        )}
-
-        {report.disaster?.windSpeed && (
-          <div className="bg-cyan-50 dark:bg-cyan-950/30 border border-cyan-100 dark:border-cyan-900/40 rounded-lg p-2 mt-2.5 text-xs flex items-center gap-2">
-            <span className="font-bold text-cyan-700 dark:text-cyan-400">Wind Speed</span>
-            <span className="text-cyan-600 dark:text-cyan-400">
-              {report.disaster.windSpeed} kph
-            </span>
-          </div>
-        )}
-
-        {report.disaster?.casualties > 0 && (
-          <div className="bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 rounded-lg p-2 mt-2.5 text-xs flex items-center gap-2">
-            <span className="font-bold text-red-700 dark:text-red-400">Casualties</span>
-            <span className="text-red-600 dark:text-red-400">{report.disaster.casualties}</span>
-          </div>
-        )}
-
-        {/* Tags */}
-        {report.disaster?.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2.5">
-            {report.disaster.tags.map((tag) => (
+              {isResolved && (
+                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-resolved/10 text-resolved">
+                  Resolved
+                </span>
+              )}
               <span
-                key={tag}
-                className="bg-primary/5 dark:bg-dark-elevated/20 text-primary/70 dark:text-dark-textLight/70 text-[10px] px-2 py-0.5 rounded-full font-medium"
+                className={`text-[10px] font-medium px-1.5 py-0.5 rounded capitalize
+                ${STATUS_BADGE[verification.status] ?? ''}`}
               >
-                #{tag}
+                {verification.status}
               </span>
-            ))}
+            </div>
+            <p className="text-xs text-text-tertiary">
+              {[location.barangay, location.municipality].filter(Boolean).join(', ')} · {timeAgo}
+            </p>
           </div>
-        )}
+        </div>
 
-        {/* Weather Context */}
-        {report.weatherContext && (
-          <div className="bg-surface dark:bg-dark-elevated border border-borderLight dark:border-dark-border rounded-lg p-2 mt-2.5 text-[11px] text-textLight dark:text-dark-textLight">
-            <span className="font-semibold">Weather:</span> {report.weatherContext.condition},{' '}
-            {report.weatherContext.temperature}&deg;C
-            {report.weatherContext.windSpeed
-              ? ` &bull; Wind: ${report.weatherContext.windSpeed}kph`
-              : ''}
-          </div>
+        {/* Description */}
+        {disaster.description && (
+          <p className="text-sm text-text-secondary leading-relaxed mb-3 line-clamp-3">
+            {disaster.description}
+          </p>
         )}
       </div>
 
-      {/* Resolution Evidence */}
-      {status === 'resolved' && report.verification?.resolution && (
-        <div className="bg-green-50 p-3.5 border-t border-success/20">
-          <p className="text-[10px] font-bold text-success uppercase tracking-wider mb-2">Update</p>
-          {report.verification.resolution.evidencePhotos?.length > 0 && (
-            <div className="grid grid-cols-3 gap-2 mb-2">
-              {getSafeMediaUrls(report.verification.resolution.evidencePhotos).map((photo, i) => (
-                <img
-                  key={`${photo}-${i}`}
-                  src={photo}
-                  alt={`Evidence ${i + 1}`}
-                  className="w-full h-16 object-cover rounded-lg border border-success/20"
-                  loading="lazy"
-                />
-              ))}
-            </div>
-          )}
-          {report.verification.resolution.actionsTaken && (
-            <p className="text-xs text-emerald-800">
-              {report.verification.resolution.actionsTaken}
-            </p>
-          )}
-          {report.verification.resolution.resolutionNotes && (
-            <p className="text-[11px] text-emerald-600 mt-1">
-              {report.verification.resolution.resolutionNotes}
-            </p>
-          )}
-        </div>
-      )}
+      {/* Photo grid — full bleed */}
+      {(media.photos?.length ?? 0) > 0 && <PhotoGrid photos={getSafeMediaUrls(media.photos)} />}
 
-      {/* Engagement */}
-      <EngagementButtons
-        report={report}
-        onViewMap={onViewMap}
-        onToggleComments={() => setShowComments(!showComments)}
-        onRequireSignUp={onRequireSignUp}
-      />
-
-      {showComments && (
-        <div className="p-3 border-t border-borderLight dark:border-dark-border bg-surface dark:bg-dark-elevated">
-          <p className="text-[11px] text-textMuted dark:text-dark-textMuted text-center">
-            Comments coming soon
-          </p>
+      {/* Engagement bar */}
+      <div className="px-4 py-2.5 flex items-center gap-4 border-t border-black/5">
+        {/* Upvote */}
+        <div className="flex items-center gap-1.5 text-text-tertiary">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z" />
+            <path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3" />
+          </svg>
+          <span className="text-xs">{upvotes.length}</span>
         </div>
-      )}
-    </div>
+
+        {/* Share */}
+        <div className="flex items-center gap-1.5 text-text-tertiary">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </svg>
+          <span className="text-xs">Share</span>
+        </div>
+
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Resolved: view resolution */}
+        {isResolved && (
+          <button
+            type="button"
+            onClick={() => onViewResolution?.(report)}
+            className="text-xs text-resolved font-semibold"
+            aria-label="View resolution"
+          >
+            View resolution →
+          </button>
+        )}
+
+        {/* View full report */}
+        <Link
+          to={`/report/${id}`}
+          className="text-xs text-text-tertiary font-medium"
+          aria-label="View full report"
+        >
+          View full report →
+        </Link>
+      </div>
+    </article>
   );
-});
+}
