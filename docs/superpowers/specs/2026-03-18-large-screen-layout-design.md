@@ -103,7 +103,7 @@ Wrapper around `LeafletMap` that reacts to context.
 - Reads `mapMode` and `highlightedReportId` from `MapPanelContext`
 - When `mapMode === 'full'`: panel takes full remaining width (no right content panel)
 - When `mapMode === 'hidden'`: renders `null` (caller hides the slot)
-- When `highlightedReportId` changes: calls `map.flyTo(pin coords)` — guards against null `mapRef`
+- When `highlightedReportId` changes: passes it as a `flyToReportId` prop to `LeafletMap`. `LeafletMap` handles the `flyTo` internally using its existing internal `mapRef` — no `forwardRef` needed. `LeafletMap` adds a `useEffect` watching `flyToReportId` that calls `mapRef.current.flyTo(coords)` when it changes, guarding against null `mapRef`.
 - Pin rendering: `'pins'` mode shows report pins; `'zones'` mode shows alert zone overlays
 - Data: reads from `useReports()` and `useAnnouncements()`. Both hooks open Firestore real-time listeners; calling them in `PersistentMapPanel` alongside a tab that also calls them opens duplicate listeners. To avoid this, `PersistentMapPanel` should NOT call these hooks directly — instead, the data (report locations, zone data) must be passed down via `MapPanelContext`. Tabs that set `mapMode('pins')` or `mapMode('zones')` also call `setReportLocations(reports)` / `setAlertZones(zones)` to push their already-fetched data into context.
 
@@ -114,6 +114,12 @@ setReportLocations: (locs) => void,
 alertZones: Array<{ id: string, bounds: LatLngBounds, severity: string }>,
 setAlertZones: (zones) => void,
 ```
+
+**`src/components/Map/LeafletMap.jsx` — modified**
+
+Add `flyToReportId` and `reportLocations` props:
+- `flyToReportId: string | null` — when it changes to a non-null value, call `mapRef.current.flyTo([lat, lng], 15)` using the matching entry from `reportLocations`. Guard with `if (!mapRef.current) return`.
+- `reportLocations: Array<{ id, lat, lng, severity }>` — used by `PersistentMapPanel` to render pins and resolve coords for flyTo
 
 **`src/hooks/useIsLg.js`**
 
@@ -236,6 +242,14 @@ User navigates to Profile tab
 | `MapTab` at lg | Assert Leaflet not rendered; REPORT EMERGENCY button present |
 | `MapTab` at mobile | Assert existing LeafletMap renders |
 | Feed → map highlight | Tap a FeedPost card; assert `highlightedReportId` updates in context; assert `PersistentMapPanel` calls `flyTo` with correct coordinates |
+
+**Note:** `src/test/utils.jsx` (`AllProviders` wrapper) must be updated to include `MapPanelContext.Provider` so any test rendering a component that calls `useMapPanel()` does not throw.
+
+---
+
+## Cleanup
+
+- **`src/components/Layout/Sidebar.jsx`** — dead code (not imported anywhere since Phase 1 rebuild). Delete this file.
 
 ---
 
