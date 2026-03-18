@@ -11,18 +11,24 @@ function TestConsumer() {
     setHighlightedReportId,
     reportLocations,
     setReportLocations,
+    reports,
+    setReports,
   } = useMapPanel();
   return (
     <div>
       <span data-testid="mode">{mapMode}</span>
       <span data-testid="highlighted">{highlightedReportId ?? 'null'}</span>
       <span data-testid="loc-count">{reportLocations.length}</span>
+      <span data-testid="reports-count">{reports.length}</span>
       <button onClick={() => setMapMode('pins')}>set pins</button>
       <button onClick={() => setHighlightedReportId('abc')}>highlight</button>
       <button
         onClick={() => setReportLocations([{ id: '1', lat: 10, lng: 20, severity: 'critical' }])}
       >
         set locs
+      </button>
+      <button onClick={() => setReports([{ id: '1', lat: 10, lng: 20, severity: 'critical' }])}>
+        set reports
       </button>
     </div>
   );

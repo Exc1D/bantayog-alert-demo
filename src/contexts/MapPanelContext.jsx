@@ -6,10 +6,12 @@ export function MapPanelProvider({ children }) {
   const [mapMode, setMapModeRaw] = useState('hidden');
   const [highlightedReportId, setHighlightedReportIdRaw] = useState(null);
   const [reportLocations, setReportLocationsRaw] = useState([]);
+  const [reports, setReportsRaw] = useState([]);
 
   const setMapMode = useCallback((mode) => setMapModeRaw(mode), []);
   const setHighlightedReportId = useCallback((id) => setHighlightedReportIdRaw(id), []);
   const setReportLocations = useCallback((locs) => setReportLocationsRaw(locs), []);
+  const setReports = useCallback((reps) => setReportsRaw(reps), []);
 
   return (
     <MapPanelContext.Provider
@@ -20,6 +22,8 @@ export function MapPanelProvider({ children }) {
         setHighlightedReportId,
         reportLocations,
         setReportLocations,
+        reports,
+        setReports,
       }}
     >
       {children}

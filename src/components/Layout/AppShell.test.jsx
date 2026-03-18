@@ -89,7 +89,7 @@ describe('AppShell', () => {
     });
 
     it('renders PersistentMapPanel on lg screens', () => {
-      renderAppShell();
+      renderAppShellWithMapMode('pins');
       expect(screen.getByTestId('persistent-map-panel')).toBeInTheDocument();
     });
 

@@ -8,13 +8,18 @@ vi.mock('./LeafletMap', () => ({ default: (props) => mockLeafletMap(props) }));
 
 import PersistentMapPanel from './PersistentMapPanel';
 
-function renderWithMapMode(mapMode, { highlightedReportId = null, reportLocations = [] } = {}) {
+function renderWithMapMode(
+  mapMode,
+  { highlightedReportId = null, reportLocations = [], reports = [] } = {}
+) {
   function Setup() {
-    const { setMapMode, setHighlightedReportId, setReportLocations } = useMapPanel();
+    const { setMapMode, setHighlightedReportId, setReportLocations, setReports } =
+      useMapPanel();
     useEffect(() => {
       setMapMode(mapMode);
       setHighlightedReportId(highlightedReportId);
       setReportLocations(reportLocations);
+      setReports(reports);
     }, []);
     return <PersistentMapPanel />;
   }
@@ -54,5 +59,16 @@ describe('PersistentMapPanel', () => {
     const reportLocations = [{ id: 'r1', lat: 14.5, lng: 121.0, severity: 'high' }];
     renderWithMapMode('pins', { highlightedReportId: 'r1', reportLocations });
     expect(mockLeafletMap).toHaveBeenCalledWith(expect.objectContaining({ flyToReportId: 'r1' }));
+  });
+
+  it('passes reports to LeafletMap for rendering markers', () => {
+    const reports = [
+      { id: 'r1', lat: 14.5, lng: 121.0, severity: 'high', location: { municipality: 'Makati' } },
+    ];
+    const reportLocations = [{ id: 'r1', lat: 14.5, lng: 121.0, severity: 'high' }];
+    renderWithMapMode('pins', { reports, reportLocations });
+    expect(mockLeafletMap).toHaveBeenCalledWith(
+      expect.objectContaining({ reports: expect.arrayContaining(reports) })
+    );
   });
 });

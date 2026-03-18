@@ -7,15 +7,16 @@ import { useMapPanel } from '../contexts/MapPanelContext';
 export default function FeedTab() {
   const { reports, loading } = useReports();
   const [resolutionReport, setResolutionReport] = useState(null);
-  const { setMapMode, setReportLocations, setHighlightedReportId } = useMapPanel();
+  const { setMapMode, setReportLocations, setReports, setHighlightedReportId } = useMapPanel();
 
   useEffect(() => setMapMode('pins'), [setMapMode]);
 
   useEffect(() => {
+    setReports(reports);
     setReportLocations(
       reports.map((r) => ({ id: r.id, lat: r.lat, lng: r.lng, severity: r.severity }))
     );
-  }, [reports, setReportLocations]);
+  }, [reports, setReports, setReportLocations]);
 
   if (loading) {
     return (

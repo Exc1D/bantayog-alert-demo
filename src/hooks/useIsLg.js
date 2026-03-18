@@ -8,11 +8,17 @@ export default function useIsLg() {
 
   useEffect(() => {
     const mql = window.matchMedia('(min-width: 1024px)');
-    function handleChange(e) {
-      setIsLg(e.matches);
+    const handleChange = (e) => setIsLg(e.matches);
+
+    // Modern browsers support addEventListener; older Safari uses addListener
+    if (mql.addEventListener) {
+      mql.addEventListener('change', handleChange);
+      return () => mql.removeEventListener('change', handleChange);
     }
-    mql.addEventListener('change', handleChange);
-    return () => mql.removeEventListener('change', handleChange);
+
+    // Fallback for older browsers (Safari < 14)
+    mql.addListener(handleChange);
+    return () => mql.removeListener(handleChange);
   }, []);
 
   return isLg;
