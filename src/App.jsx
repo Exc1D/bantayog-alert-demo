@@ -35,10 +35,7 @@ const router = createBrowserRouter([
       {
         path: 'admin',
         element: <AdminGuard />,
-        children: [
-          { index: true, element: <AdminShell /> },
-          { path: '*', element: <AdminShell /> },
-        ],
+        children: [{ path: '*', element: <AdminShell /> }],
       },
     ],
   },

@@ -1,27 +1,30 @@
-import { cn } from '../../utils/cn';
+import { NavLink } from 'react-router-dom';
 
-export default function AdminNav({ tabs, currentTab, onTabChange }) {
+const TABS = [
+  { label: 'Queue', href: '/admin' },
+  { label: 'Live Map', href: '/admin/map' },
+  { label: 'All Reports', href: '/admin/reports' },
+];
+
+export default function AdminNav() {
   return (
-    <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-      <div className="flex overflow-x-auto">
-        {tabs.map((tab) => (
-          <button
-            key={tab.path}
-            onClick={() => onTabChange(tab.path)}
-            className={cn(
-              'flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap',
-              'border-b-2 transition-colors',
-              currentTab === tab.path
-                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-                : 'border-transparent text-gray-600 dark:text-gray-300',
-              'hover:text-gray-900 dark:hover:text-gray-100'
-            )}
-          >
-            <span>{tab.icon}</span>
-            <span>{tab.label}</span>
-          </button>
-        ))}
-      </div>
+    <nav
+      aria-label="Admin navigation"
+      className="bg-shell border-b border-white/10 grid grid-cols-3"
+    >
+      {TABS.map(({ label, href }) => (
+        <NavLink
+          key={href}
+          to={href}
+          end={href === '/admin'}
+          className={({ isActive }) =>
+            `py-3 text-center text-xs font-semibold transition-colors
+             ${isActive ? 'text-white border-b-2 border-urgent' : 'text-white/50'}`
+          }
+        >
+          {label}
+        </NavLink>
+      ))}
     </nav>
   );
 }
