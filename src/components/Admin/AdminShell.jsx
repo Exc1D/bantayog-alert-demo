@@ -1,33 +1,35 @@
+import { Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
-import LoadingSpinner from '../Common/LoadingSpinner';
 import AdminNav from './AdminNav';
+import LoadingSpinner from '../Common/LoadingSpinner';
 
-const AdminDashboard = lazy(() => import('./AdminDashboard'));
-const AdminAlertsTab = lazy(() => import('./AdminAlertsTab'));
+const TriageQueue = lazy(() => import('./TriageQueue'));
+const AdminMapView = lazy(() => import('./AdminMapView'));
+const AllReports = lazy(() => import('./AllReports'));
+const ReportDetail = lazy(() => import('./ReportDetail'));
 
-const TABS = [
-  { path: 'admin', label: 'Queue', icon: '📋' },
-  { path: 'admin-map', label: 'Live Map', icon: '🗺️' },
-  { path: 'admin-reports', label: 'All Reports', icon: '📊' },
-  { path: 'admin-alerts', label: 'Alerts', icon: '🔔' },
-];
-
-export default function AdminShell({ activeTab, onTabChange }) {
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'admin-alerts':
-        return <AdminAlertsTab />;
-      default:
-        return <AdminDashboard />;
-    }
-  };
-
+function PageFallback() {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <AdminNav tabs={TABS} currentTab={activeTab} onTabChange={onTabChange} />
-      <main className="p-4">
-        <Suspense fallback={<LoadingSpinner />}>{renderContent()}</Suspense>
-      </main>
+    <div className="flex items-center justify-center h-full">
+      <LoadingSpinner />
+    </div>
+  );
+}
+
+export default function AdminShell() {
+  return (
+    <div className="flex flex-col h-full">
+      <AdminNav />
+      <div className="flex-1 overflow-hidden">
+        <Suspense fallback={<PageFallback />}>
+          <Routes>
+            <Route index element={<TriageQueue />} />
+            <Route path="map" element={<AdminMapView />} />
+            <Route path="reports" element={<AllReports />} />
+            <Route path="report/:id" element={<ReportDetail />} />
+          </Routes>
+        </Suspense>
+      </div>
     </div>
   );
 }
