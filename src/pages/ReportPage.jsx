@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { submitReport } from '../hooks/useReports';
 import { useAuth } from '../hooks/useAuth';
 import { useGeolocation } from '../hooks/useGeolocation';
+import { resolveMunicipality } from '../utils/geoFencing';
 import ReportTypeStep from '../components/Reports/ReportTypeStep';
 import PhotoStep from '../components/Reports/PhotoStep';
 import DetailsStep from '../components/Reports/DetailsStep';
@@ -15,6 +16,13 @@ export default function ReportPage() {
   const { location } = useGeolocation();
   const lat = location?.lat;
   const lng = location?.lng;
+
+  // Derive municipality string from GPS coordinates
+  const municipality = useMemo(() => {
+    if (!location?.lat || !location?.lng) return null;
+    const result = resolveMunicipality(location.lat, location.lng);
+    return result.municipality === 'Unknown' ? null : result.municipality;
+  }, [location]);
 
   const [step, setStep] = useState(1);
   const [disasterType, setDisasterType] = useState(null);
@@ -100,7 +108,7 @@ export default function ReportPage() {
           <DetailsStep
             description={description}
             severity={severity}
-            municipality={null}
+            municipality={municipality}
             onDescriptionChange={setDescription}
             onSeverityChange={setSeverity}
             onSubmit={handleSubmit}
