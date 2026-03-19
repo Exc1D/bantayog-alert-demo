@@ -2,12 +2,15 @@ import { render } from '@testing-library/react';
 import { ToastProvider } from '../components/Common/Toast';
 import { AuthProvider } from '../contexts/AuthContext';
 import { ReportsProvider } from '../contexts/ReportsContext';
+import { MapPanelProvider } from '../contexts/MapPanelContext';
 
 const AllProviders = ({ children }) => {
   return (
     <ToastProvider>
       <AuthProvider>
-        <ReportsProvider>{children}</ReportsProvider>
+        <ReportsProvider>
+          <MapPanelProvider>{children}</MapPanelProvider>
+        </ReportsProvider>
       </AuthProvider>
     </ToastProvider>
   );

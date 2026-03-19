@@ -2,7 +2,11 @@ import { Outlet } from 'react-router-dom';
 import { Suspense } from 'react';
 import Header from './Header';
 import TabNavigation from './TabNavigation';
+import IconSidebar from './IconSidebar';
 import LoadingSpinner from '../Common/LoadingSpinner';
+import PersistentMapPanel from '../Map/PersistentMapPanel';
+import { MapPanelProvider, useMapPanel } from '../../contexts/MapPanelContext';
+import useIsLg from '../../hooks/useIsLg';
 
 function PageFallback() {
   return (
@@ -12,17 +16,59 @@ function PageFallback() {
   );
 }
 
-export default function AppShell() {
+function AppShellInner() {
+  const isLg = useIsLg();
+  const { mapMode } = useMapPanel();
+
+  if (isLg) {
+    const showMapPanel = mapMode !== 'hidden';
+
+    if (showMapPanel) {
+      return (
+        <div className="grid grid-cols-[44px_1fr] h-dvh bg-app-bg overflow-hidden">
+          <IconSidebar />
+          <div className="flex h-full overflow-hidden">
+            <PersistentMapPanel className={mapMode === 'full' ? 'flex-1' : 'w-[45%]'} />
+            <main role="main" className={mapMode === 'full' ? 'hidden' : 'flex-1 overflow-auto'}>
+              <Suspense fallback={<PageFallback />}>
+                <Outlet />
+              </Suspense>
+            </main>
+          </div>
+        </div>
+      );
+    }
+
+    // mapMode === 'hidden': full-width content
+    return (
+      <div className="grid grid-cols-[44px_1fr] h-dvh bg-app-bg overflow-hidden">
+        <IconSidebar />
+        <main role="main" className="flex-1 overflow-auto">
+          <Suspense fallback={<PageFallback />}>
+            <Outlet />
+          </Suspense>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-dvh bg-app-bg overflow-hidden">
       <Header />
-      <main className="flex-1 overflow-hidden relative">
+      <main role="main" className="flex-1 overflow-hidden relative">
         <Suspense fallback={<PageFallback />}>
           <Outlet />
         </Suspense>
       </main>
-      {/* TODO Phase 2+: Replace with sidebar on lg+ breakpoint for desktop layout */}
       <TabNavigation />
     </div>
+  );
+}
+
+export default function AppShell() {
+  return (
+    <MapPanelProvider>
+      <AppShellInner />
+    </MapPanelProvider>
   );
 }
