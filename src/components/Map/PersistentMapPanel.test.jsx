@@ -19,7 +19,7 @@ function renderWithMapMode(
       setHighlightedReportId(highlightedReportId);
       setReportLocations(reportLocations);
       setReports(reports);
-    }, []);
+    }, [setMapMode, setHighlightedReportId, setReportLocations, setReports]);
     return <PersistentMapPanel />;
   }
   return render(
