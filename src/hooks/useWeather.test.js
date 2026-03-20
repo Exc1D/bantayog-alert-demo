@@ -33,6 +33,17 @@ describe('useWeather', () => {
     const { result } = renderHook(() => useWeather('Daet'));
     expect(typeof result.current.refresh).toBe('function');
   });
+
+  it('sets loading=false when municipality is falsy', async () => {
+    const { result } = renderHook(() => useWeather(null));
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+    expect(result.current.weather).toBeNull();
+    expect(result.current.forecast).toEqual([]);
+    expect(result.current.error).toBe('Location required for weather data');
+  });
 });
 
 describe('useAllMunicipalitiesWeather', () => {

@@ -8,7 +8,15 @@ export default function WeatherCard({ weather, loading }) {
     );
   }
 
-  if (!weather) return null;
+  if (!weather) {
+    return (
+      <div className="bg-surface shadow-card p-4">
+        <p className="text-sm text-text-secondary">
+          Weather data unavailable — could not detect your location.
+        </p>
+      </div>
+    );
+  }
 
   const { temperature, description, humidity, windSpeed, signal } = weather;
 

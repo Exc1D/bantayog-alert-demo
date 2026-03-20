@@ -11,7 +11,13 @@ export function useWeather(municipality) {
   const [error, setError] = useState(null);
 
   const fetchWeather = useCallback(async () => {
-    if (!municipality) return;
+    if (!municipality) {
+      setWeather(null);
+      setForecast([]);
+      setError('Location required for weather data');
+      setLoading(false);
+      return;
+    }
 
     const coords = MUNICIPALITY_COORDS[municipality];
     if (!coords) {

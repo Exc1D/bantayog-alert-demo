@@ -78,3 +78,4 @@ telemetry-id
 .tmp/
 .claude/settings.local.json
 .worktrees/
+.superpowers/
