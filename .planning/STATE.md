@@ -8,7 +8,7 @@
 ## Current Status
 
 **Build:** Rebuild Phases 1-3 COMPLETE and deployed (PR #84, #86, #87)
-**Tests:** 588 passing
+**Tests:** 627 passing
 **Live URL:** https://bantayog-alert-demo-36b27.web.app
 
 **Deployed Features (Baseline):**
@@ -32,7 +32,7 @@
 
 | Issue | Phase | Priority | Status |
 |-------|-------|----------|--------|
-| CSP violation blocks image compression library | 1 | BLOCKER | Open |
+| CSP violation blocks image compression library | 1 | BLOCKER | ✓ Fixed |
 | ~30 potentially unused hooks need audit | 3 | High | Open |
 | Lighthouse Performance score: 56% (target ≥95) | 4 | Medium | Open |
 | 11 profile subpage features missing | 2 | High | Open |
@@ -43,10 +43,10 @@
 ## Phase Progress
 
 ### Phase 1: CSP Fix (Blocking)
-- **Start:** Not started
-- **Completion:** 0%
-- **Blockers:** None (ready to start)
-- **Expected Effort:** 1-2 hours (configuration + testing)
+- **Start:** 2026-03-20
+- **Completion:** 100% ✓
+- **Fix:** Added `data:` to `connect-src` in `firebase.json` — no library replacement needed
+- **Verification:** 627 tests pass, deployed to production
 
 ### Phase 2: Profile Feature Completion
 - **Start:** Not started (depends on Phase 1 completion)
@@ -112,16 +112,11 @@
 
 ## Next Actions
 
-1. **Begin Phase 1 (CSP Fix)**
-   - Open Chrome DevTools on live app
-   - Attempt photo upload; capture CSP violation details
-   - Identify blocked directive(s) and endpoints
-   - Update `firebase.json` hosting headers
-   - Test in staging before deploy
+1. **Manual verification of Phase 1 fix**
+   - Test photo upload on live app: https://bantayog-alert-demo-36b27.web.app/report
+   - Confirm no CSP errors during submission
 
-2. **Update REQUIREMENTS.md** with phase assignments and status
-
-3. **Proceed to Phase 2** once Phase 1 verified complete
+2. **Proceed to Phase 2 (Profile features)** — /gsd:plan-phase 2
 
 ---
 

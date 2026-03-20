@@ -199,6 +199,7 @@ export const IMAGE_COMPRESSION_OPTIONS = {
   maxSizeMB: 1,
   maxWidthOrHeight: 1920,
   useWebWorker: true,
+  libURL: '/vendor/browser-image-compression.js',
 };
 
 export const WEATHER_CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
