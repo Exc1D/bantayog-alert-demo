@@ -86,12 +86,46 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| *To be populated by roadmap* | | |
+| REP-01 | 0 (Deployed) | Completed |
+| REP-02 | 0 (Deployed) | Completed |
+| REP-03 | 1 (Pending) | Pending |
+| REP-04 | 1 (Pending) | Pending |
+| REP-05 | 0 (Deployed) | Completed |
+| REP-06 | 2 (Pending) | Pending |
+| ADM-01 | 0 (Deployed) | Completed |
+| ADM-02 | 0 (Deployed) | Completed |
+| ADM-03 | 0 (Deployed) | Completed |
+| ADM-04 | 0 (Deployed) | Completed |
+| ADM-05 | 0 (Deployed) | Completed |
+| ADM-06 | 0 (Deployed) | Completed |
+| ADM-07 | 0 (Deployed) | Completed |
+| PRF-01 | 2 (Pending) | Pending |
+| PRF-02 | 2 (Pending) | Pending |
+| PRF-03 | 2 (Pending) | Pending |
+| PRF-04 | 2 (Pending) | Pending |
+| PRF-05 | 2 (Pending) | Pending |
+| PRF-06 | 2 (Pending) | Pending |
+| PRF-07 | 2 (Pending) | Pending |
+| PRF-08 | 2 (Pending) | Pending |
+| PRF-09 | 2 (Pending) | Pending |
+| PRF-10 | 2 (Pending) | Pending |
+| PRF-11 | 2 (Pending) | Pending |
+| SYS-01 | 1 (Pending) | Pending |
+| SYS-02 | 4 (Pending) | Pending |
+| SYS-03 | 4 (Pending) | Pending |
+| SYS-04 | 3 (Pending) | Pending |
+| SYS-05 | 4 (Pending) | Pending |
+| SYS-06 | 4 (Pending) | Pending |
 
 **Coverage:**
-- v1 requirements: *To be calculated* total
-- Mapped to phases: *To be calculated*
-- Unmapped: *To be calculated*
+- v1 requirements: 30 total
+- Mapped to phases: 30 (100%)
+- Unmapped: 0
+
+**Notes:**
+- REP-06 (My Reports) is partially implemented as feed view; full status tracking in Phase 2
+- REP-03/REP-04 depend on SYS-01 (CSP fix) to enable image compression
+- Phase 0 = Already deployed from rebuild (PR #84, #86, #87)
 
 ---
 
