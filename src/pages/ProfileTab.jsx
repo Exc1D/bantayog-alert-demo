@@ -14,12 +14,14 @@ function Toggle({ value, onChange }) {
       role="switch"
       aria-checked={value}
       onClick={() => onChange(!value)}
-      className={`relative w-10 h-6 rounded-full transition-colors flex-shrink-0
-        ${value ? 'bg-resolved' : 'bg-gray-200'}`}
+      className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0
+        ${value ? 'bg-resolved' : 'bg-gray-200'}
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-urgent focus-visible:ring-offset-2`}
     >
       <span
-        className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform
-          ${value ? 'translate-x-4' : 'translate-x-0.5'}`}
+        className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200
+          ${value ? 'translate-x-5' : 'translate-x-0.5'}`}
+        aria-hidden="true"
       />
     </button>
   );

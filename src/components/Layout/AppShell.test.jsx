@@ -7,8 +7,8 @@ vi.mock('../../hooks/useIsLg', () => ({ default: () => mockUseIsLg() }));
 vi.mock('../Map/PersistentMapPanel', () => ({
   default: () => <div data-testid="persistent-map-panel" />,
 }));
-vi.mock('./IconSidebar', () => ({
-  default: () => <nav aria-label="icon sidebar" data-testid="icon-sidebar" />,
+vi.mock('./EnhancedSidebar', () => ({
+  default: () => <nav aria-label="enhanced sidebar" data-testid="enhanced-sidebar" />,
 }));
 
 import AppShell from './AppShell';
@@ -47,6 +47,8 @@ function renderAppShellWithMapMode(mapMode) {
 
 describe('AppShell', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
+    window.localStorage.getItem.mockReturnValue(null);
     mockUseIsLg.mockReturnValue(false);
   });
 
@@ -80,9 +82,9 @@ describe('AppShell', () => {
       mockUseIsLg.mockReturnValue(true);
     });
 
-    it('renders IconSidebar and not TabNavigation on lg screens', () => {
+    it('renders EnhancedSidebar and not TabNavigation on lg screens', () => {
       renderAppShell();
-      expect(screen.getByTestId('icon-sidebar')).toBeInTheDocument();
+      expect(screen.getByTestId('enhanced-sidebar')).toBeInTheDocument();
       expect(
         screen.queryByRole('navigation', { name: /main navigation/i })
       ).not.toBeInTheDocument();
@@ -93,16 +95,26 @@ describe('AppShell', () => {
       expect(screen.getByTestId('persistent-map-panel')).toBeInTheDocument();
     });
 
-    it('renders TabNavigation and not IconSidebar on mobile', () => {
+    it('renders TabNavigation and not EnhancedSidebar on mobile', () => {
       mockUseIsLg.mockReturnValue(false);
       renderAppShell();
       expect(screen.getByRole('navigation', { name: /main navigation/i })).toBeInTheDocument();
-      expect(screen.queryByTestId('icon-sidebar')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('enhanced-sidebar')).not.toBeInTheDocument();
     });
 
     it("hides main content when mapMode === 'full'", () => {
       renderAppShellWithMapMode('full');
       expect(screen.getByRole('main')).toHaveClass('hidden');
+    });
+
+    it('renders resize divider when mapMode is pins', () => {
+      renderAppShellWithMapMode('pins');
+      expect(screen.getByRole('separator')).toBeInTheDocument();
+    });
+
+    it('does not render resize divider when mapMode is hidden', () => {
+      renderAppShellWithMapMode('hidden');
+      expect(screen.queryByRole('separator')).not.toBeInTheDocument();
     });
   });
 });
