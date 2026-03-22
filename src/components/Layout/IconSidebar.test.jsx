@@ -17,10 +17,16 @@ describe('IconSidebar', () => {
     expect(screen.getByRole('navigation', { name: /main navigation/i })).toBeInTheDocument();
   });
 
-  it('renders 4 nav links', () => {
+  it('renders 5 nav links (4 tabs + report shortcut)', () => {
     renderSidebar();
     const links = screen.getAllByRole('link');
-    expect(links).toHaveLength(4);
+    expect(links).toHaveLength(5);
+  });
+
+  it('renders a report shortcut link', () => {
+    renderSidebar();
+    const reportLink = screen.getByRole('link', { name: /create report/i });
+    expect(reportLink).toHaveAttribute('href', '/report');
   });
 
   it('active link on / has aria-current="page"', () => {

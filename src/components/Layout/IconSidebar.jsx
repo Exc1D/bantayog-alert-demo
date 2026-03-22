@@ -1,92 +1,11 @@
 import { NavLink } from 'react-router-dom';
-
-function MapIcon() {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-      <line x1="9" y1="3" x2="9" y2="18" />
-      <line x1="15" y1="6" x2="15" y2="21" />
-    </svg>
-  );
-}
-
-function FeedIcon() {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <line x1="8" y1="6" x2="21" y2="6" />
-      <line x1="8" y1="12" x2="21" y2="12" />
-      <line x1="8" y1="18" x2="21" y2="18" />
-      <line x1="3" y1="6" x2="3.01" y2="6" />
-      <line x1="3" y1="12" x2="3.01" y2="12" />
-      <line x1="3" y1="18" x2="3.01" y2="18" />
-    </svg>
-  );
-}
-
-function AlertsIcon() {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-      <line x1="12" y1="9" x2="12" y2="13" />
-      <line x1="12" y1="17" x2="12.01" y2="17" />
-    </svg>
-  );
-}
-
-function ProfileIcon() {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
+import { MapTrifold, Article, Bell, User, PlusCircle } from '@phosphor-icons/react';
 
 const TABS = [
-  { label: 'Map', href: '/', icon: <MapIcon />, end: true },
-  { label: 'Feed', href: '/feed', icon: <FeedIcon /> },
-  { label: 'Alerts', href: '/alerts', icon: <AlertsIcon /> },
-  { label: 'Profile', href: '/profile', icon: <ProfileIcon /> },
+  { label: 'Map', href: '/', icon: MapTrifold, end: true },
+  { label: 'Feed', href: '/feed', icon: Article },
+  { label: 'Alerts', href: '/alerts', icon: Bell },
+  { label: 'Profile', href: '/profile', icon: User },
 ];
 
 export default function IconSidebar() {
@@ -95,26 +14,39 @@ export default function IconSidebar() {
       aria-label="Main navigation"
       className="w-11 bg-surface border-r border-black/10 flex flex-col items-center py-3 gap-1 flex-shrink-0"
     >
-      {/* App name initial */}
-      <span className="text-xs font-bold text-text-primary mb-3 select-none">B</span>
+      {/* Report shortcut button */}
+      <NavLink
+        to="/report"
+        aria-label="Create report"
+        className="w-9 h-9 rounded-lg flex items-center justify-center text-emergency dark:text-emergency-dark hover:bg-emergency/10 transition-colors"
+      >
+        <PlusCircle weight="fill" size={20} />
+      </NavLink>
 
-      {TABS.map(({ label, href, icon, end }) => (
+      {/* Separator */}
+      <div className="w-6 h-px bg-black/10 my-1" />
+
+      {TABS.map(({ label, href, icon: Icon, end }) => (
         <NavLink
           key={href}
           to={href}
           end={end}
           aria-label={label}
           className={({ isActive }) =>
-            `w-9 h-9 rounded-lg flex items-center justify-center transition-colors relative
-             ${isActive ? 'text-urgent bg-urgent/10' : 'text-text-tertiary hover:text-text-primary hover:bg-black/5'}`
+            `group relative w-9 h-9 rounded-lg flex items-center justify-center transition-colors
+             ${isActive ? 'text-emergency dark:text-emergency-dark bg-emergency/10' : 'text-text-tertiary hover:text-text-primary hover:bg-black/5'}`
           }
         >
           {({ isActive }) => (
             <>
-              {icon}
+              <Icon weight={isActive ? 'fill' : 'regular'} size={20} />
               {isActive && (
-                <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-urgent" />
+                <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-emergency dark:bg-emergency-dark rounded-r" />
               )}
+              {/* Tooltip */}
+              <span className="absolute left-full ml-2 px-2 py-1 bg-shell text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity">
+                {label}
+              </span>
             </>
           )}
         </NavLink>
