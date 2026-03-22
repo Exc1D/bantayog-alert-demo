@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { useState, useEffect, useCallback } from 'react';
 import {
   collection,
@@ -224,7 +225,7 @@ export async function submitReport(reportData, evidenceFiles, user) {
     disaster: {
       type: reportData.disaster.type,
       severity: reportData.disaster.severity,
-      description: reportData.disaster.description,
+      description: DOMPurify.sanitize(reportData.disaster.description || ''),
       tags: reportData.disaster.tags || [],
     },
     media: {

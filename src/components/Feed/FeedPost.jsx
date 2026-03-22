@@ -1,4 +1,5 @@
 import { useState, memo } from 'react';
+import DOMPurify from 'dompurify';
 import { getDisasterType } from '../../data/disasterTypes';
 import { formatTimeAgo } from '../../utils/timeUtils';
 import EngagementButtons from './EngagementButtons';
@@ -103,7 +104,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
               </svg>
               <span className="truncate">
                 {report.location?.municipality}
-                {report.location?.barangay && `, ${report.location.barangay}`}
+                {report.location?.barangay && `, ${DOMPurify.sanitize(report.location.barangay)}`}
               </span>
             </div>
             <div className="text-[11px] text-textMuted dark:text-dark-textMuted mt-0.5 flex items-center gap-1.5">
