@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
 
 const mockUseIsLg = vi.fn(() => false);
 vi.mock('../../hooks/useIsLg', () => ({ default: () => mockUseIsLg() }));
@@ -22,7 +21,6 @@ vi.mock('../RightPanel/DataPanel', () => ({ default: () => <div>DataPanel</div> 
 vi.mock('../RightPanel/IncidentDetail', () => ({ default: () => <div>IncidentDetail</div> }));
 
 import AppShell from './AppShell';
-import { useMapPanel, MapPanelProvider } from '../../contexts/MapPanelContext';
 
 function renderAppShell(path = '/') {
   return render(
@@ -33,14 +31,8 @@ function renderAppShell(path = '/') {
           <Route path="/feed" element={<div>Feed content</div>} />
         </Route>
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   );
-}
-
-function MapModeSetter({ mapMode }) {
-  const { setMapMode } = useMapPanel();
-  useEffect(() => setMapMode(mapMode), [mapMode, setMapMode]);
-  return <div>Full map content</div>;
 }
 
 function renderAppShellWithMapMode(mapMode) {
@@ -51,7 +43,7 @@ function renderAppShellWithMapMode(mapMode) {
           <Route path="/" element={<div>Map content</div>} />
         </Route>
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 }
 

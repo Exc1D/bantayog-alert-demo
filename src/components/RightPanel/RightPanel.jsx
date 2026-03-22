@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Article, Bell, ChartBar } from '@phosphor-icons/react';
 import { useMapPanel } from '../../contexts/MapPanelContext';
@@ -24,18 +24,11 @@ export default function RightPanel() {
   const location = useLocation();
   const { incidentDetailReport } = useMapPanel();
 
-  const [activeTab, setActiveTab] = useState(() => getTabFromPathname(location.pathname));
-  const userSelected = useRef(false);
-
-  useEffect(() => {
-    if (!userSelected.current) {
-      setActiveTab(getTabFromPathname(location.pathname));
-    }
-  }, [location.pathname]);
+  const [userTab, setUserTab] = useState(null);
+  const activeTab = userTab ?? getTabFromPathname(location.pathname);
 
   function handleTabClick(id) {
-    userSelected.current = true;
-    setActiveTab(id);
+    setUserTab(id);
   }
 
   // If an incident is selected, show detail instead of tabs
@@ -54,9 +47,10 @@ export default function RightPanel() {
             onClick={() => handleTabClick(id)}
             className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium
                        transition-colors border-b-2 -mb-px
-                       ${activeTab === id
-                         ? 'text-text-dark border-emergency dark:border-emergency-dark'
-                         : 'text-text-muted-dark border-transparent hover:text-text-dark'
+                       ${
+                         activeTab === id
+                           ? 'text-text-dark border-emergency dark:border-emergency-dark'
+                           : 'text-text-muted-dark border-transparent hover:text-text-dark'
                        }`}
             aria-selected={activeTab === id}
             role="tab"
