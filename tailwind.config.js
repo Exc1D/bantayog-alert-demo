@@ -27,6 +27,19 @@ export default {
         alertRed: '#C62828',
         alertAmber: '#E65100',
         alertGreen: '#2E7D32',
+        // Emergency command center dark palette
+        'bg-app': '#0F1923',
+        'surface-dark': '#182635',
+        'border-dark': '#2A3F55',
+        // Emergency accent
+        emergency: '#C62828',
+        'emergency-dark': '#EF5350',
+        // Status colors
+        safe: '#2E7D32',
+        'warning-amber': '#E65100',
+        // Text colors
+        'text-dark': '#E1E4E8',
+        'text-muted-dark': '#8B99A8',
         dark: {
           bg: '#0F1923',
           card: '#182635',
@@ -42,6 +55,7 @@ export default {
         sans: ['Atkinson Hyperlegible', 'system-ui', 'sans-serif'],
         display: ['DM Serif Display', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'monospace'],
+        hyperlegible: ['Atkinson Hyperlegible', 'sans-serif'],
       },
       animation: {
         'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -50,6 +64,8 @@ export default {
         'slide-down': 'slide-down 0.25s ease-out',
         'fade-in': 'fade-in 0.2s ease-out',
         beacon: 'beacon 1.5s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        shimmer: 'shimmer 1.5s linear infinite',
       },
       keyframes: {
         'pulse-ring': {
@@ -72,6 +88,14 @@ export default {
         beacon: {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.4' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { boxShadow: '0 0 8px 2px rgba(198, 40, 40, 0.4)' },
+          '50%': { boxShadow: '0 0 24px 8px rgba(198, 40, 40, 0.7)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
         },
       },
       boxShadow: {
