@@ -1,0 +1,242 @@
+<h2>Streamlined Report Flow — 3 Steps</h2>
+<p class="subtitle">Mobile: GPS captured silently. Camera opens immediately. One confirmation screen.</p>
+
+<style>
+  .flow-container { display: flex; flex-direction: column; gap: 24px; max-width: 800px; margin: 0 auto; }
+  .flow-row { display: flex; gap: 16px; align-items: flex-start; }
+  .flow-phone { flex: 1; max-width: 200px; }
+  .flow-desc { flex: 1; padding-top: 20px; }
+  .flow-arrow { display: flex; align-items: center; justify-content: center; color: #C62828; font-size: 24px; padding-top: 80px; }
+</style>
+
+<div class="flow-container">
+
+  <!-- Step 1 -->
+  <div class="flow-row">
+    <div class="flow-phone">
+      <style>
+        .step1 { width: 200px; height: 380px; background: #1B2A41; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+        .step1-header { padding: 12px 14px; background: #132031; display: flex; justify-content: space-between; align-items: center; }
+        .step1-header span { color: #E1E4E8; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+        .step1-title { padding: 12px 14px 8px; }
+        .step1-title h3 { color: white; font-size: 13px; font-weight: 700; margin: 0 0 4px; }
+        .step1-title p { color: #8B99A8; font-size: 9px; margin: 0; }
+        .step1-grid { flex: 1; padding: 0 14px 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .step1-type { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+        .step1-type.selected { background: rgba(198,40,40,0.2); border-color: #C62828; }
+        .step1-type svg { width: 24px; height: 24px; stroke: #8B99A8; }
+        .step1-type.selected svg { stroke: #EF5350; }
+        .step1-type span { color: #8B99A8; font-size: 8px; font-weight: 600; text-align: center; }
+        .step1-type.selected span { color: #EF5350; }
+        .step1-footer { padding: 10px 14px 14px; }
+        .step1-btn { width: 100%; padding: 12px; background: #C62828; border-radius: 10px; color: white; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-align: center; opacity: 0.4; cursor: not-allowed; }
+        .step1-btn.ready { opacity: 1; cursor: pointer; animation: glow-red 2s ease-in-out infinite; }
+        @keyframes glow-red { 0%,100%{box-shadow:0 0 12px rgba(198,40,40,0.4)} 50%{box-shadow:0 0 24px rgba(198,40,40,0.7)} }
+      </style>
+      <div class="step1">
+        <div class="step1-header">
+          <span>STEP 1 OF 3</span>
+          <span style="color:#5A6978;font-size:9px">New Report</span>
+        </div>
+        <div class="step1-title">
+          <h3>What happened?</h3>
+          <p>Tap one to begin</p>
+        </div>
+        <div class="step1-grid">
+          <div class="step1-type">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 2v6m0 0l-3-3m3 3l3-3M5 10v1a7 7 0 0014 0v-1"/></svg>
+            <span>Flooding</span>
+          </div>
+          <div class="step1-type selected">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span>Landslide</span>
+          </div>
+          <div class="step1-type">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span>Fire</span>
+          </div>
+          <div class="step1-type">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            <span>Other</span>
+          </div>
+          <div class="step1-type">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            <span>Crowding</span>
+          </div>
+          <div class="step1-type">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+            <span>Accident</span>
+          </div>
+        </div>
+        <div class="step1-footer">
+          <div class="step1-btn ready">NEXT</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-desc">
+      <h3 style="color:#1B2A41;margin:0 0 8px;font-size:14px">Step 1 — Disaster Type</h3>
+      <p style="color:#5D6B7E;font-size:11px;margin:0;line-height:1.6">Large icon grid, single tap to select. Grid auto-advances after selection (no "Next" tap needed). GPS is captured silently in the background during this step — zero extra taps.</p>
+    </div>
+    <div class="flow-arrow">→</div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="flow-row">
+    <div class="flow-phone">
+      <style>
+        .step2 { width: 200px; height: 380px; background: #111; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+        .step2-header { padding: 12px 14px; background: #1a1a1a; display: flex; justify-content: space-between; align-items: center; position: absolute; top: 0; left: 0; right: 0; z-index: 10; }
+        .step2-header span { color: #E1E4E8; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+        .step2-cam { flex: 1; background: #222; display: flex; align-items: center; justify-content: center; position: relative; }
+        .step2-grid { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; }
+        .step2-grid-item { background: #1a1a1a; display: flex; align-items: center; justify-content: center; }
+        .step2-capture-btn { width: 56px; height: 56px; border-radius: 50%; background: white; border: 4px solid rgba(255,255,255,0.3); position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .step2-capture-btn::before { content: ''; width: 40px; height: 40px; border-radius: 50%; background: white; }
+        .step2-capture-btn:active::before { transform: scale(0.9); }
+        .step2-gallery { position: absolute; bottom: 30px; right: 14px; width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .step2-gallery svg { width: 18px; height: 18px; stroke: white; }
+        .step2-video-btn { position: absolute; bottom: 34px; left: 24px; display: flex; align-items: center; gap: 4px; z-index: 10; }
+        .step2-video-btn span { color: rgba(255,255,255,0.7); font-size: 8px; font-weight: 600; }
+        .step2-video-btn svg { width: 16px; height: 16px; stroke: #EF5350; }
+        .step2-count { position: absolute; top: 44px; left: 50%; transform: translateX(-50%); background: rgba(198,40,40,0.9); color: white; font-size: 8px; font-weight: 700; padding: 3px 8px; border-radius: 10px; z-index: 10; }
+        .step2-taken { position: absolute; top: 8px; left: 8px; width: 40px; height: 40px; background: rgba(0,0,0,0.6); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+        .step2-taken img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+      </style>
+      <div class="step2">
+        <div class="step2-header">
+          <span>STEP 2 OF 3</span>
+          <span style="color:#5A6978;font-size:9px">Tap to capture</span>
+        </div>
+        <div class="step2-cam">
+          <div class="step2-count">1 captured</div>
+          <div class="step2-taken"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect fill='%23334' width='40' height='40'/%3E%3Cpath d='M8 28 L16 20 L24 26 L30 18 L36 24' stroke='%23555' stroke-width='2' fill='none'/%3E%3C/svg%3E" alt=""/></div>
+          <div class="step2-grid">
+            <div class="step2-grid-item"></div>
+            <div class="step2-grid-item"></div>
+            <div class="step2-grid-item"></div>
+            <div class="step2-grid-item"></div>
+          </div>
+        </div>
+        <div class="step2-video-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+          <span>Video</span>
+        </div>
+        <div class="step2-gallery">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        </div>
+        <div class="step2-capture-btn"></div>
+      </div>
+    </div>
+    <div class="flow-desc">
+      <h3 style="color:#1B2A41;margin:0 0 8px;font-size:14px">Step 2 — Photo/Video</h3>
+      <p style="color:#5D6B7E;font-size:11px;margin:0;line-height:1.6">Camera opens immediately after type selection. Grid view shows photos already captured. Video toggle visible. Tap to capture or tap gallery to add existing media. Advances automatically after first capture.</p>
+    </div>
+    <div class="flow-arrow">→</div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="flow-row">
+    <div class="flow-phone">
+      <style>
+        .step3 { width: 200px; height: 380px; background: #F4F1EC; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+        .step3-header { padding: 12px 14px; background: #1B2A41; display: flex; justify-content: space-between; align-items: center; }
+        .step3-header span { color: #E1E4E8; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+        .step3-title { padding: 12px 14px 8px; background: #F4F1EC; }
+        .step3-title h3 { color: #1B2A41; font-size: 13px; font-weight: 700; margin: 0 0 2px; }
+        .step3-title p { color: #5D6B7E; font-size: 9px; margin: 0; }
+        .step3-summary { padding: 0 14px 12px; background: #F4F1EC; display: flex; flex-direction: column; gap: 8px; }
+        .step3-card { background: white; border-radius: 10px; padding: 10px; display: flex; gap: 10px; border: 1px solid #D6D0C4; }
+        .step3-card-icon { width: 36px; height: 36px; border-radius: 8px; background: rgba(198,40,40,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .step3-card-icon svg { width: 18px; height: 18px; stroke: #C62828; }
+        .step3-card-content { flex: 1; min-width: 0; }
+        .step3-card-label { color: #9CA8B7; font-size: 7px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .step3-card-value { color: #1B2A41; font-size: 10px; font-weight: 600; }
+        .step3-card-value small { color: #5D6B7E; font-weight: 400; display: block; margin-top: 1px; }
+        .step3-photos { display: flex; gap: 4px; }
+        .step3-photo { width: 28px; height: 28px; border-radius: 4px; background: #ddd; }
+        .step3-location { display: flex; align-items: center; gap: 4px; }
+        .step3-location svg { width: 12px; height: 12px; stroke: #2E7D32; }
+        .step3-location span { color: #2E7D32; font-size: 9px; font-weight: 600; }
+        .step3-optional { padding: 0 14px 10px; background: #F4F1EC; }
+        .step3-optional-input { width: 100%; background: white; border: 1px solid #D6D0C4; border-radius: 8px; padding: 8px 10px; font-size: 10px; color: #1B2A41; outline: none; }
+        .step3-optional-input::placeholder { color: #9CA8B7; }
+        .step3-optional-input:focus { border-color: #1B2A41; }
+        .step3-footer { margin-top: auto; padding: 12px 14px 14px; background: #F4F1EC; display: flex; flex-direction: column; gap: 8px; }
+        .step3-send { width: 100%; padding: 14px; background: #C62828; border-radius: 10px; color: white; font-size: 12px; font-weight: 800; letter-spacing: 2px; text-align: center; box-shadow: 0 4px 12px rgba(198,40,40,0.3); cursor: pointer; }
+        .step3-send:active { transform: scale(0.98); }
+        .step3-skip { width: 100%; padding: 10px; background: transparent; border: 1px solid #D6D0C4; border-radius: 8px; color: #5D6B7E; font-size: 10px; font-weight: 600; text-align: center; cursor: pointer; }
+      </style>
+      <div class="step3">
+        <div class="step3-header">
+          <span>STEP 3 OF 3</span>
+          <span style="color:#5A6978;font-size:9px">Confirm</span>
+        </div>
+        <div class="step3-title">
+          <h3>Review your report</h3>
+          <p>Everything looks good?</p>
+        </div>
+        <div class="step3-summary">
+          <div class="step3-card">
+            <div class="step3-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
+            <div class="step3-card-content">
+              <div class="step3-card-label">Type</div>
+              <div class="step3-card-value">Landslide</div>
+            </div>
+          </div>
+          <div class="step3-card">
+            <div class="step3-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            </div>
+            <div class="step3-card-content">
+              <div class="step3-card-label">Photos</div>
+              <div class="step3-photos">
+                <div class="step3-photo"></div>
+                <div class="step3-photo"></div>
+              </div>
+            </div>
+          </div>
+          <div class="step3-card">
+            <div class="step3-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="step3-card-content">
+              <div class="step3-card-label">Location</div>
+              <div class="step3-card-value">
+                <div class="step3-location">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <span>Auto-detected — Daet, Camarines Norte</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step3-optional">
+          <input class="step3-optional-input" placeholder="Add a short note (optional)..." />
+        </div>
+        <div class="step3-footer">
+          <div class="step3-send">SEND REPORT</div>
+          <div class="step3-skip">Skip adding note</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-desc">
+      <h3 style="color:#1B2A41;margin:0 0 8px;font-size:14px">Step 3 — Confirm & Send</h3>
+      <p style="color:#5D6B7E;font-size:11px;margin:0;line-height:1.6">Summary card shows type, photo thumbnails, and auto-detected location with a green checkmark. Optional short note field. One "SEND REPORT" button — location was captured silently, no manual confirmation step needed.</p>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top: 24px; padding: 16px; background: #EBE7E0; border-radius: 12px; max-width: 800px; margin-left: auto; margin-right: auto;">
+  <h4 style="margin:0 0 8px;font-size:12px;color:#1B2A41">Key simplifications vs. current flow</h4>
+  <ul style="margin:0;padding-left:16px;color:#5D6B7E;font-size:10px;line-height:1.8">
+    <li><strong>GPS auto-capture</strong> — location confirmed silently, no manual tap needed on step 3</li>
+    <li><strong>Auto-advance</strong> — type selection auto-moves to camera, camera auto-moves to confirm</li>
+    <li><strong>Single column summary</strong> — all info on one card, no scrolling on confirm screen</li>
+    <li><strong>Optional description</strong> — can be skipped entirely, only type + photo + location are required</li>
+  </ul>
+</div>
+
+<p style="margin-top:16px;text-align:center;color:#5D6B7E;font-size:11px;">Open <strong>http://localhost:52053</strong> — come back to discuss.</p>

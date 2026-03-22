@@ -1,0 +1,208 @@
+<h2>Mobile: Option B vs Option C</h2>
+<p class="subtitle">Two approaches to the mobile home screen urgency layout. Tap to compare.</p>
+
+<div class="split">
+  <!-- Option B: Report Dominant -->
+  <div class="mockup">
+    <div class="mockup-header">Option B — Report Dominant</div>
+    <div class="mockup-body">
+      <style>
+        .phone-b { width: 220px; height: 420px; background: #1B2A41; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+        .phone-b-header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; background: #132031; }
+        .phone-b-header span { color: #E1E4E8; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
+        .phone-b-live { display: flex; align-items: center; gap: 4px; }
+        .phone-b-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #2E7D32; animation: blink 2s infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .phone-b-live-text { color: #8B99A8; font-size: 9px; }
+        .phone-b-map-bg { position: absolute; inset: 0; opacity: 0.25; background: linear-gradient(135deg, #2a3f2a 0%, #1e3020 100%); }
+        .phone-b-map-bg::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cpath d='M0 100 Q50 80 100 100 T200 100' fill='none' stroke='%23334d33' stroke-width='30'/%3E%3Cpath d='M0 130 Q50 110 100 130 T200 130' fill='none' stroke='%23334433' stroke-width='20'/%3E%3C/svg%3E"); }
+        .phone-b-report-zone { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+        .phone-b-btn { width: 160px; height: 160px; border-radius: 50%; background: #C62828; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0 60px rgba(198,40,40,0.6), 0 0 120px rgba(198,40,40,0.3), inset 0 2px 0 rgba(255,255,255,0.15); animation: pulse-red 2s ease-in-out infinite; cursor: pointer; }
+        @keyframes pulse-red { 0%,100%{transform:scale(1);box-shadow:0 0 60px rgba(198,40,40,0.6),0 0 120px rgba(198,40,40,0.3),inset 0 2px 0 rgba(255,255,255,0.15)} 50%{transform:scale(1.04);box-shadow:0 0 80px rgba(198,40,40,0.8),0 0 160px rgba(198,40,40,0.4),inset 0 2px 0 rgba(255,255,255,0.15)} }
+        .phone-b-btn:active { transform:scale(0.96); }
+        .phone-b-btn svg { width: 40px; height: 40px; stroke: white; }
+        .phone-b-btn span { color: white; font-size: 18px; font-weight: 900; letter-spacing: 4px; }
+        .phone-b-btn small { color: rgba(255,255,255,0.7); font-size: 9px; font-weight: 400; letter-spacing: 1px; margin-top: -4px; }
+        .phone-b-bottom { padding: 16px 20px 24px; background: linear-gradient(to top, #1B2A41 60%, transparent); position: relative; z-index: 1; }
+        .phone-b-quick-actions { display: flex; gap: 10px; }
+        .phone-b-quick { flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .phone-b-quick svg { width: 18px; height: 18px; stroke: #8B99A8; }
+        .phone-b-quick span { color: #8B99A8; font-size: 8px; font-weight: 600; }
+        .phone-b-nav { display: flex; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 8px; }
+        .phone-b-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; }
+        .phone-b-nav-item svg { width: 18px; height: 18px; stroke: #5A6978; }
+        .phone-b-nav-item span { color: #5A6978; font-size: 8px; }
+        .phone-b-nav-item.active svg { stroke: #E1E4E8; }
+        .phone-b-nav-item.active span { color: #E1E4E8; }
+      </style>
+      <div class="phone-b">
+        <div class="phone-b-map-bg"></div>
+        <div class="phone-b-header">
+          <span>BANTAYOG</span>
+          <div class="phone-b-live">
+            <div class="phone-b-live-dot"></div>
+            <span class="phone-b-live-text">LIVE</span>
+          </div>
+        </div>
+        <div class="phone-b-report-zone">
+          <div class="phone-b-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>REPORT</span>
+            <small>Tap to report emergency</small>
+          </div>
+        </div>
+        <div class="phone-b-bottom">
+          <div class="phone-b-quick-actions">
+            <div class="phone-b-quick">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+              <span>Map</span>
+            </div>
+            <div class="phone-b-quick">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+              <span>Weather</span>
+            </div>
+            <div class="phone-b-quick">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>History</span>
+            </div>
+          </div>
+          <div class="phone-b-nav">
+            <div class="phone-b-nav-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg>
+              <span>Map</span>
+            </div>
+            <div class="phone-b-nav-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              <span>Feed</span>
+            </div>
+            <div class="phone-b-nav-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+              <span>Weather</span>
+            </div>
+            <div class="phone-b-nav-item active">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Profile</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option C: Split Decision -->
+  <div class="mockup">
+    <div class="mockup-header">Option C — Split Decision</div>
+    <div class="mockup-body">
+      <style>
+        .phone-c { width: 220px; height: 420px; background: #F4F1EC; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+        .phone-c-header { background: #1B2A41; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+        .phone-c-header span { color: #E1E4E8; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+        .phone-c-status { display: flex; align-items: center; gap: 4px; }
+        .phone-c-dot { width: 6px; height: 6px; border-radius: 50%; background: #2E7D32; }
+        .phone-c-map { height: 45%; background: linear-gradient(135deg, #d4e4d4 0%, #b8c8b0 100%); position: relative; overflow: hidden; }
+        .phone-c-map::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cpath d='M0 80 Q75 60 150 80 T300 80' fill='none' stroke='%23c8d8c0' stroke-width='40'/%3E%3Cpath d='M0 140 Q75 120 150 140 T300 140' fill='none' stroke='%23b8c8b0' stroke-width='30'/%3E%3C/svg%3E"); opacity: 0.6; }
+        .phone-c-pin { position: absolute; width: 20px; height: 20px; }
+        .phone-c-pin::before { content: ''; position: absolute; width: 20px; height: 20px; background: #C62828; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 0 2px 6px rgba(198,40,40,0.4); }
+        .phone-c-pin::after { content: ''; position: absolute; top: 5px; left: 5px; width: 6px; height: 6px; background: white; border-radius: 50%; transform: rotate(45deg); }
+        .phone-c-pin.c1 { top: 35%; left: 45%; }
+        .phone-c-pin.c2 { top: 60%; left: 65%; }
+        .phone-c-map-label { position: absolute; top: 6px; left: 6px; background: rgba(255,255,255,0.85); color: #1B2A41; padding: 3px 7px; border-radius: 4px; font-size: 8px; font-weight: 700; }
+        .phone-c-map-label span { color: #C62828; }
+        .phone-c-divider { height: 3px; background: #1B2A41; display: flex; align-items: center; justify-content: center; }
+        .phone-c-divider::after { content: ''; width: 32px; height: 3px; background: #C62828; border-radius: 2px; }
+        .phone-c-report { flex: 1; background: #F4F1EC; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 16px; }
+        .phone-c-btn { width: 120px; height: 90px; border-radius: 16px; background: #C62828; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 6px 24px rgba(198,40,40,0.35); }
+        .phone-c-btn:active { transform: scale(0.96); }
+        .phone-c-btn svg { width: 28px; height: 28px; stroke: white; }
+        .phone-c-btn span { color: white; font-size: 14px; font-weight: 900; letter-spacing: 3px; }
+        .phone-c-context { display: flex; gap: 8px; width: 100%; padding: 0 4px; }
+        .phone-c-context-item { flex: 1; background: white; border-radius: 10px; padding: 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; border: 1px solid #D6D0C4; }
+        .phone-c-context-item svg { width: 16px; height: 16px; stroke: #C62828; }
+        .phone-c-context-item span { color: #1B2A41; font-size: 8px; font-weight: 600; text-align: center; }
+        .phone-c-context-item.subtle { background: #EBE7E0; border-color: #D6D0C4; }
+        .phone-c-context-item.subtle svg { stroke: #5D6B7E; }
+        .phone-c-context-item.subtle span { color: #5D6B7E; }
+        .phone-c-nav { display: flex; background: white; border-top: 1px solid #D6D0C4; padding: 6px 0; }
+        .phone-c-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; }
+        .phone-c-nav-item svg { width: 18px; height: 18px; stroke: #5D6B7E; }
+        .phone-c-nav-item span { color: #5D6B7E; font-size: 8px; }
+        .phone-c-nav-item.active svg { stroke: #1B2A41; }
+        .phone-c-nav-item.active span { color: #1B2A41; font-weight: 700; }
+      </style>
+      <div class="phone-c">
+        <div class="phone-c-header">
+          <span>BANTAYOG</span>
+          <div class="phone-c-status">
+            <div class="phone-c-dot"></div>
+            <span style="color:#8B99A8;font-size:9px">LIVE</span>
+          </div>
+        </div>
+        <div class="phone-c-map">
+          <div class="phone-c-map-label"><span>2</span> active nearby</div>
+          <div class="phone-c-pin c1"></div>
+          <div class="phone-c-pin c2"></div>
+        </div>
+        <div class="phone-c-divider"></div>
+        <div class="phone-c-report">
+          <div class="phone-c-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>REPORT</span>
+          </div>
+          <div class="phone-c-context">
+            <div class="phone-c-context-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              <span>View Feed</span>
+            </div>
+            <div class="phone-c-context-item subtle">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+              <span>Weather</span>
+            </div>
+            <div class="phone-c-context-item subtle">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>History</span>
+            </div>
+          </div>
+        </div>
+        <div class="phone-c-nav">
+          <div class="phone-c-nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg>
+            <span>Map</span>
+          </div>
+          <div class="phone-c-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            <span>Feed</span>
+          </div>
+          <div class="phone-c-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+            <span>Weather</span>
+          </div>
+          <div class="phone-c-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Profile</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pros-cons" style="margin-top: 20px;">
+  <div class="pros">
+    <h4>Option B — Report Dominant</h4>
+    <ul>
+      <li>Maximum urgency signal — one tap, zero hesitation</li>
+      <li>Works even with shaky hands or poor visibility</li>
+      <li>Map visible as context behind the button</li>
+    </ul>
+  </div>
+  <div class="cons">
+    <h4>Option C — Split Decision</h4>
+    <ul>
+      <li>Users can orient themselves before reporting</li>
+      <li>Quick-action shortcuts below the button</li>
+      <li>Context cards give situation awareness without full map</li>
+    </ul>
+  </div>
+</div>
+
+<p style="margin-top:16px;text-align:center;color:#5D6B7E;font-size:11px;">Open <strong>http://localhost:52053</strong> — then come back and tell me your choice in the terminal.</p>
