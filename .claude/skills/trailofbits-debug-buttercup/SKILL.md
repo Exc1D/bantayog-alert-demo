@@ -1,6 +1,6 @@
 ---
 name: trailofbits-debug-buttercup
-description: "Debug Buttercup — a Kubernetes-based fuzzing orchestration system. Use when pods in the crs namespace are in CrashLoopBackOff, OOMKilled, or restarting, Redis is unresponsive, queues are growing but tasks are not progressing, nodes show DiskPressure/MemoryPressure/PID pressure, or scheduler is stuck."
+description: Debug Buttercup — a Kubernetes-based fuzzing orchestration system. Use when pods in the crs namespace are in CrashLoopBackOff, OOMKilled, or restarting, Redis is unresponsive, queues are growing but tasks are not progressing, nodes show DiskPressure/MemoryPressure/PID pressure, or scheduler is stuck.
 allowed-tools:
   - Bash
   - Read

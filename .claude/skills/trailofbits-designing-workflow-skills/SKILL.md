@@ -1,65 +1,27 @@
 ---
 name: trailofbits-designing-workflow-skills
-description: "Guides the design and structuring of workflow-based Claude Code skills with multi-step phases, decision trees, subagent delegation, and progressive disclosure. Use when creating skills that involve sequential pipelines, routing patterns, safety gates, task tracking, phased execution, or any multi-step workflow. Also applies when reviewing or refactoring existing workflow skills for quality."
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
-  - TodoRead
-  - TodoWrite
+description: Use when creating skills with sequential pipelines, routing patterns, safety gates, task tracking, or phased execution. Also for reviewing or refactoring existing workflow skills. Trigger phrases: "design a workflow skill", "multi-step skill", "pipeline skill", "routing skill".
+allowed-tools: Read, Glob, Grep, TodoRead, TodoWrite
 ---
-
-# designing-workflow-skills
-
-description: >-
-  Guides the design and structuring of workflow-based Claude Code skills
-  with multi-step phases, decision trees, subagent delegation, and
-  progressive disclosure. Use when creating skills that involve
-  sequential pipelines, routing patterns, safety gates, task tracking,
-  phased execution, or any multi-step workflow. Also applies when
-  reviewing or refactoring existing workflow skills for quality.
-
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
-  - TodoRead
-  - TodoWrite
 
 # Designing Workflow Skills
 
-Build workflow-based skills that execute reliably by following structural patterns, not prose.
+Build workflow-based skills that execute reliably by following structural patterns.
 
 ## Essential Principles
 
-**The `description` field is the only thing that controls when a skill activates.**
+**The `description` field is the only thing that controls when a skill activates.** Put trigger keywords, use cases, and exclusions in the description.
 
-Claude decides whether to load a skill based solely on its frontmatter `description`. The body of SKILL.md — including "When to Use" and "When NOT to Use" sections — is only read AFTER the skill is already active. Put trigger keywords, use cases, and exclusions in the description.
+**Phases must be numbered with entry and exit criteria.** Every phase needs: a number, entry criteria, numbered actions, exit criteria.
 
-**Phases must be numbered with entry and exit criteria.**
+**Tools must match the executor.** Skills use `allowed-tools:` in frontmatter. Agents use `tools:` in frontmatter. Subagents get tools from their `subagent_type`.
 
-Unnumbered prose instructions produce unreliable execution order. Every phase needs:
-- A number (Phase 1, Phase 2, ...)
-- Entry criteria (what must be true before starting)
-- Numbered actions (what to do)
-- Exit criteria (how to know it's done)
+**Progressive disclosure is structural, not optional.** SKILL.md stays under 500 lines. Detailed patterns go in `references/`. One level deep — no reference chains.
 
-**Tools must match the executor.**
-
-Skills use `allowed-tools:` in frontmatter. Agents use `tools:` in frontmatter. Subagents get tools from their `subagent_type`. Never list tools the component doesn't use.
-
-**Progressive disclosure is structural, not optional.**
-
-SKILL.md stays under 500 lines. It contains only what the LLM needs for every invocation: principles, routing, quick references, and links. Detailed patterns go in `references/`. Step-by-step processes go in `workflows/`. One level deep — no reference chains.
-
-**Instructions must produce tool-calling patterns that scale.**
-
-Every workflow instruction becomes tool calls at runtime. If a workflow searches N files for M patterns, combine into one regex — not N×M calls. If a workflow spawns subagents per item, use batching — not one subagent per file. Apply the 10,000-file test.
+**Instructions must produce tool-calling patterns that scale.** Combine into one regex — not N×M calls. Use batching — not one subagent per file.
 
 **Match instruction specificity to task fragility.**
-
-Calibrate per step:
-- **Low freedom** (exact commands): Fragile operations — database migrations, crypto, destructive actions
+- **Low freedom** (exact commands): Fragile operations — migrations, crypto, destructive actions
 - **Medium freedom** (pseudocode with parameters): Preferred patterns where variation is acceptable
 - **High freedom** (heuristics): Variable tasks — code review, exploration, documentation
 
@@ -67,7 +29,7 @@ Calibrate per step:
 
 ```
 How many distinct paths does the skill have?
-|
+
 +-- One path, always the same
 |   +-- Does it perform destructive actions?
 |       +-- YES -> Safety Gate Pattern
@@ -81,8 +43,6 @@ How many distinct paths does the skill have?
         +-- YES -> Task-Driven Pattern
         +-- NO  -> Sequential Pipeline Pattern
 ```
-
-### Pattern Summary
 
 | Pattern | Use When | Key Feature |
 |---------|----------|-------------|
@@ -147,9 +107,9 @@ allowed-tools:
 | AP-15 | Reference dumps | Teach judgment, not raw documentation |
 | AP-16 | Missing rationalizations | Add "Rationalizations to Reject" for audit skills |
 | AP-17 | No concrete examples | Show input -> output for key instructions |
-| AP-18 | Cartesian product tool calls | Combine patterns into single regex, grep once, then filter |
+| AP-18 | Cartesian product tool calls | Combine patterns into single regex, grep once |
 | AP-19 | Unbounded subagent spawning | Batch items into groups, one subagent per batch |
-| AP-20 | Description summarizes workflow | Description = triggering conditions only, never workflow steps |
+| AP-20 | Description summarizes workflow | Description = triggering conditions only |
 
 ## Tool Assignment Quick Reference
 
@@ -158,12 +118,11 @@ allowed-tools:
 | Read-only analysis skill | Read, Glob, Grep, TodoRead, TodoWrite |
 | Interactive analysis skill | Read, Glob, Grep, AskUserQuestion, TodoRead, TodoWrite |
 | Code generation skill | Read, Glob, Grep, Write, Bash, TodoRead, TodoWrite |
-| Pipeline skill | Read, Write, Glob, Grep, Bash, AskUserQuestion, Task, TaskCreate, TaskList, TaskUpdate, TodoRead, TodoWrite |
+| Pipeline skill | Read, Write, Glob, Grep, Bash, Task, TaskCreate, TaskList, TaskUpdate |
 
 ## Success Criteria
 
 A well-designed workflow skill:
-
 - [ ] Has When to Use AND When NOT to Use sections
 - [ ] Uses a recognizable pattern (routing, pipeline, linear, safety gate, or task-driven)
 - [ ] Numbers all phases with entry and exit criteria

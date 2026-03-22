@@ -1,3 +1,9 @@
+---
+name: firebase-emulator
+description: Use when someone asks to start Firebase emulators, run the local emulator suite, or test Firestore/Storage rules locally. Trigger phrases: "firebase emulator", "start emulators", "local Firestore", "test rules locally", "emulator suite".
+allowed-tools: Bash
+---
+
 # Skill: Firebase Emulator
 
 ## Purpose
@@ -53,8 +59,21 @@ Start Firebase emulators for local development and testing of Firestore rules an
 | Java not found | Firebase emulators require Java | Install Java JDK (11+) |
 | Rules test fails | Rule logic doesn't match test expectations | Check rule conditions in `firestore.rules` |
 
+## When to Use
+
+- Testing Firestore or Storage rules locally before deploying
+- Running the full test suite against emulated Firebase services
+- Developing auth flows without touching production
+- Debugging permission issues found in the emulator
+
+## When NOT to Use
+
+- When rules are already deployed and known to work
+- For simple unit tests that don't need Firebase
+- When Java is not available (Firebase emulators require JDK 11+)
+
 ## Related
 
 - `workflows/error-handling.md` — emulator testing for rule changes
-- `.claude/skills/deploy-firebase.md` — deploy rules after testing
+- `.claude/skills/deploy-firebase/SKILL.md` — deploy rules after testing
 - `errors/firebase-permission-denied.md` — permission errors often found via emulator

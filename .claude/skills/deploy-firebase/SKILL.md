@@ -1,3 +1,9 @@
+---
+name: deploy-firebase
+description: Use when someone asks to deploy to Firebase, push to Firebase Hosting, or publish the app. Trigger phrases: "deploy", "firebase deploy", "publish", "push to production", "deploy to hosting", "ship the app".
+allowed-tools: Bash
+---
+
 # Skill: Deploy to Firebase
 
 ## Purpose
@@ -67,11 +73,24 @@ Deploy the application to Firebase Hosting, with optional rules and indexes depl
 | Symptom | Likely Cause | Fix |
 |---|---|---|
 | `FirebaseError: not authorized` | Not logged in or wrong project | Run `npx firebase login` and check `.firebaserc` |
-| Build fails before deploy | Missing env vars or type errors | Run `.claude/skills/build.md` steps first |
+| Build fails before deploy | Missing env vars or type errors | Run `.claude/skills/build/SKILL.md` steps first |
 | Old content after deploy | Service worker cache | See `errors/service-worker-cache-stale.md` |
+
+## When to Use
+
+- Someone asks to deploy to Firebase or publish the app
+- Running `firebase deploy` to push changes to production
+- Deploying Firestore rules, storage rules, or indexes separately
+- Rolling back a bad deployment
+
+## When NOT to Use
+
+- For local development — use `npm run dev` instead
+- Without a successful prior build — use build skill first
+- When only testing rules locally — use firebase-emulator skill instead
 
 ## Related
 
 - `workflows/deployment.md` — full deployment workflow including CI/CD
-- `.claude/skills/build.md` — build step
-- `.claude/skills/lighthouse-audit.md` — post-deploy audit
+- `.claude/skills/build/SKILL.md` — build step
+- `.claude/skills/lighthouse-audit/SKILL.md` — post-deploy audit

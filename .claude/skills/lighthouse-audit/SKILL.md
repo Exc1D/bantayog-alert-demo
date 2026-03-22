@@ -1,3 +1,9 @@
+---
+name: lighthouse-audit
+description: Use when someone asks to run Lighthouse audit, check performance scores, audit accessibility, or measure Core Web Vitals. Trigger phrases: "lighthouse", "performance audit", "accessibility check", "audit performance", "check lighthouse scores", "measure CWV".
+allowed-tools: Bash
+---
+
 # Skill: Lighthouse Audit
 
 ## Purpose
@@ -51,6 +57,19 @@ Run a Lighthouse performance audit and check scores against project thresholds.
 | Low performance score | Large bundles, unoptimized images | Check bundle size, lazy-load heavy modules |
 | Low accessibility | Missing alt text, contrast issues | Fix ARIA labels, color contrast |
 | CSP warnings in best practices | Missing CSP directives | Update `firebase.json` headers |
+
+## When to Use
+
+- Before deploying to verify performance thresholds are met
+- After making significant changes that could affect Core Web Vitals
+- When Lighthouse scores are reported as low in CI or user feedback
+- Accessibility audits as part of pre-commit checks
+
+## When NOT to Use
+
+- During active development (run dev server without Lighthouse overhead)
+- Without a running app (Lighthouse needs a live server)
+- As a replacement for unit/integration tests
 
 ## Related
 

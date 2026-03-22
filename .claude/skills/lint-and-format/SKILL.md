@@ -1,3 +1,9 @@
+---
+name: lint-and-format
+description: Use when someone asks to lint, format code, check ESLint, run Prettier, or fix code style issues. Trigger phrases: "lint", "format", "prettier", "ESLint", "check code style", "fix formatting", "auto-fix lint".
+allowed-tools: Bash
+---
+
 # Skill: Lint and Format
 
 ## Purpose
@@ -53,7 +59,20 @@ npm run lint:fix && npm run format
 | Prettier diff shown | Formatting drift | Run `npm run format` |
 | Conflicting rules | ESLint and Prettier disagree | Check `eslint-config-prettier` is in ESLint config |
 
+## When to Use
+
+- Before committing or creating a pull request
+- When ESLint or Prettier errors appear in the IDE
+- As the first step of the pre-commit check sequence
+- When code style violations are reported by CI
+
+## When NOT to Use
+
+- During active development — let the IDE auto-format on save instead
+- As a replacement for manual code review
+- Without running pre-commit-check first if committing (lint is part of the sequence)
+
 ## Related
 
 - `principles/` — coding standards that inform lint rules
-- `.claude/skills/pre-commit-check.md` — lint and format are the first pre-commit steps
+- `.claude/skills/pre-commit-check/SKILL.md` — lint and format are the first pre-commit steps

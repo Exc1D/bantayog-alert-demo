@@ -1,6 +1,7 @@
 ---
 name: pinme
-description: Use PinMe CLI to upload files and get a preview URL. Use when user wants to upload any files or folders to IPFS, share files via decentralized storage, mentions "pinme", "pin", "IPFS", or "upload to IPFS", or requests deployment of a frontend project to decentralized storage.
+description: Use when someone wants to upload files to IPFS, share via decentralized storage, deploy to IPFS, or mentions "pinme", "pin", "IPFS", or "upload to IPFS".
+allowed-tools: Bash
 ---
 
 # PinMe Skill
@@ -9,15 +10,16 @@ Use PinMe CLI to upload files and get a preview URL.
 
 ## When to Use
 
-### General File Upload
 - User wants to upload any files or folders to IPFS
 - User wants to share files via decentralized storage
 - User mentions "pinme", "pin", "IPFS", or "upload to IPFS"
+- User requests deployment of a frontend project to IPFS
 
-### Website Deployment
-- User requests deployment of a frontend project
-- User wants to deploy a static website
-- After building a frontend project (Vue, React, Next.js, etc.)
+## When NOT to Use
+
+- For sensitive files that should not be on public IPFS (credentials, keys, personal data)
+- Without checking that the content is hash-mode compatible if deploying a SPA
+- As a replacement for Firebase Hosting or other managed hosting solutions
 
 ## Upload Steps
 
@@ -34,12 +36,9 @@ npm install -g pinme
 
 ### 2. Identify Upload Target
 
-**For general files:**
-- Use the file or directory path specified by the user
-- Can be any file type: images, documents, archives, etc.
+**For general files:** Use the file or directory path specified by the user.
 
-**For website deployment:**
-Look for build output directories (in priority order):
+**For website deployment:** Look for build output directories (in priority order):
 1. `dist/` - Vue/React/Vite default output
 2. `build/` - Create React App output
 3. `out/` - Next.js static export
@@ -70,13 +69,9 @@ After successful upload, return the preview URL:
 https://pinme.eth.limo/#/preview/<hash>
 ```
 
-Users can visit the preview page to:
-- View or download the uploaded files
-- Get a fixed domain: `https://<name>.pinit.eth.limo`
-
 ## Router Mode Check
 
-Before building a frontend project for IPFS deployment, ensure it uses **hash mode** routing (e.g., `/#/about`). History mode (e.g., `/about`) will cause **404 errors** on sub-routes when deployed to IPFS, because there is no server to handle fallback routing.
+Before building a frontend project for IPFS deployment, ensure it uses **hash mode** routing (e.g., `/#/about`). History mode (e.g., `/about`) will cause **404 errors** on sub-routes when deployed to IPFS.
 
 - **React**: Use `HashRouter` instead of `BrowserRouter`
 - **Vue**: Use `createWebHashHistory()` instead of `createWebHistory()`
@@ -93,44 +88,18 @@ Before building a frontend project for IPFS deployment, ensure it uses **hash mo
 - Upload `.git/` directory
 - Upload empty or non-existent paths
 
-**For website deployment, also avoid:**
-- Uploading source code instead of build output
-- Uploading configuration files (package.json, tsconfig.json, etc.)
-
 ## Common Workflows
 
 ### General File Upload
-
 ```bash
-# Upload a single file
 pinme upload ./image.png
-
-# Upload a folder
 pinme upload ./my-documents
-
-# Upload with specific path
 pinme upload /path/to/files
 ```
 
 ### Website Deployment
-
-#### Vue/Vite
 ```bash
-npm run build
-pinme upload dist
-```
-
-#### React CRA
-```bash
-npm run build
-pinme upload build
-```
-
-#### Next.js Static
-```bash
-npm run build
-npm run export  # or next export
-pinme upload out
+npm run build && pinme upload dist
 ```
 
 ## Error Handling

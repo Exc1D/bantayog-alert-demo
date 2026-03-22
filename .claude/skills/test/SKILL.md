@@ -1,3 +1,9 @@
+---
+name: test
+description: Use when someone asks to run tests, execute the test suite, check code correctness, or run unit/integration/E2E tests. Trigger phrases: "run tests", "test", "execute tests", "npm run test", "run the test suite".
+allowed-tools: Bash
+---
+
 # Skill: Test
 
 ## Purpose
@@ -66,8 +72,21 @@ E2E tests require a running app. Start `npm run dev` first, or point Playwright 
 | E2E timeout | App not running or slow start | Ensure `npm run dev` is running |
 | Playwright browser missing | First run without install | Run `npx playwright install` |
 
+## When to Use
+
+- Someone asks to run the test suite
+- Verifying code correctness before committing or deploying
+- Running unit tests, integration tests, or E2E tests
+- Checking boundary accuracy or geolocation logic
+
+## When NOT to Use
+
+- When only linting/formatting is needed (use lint-and-format skill)
+- When type-checking is needed (use build skill which runs typecheck)
+- During active TDD development — use watch mode (`npm run test`) separately
+
 ## Related
 
 - `workflows/testing.md` — full testing strategy and conventions
 - `principles/testing.md` — testing principles and patterns
-- `.claude/skills/pre-commit-check.md` — tests are part of pre-commit
+- `.claude/skills/pre-commit-check/SKILL.md` — tests are part of pre-commit

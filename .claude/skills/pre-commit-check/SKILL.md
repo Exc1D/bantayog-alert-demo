@@ -1,3 +1,9 @@
+---
+name: pre-commit-check
+description: Use when someone asks to run pre-commit checks, validate code before committing, check if code is ready to commit, or gate commits. Trigger phrases: "pre-commit", "validate code", "check before commit", "ready to commit", "gate check".
+allowed-tools: Bash
+---
+
 # Skill: Pre-Commit Check
 
 ## Purpose
@@ -48,8 +54,20 @@ After fixing, re-run the full sequence from step 1.
 - All four commands exit with code 0
 - Code is safe to commit and will pass CI
 
+## When to Use
+
+- Before committing any code to the repository
+- As part of the CI/CD pipeline gate
+- When verifying code is ready for pull request review
+
+## When NOT to Use
+
+- During active development (run individual steps instead)
+- As a replacement for writing tests
+- Without having run lint-and-format first
+
 ## Related
 
-- `.claude/skills/lint-and-format.md` — detailed lint/format skill
-- `.claude/skills/test.md` — detailed test skill
+- `.claude/skills/lint-and-format/SKILL.md` — detailed lint/format skill
+- `.claude/skills/test/SKILL.md` — detailed test skill
 - `workflows/testing.md` — pre-commit checks are defined here

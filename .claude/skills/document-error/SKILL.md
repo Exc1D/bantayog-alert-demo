@@ -1,3 +1,9 @@
+---
+name: document-error
+description: Use when someone asks to document an error, create an error record, add to the errors directory, or log a recurring issue. Trigger phrases: "document error", "create error doc", "log error", "add error", "record an error", "error documentation".
+allowed-tools: Read, Write, Bash
+---
+
 # Skill: Document Error
 
 ## Purpose
@@ -38,6 +44,19 @@ Create or update an error document in `errors/` to capture recurring error patte
 - Be specific in root cause — don't say "config was wrong", say which config key was missing and why
 - Include the exact commands or code changes needed to fix it
 - Prevention section should describe a check that avoids the error, not just "be careful"
+
+## When to Use
+
+- When encountering an error that is not yet documented in `errors/`
+- When a recurring error pattern is discovered and should be captured
+- After fixing a bug that took significant debugging to understand
+- When an error has multiple possible causes that need to be disambiguated
+
+## When NOT to Use
+
+- For one-off typos or trivial issues that are immediately obvious
+- When the error is already documented (update instead of create)
+- For errors that have no actionable fix (log and move on)
 
 ## Related
 

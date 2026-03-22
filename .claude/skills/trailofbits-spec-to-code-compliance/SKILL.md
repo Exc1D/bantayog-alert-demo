@@ -1,25 +1,12 @@
 ---
 name: trailofbits-spec-to-code-compliance
-description: "Verifies code implements exactly what documentation specifies for blockchain audits. Use when comparing code against whitepapers, finding gaps between specs and implementation, or performing compliance checks for protocol implementations."
+description: Verifies code implements exactly what documentation specifies for blockchain audits. Use when comparing code against whitepapers, finding gaps between specs and implementation, or performing compliance checks for protocol implementations.
 allowed-tools:
   - Read
   - Glob
   - Grep
   - Bash
 ---
-
-# spec-to-code-compliance
-
-description: >-
-  Verifies code implements exactly what documentation specifies for blockchain audits.
-  Use when comparing code against whitepapers, finding gaps between specs and
-  implementation, or performing compliance checks for protocol implementations.
-
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
 
 # Spec-to-Code Compliance Checker
 
