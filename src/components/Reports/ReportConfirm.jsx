@@ -1,8 +1,17 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { MapPin, CheckCircle, PaperPlaneRight } from '@phosphor-icons/react';
 
 export default function ReportConfirm({ disasterType, photoFile, municipality, onSubmit, submitting, onBack }) {
   const [description, setDescription] = useState('');
+
+  // Memoize the object URL so it is created once per photoFile, not on every render.
+  const photoUrl = useMemo(() => (photoFile ? URL.createObjectURL(photoFile) : null), [photoFile]);
+
+  // Revoke the object URL when photoFile changes or the component unmounts.
+  useEffect(() => {
+    if (!photoUrl) return;
+    return () => URL.revokeObjectURL(photoUrl);
+  }, [photoUrl]);
 
   return (
     <div className="flex flex-col h-full">
@@ -17,7 +26,7 @@ export default function ReportConfirm({ disasterType, photoFile, municipality, o
           {photoFile && (
             <div className="flex items-center gap-3">
               <div className="w-16 h-16 rounded-lg overflow-hidden bg-surface-dark">
-                <img src={URL.createObjectURL(photoFile)} alt="Evidence" className="w-full h-full object-cover" />
+                <img src={photoUrl} alt="Evidence" className="w-full h-full object-cover" />
               </div>
               <p className="text-xs text-text-muted-dark">Photo attached</p>
             </div>

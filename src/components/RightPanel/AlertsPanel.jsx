@@ -47,7 +47,7 @@ export default function AlertsPanel() {
       .filter(r => r.status === 'active')
       .sort((a, b) => {
         if (!lat || !lng) return 0;
-        return haversineKm(lat, lng, a.lat, a.lng) - haversineKm(lat, lng, b.lat, b.lng);
+        return haversineKm(lat, lng, a.location.lat, a.location.lng) - haversineKm(lat, lng, b.location.lat, b.location.lng);
       });
   }, [reports, lat, lng]);
 
@@ -56,7 +56,7 @@ export default function AlertsPanel() {
   return (
     <div className="h-full overflow-y-auto">
       {sorted.map(r => (
-        <AlertItem key={r.id} report={r} dist={lat && lng ? haversineKm(lat, lng, r.lat, r.lng) : null} onSelect={(r) => setSelectedReportId(r.id)} />
+        <AlertItem key={r.id} report={r} dist={lat && lng ? haversineKm(lat, lng, r.location.lat, r.location.lng) : null} onSelect={(r) => setSelectedReportId(r.id)} />
       ))}
     </div>
   );

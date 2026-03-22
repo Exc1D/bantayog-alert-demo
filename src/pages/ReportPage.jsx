@@ -19,10 +19,16 @@ export default function ReportPage() {
   const [photoFile, setPhotoFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const municipality = location ? resolveMunicipality(location.lat, location.lng).municipality : null;
+  const municipality = location?.lat != null && location?.lng != null
+    ? (resolveMunicipality(location.lat, location.lng).municipality === 'Unknown' ? null : resolveMunicipality(location.lat, location.lng).municipality)
+    : null;
 
   async function handleSubmit({ description }) {
     if (submitting) return;
+    if (!location?.lat || !location?.lng) {
+      addToast('Location not available. Please wait for GPS or move outdoors.', 'error');
+      return;
+    }
     setSubmitting(true);
     try {
       await submitReport({

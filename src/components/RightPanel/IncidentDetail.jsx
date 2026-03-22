@@ -28,15 +28,11 @@ export default function IncidentDetail() {
   const Icon = DISASTER_ICONS[report?.disaster?.type] ?? Warning;
 
   useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') handleBack(); };
+    const handler = (e) => { if (e.key === 'Escape') { setIncidentDetailReport(null); setSelectedReportId(null); } };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  function handleBack() {
-    setIncidentDetailReport(null);
-    setSelectedReportId(null);
-  }
 
   if (!report) return <div className="p-4 text-text-muted-dark text-sm">Select a report</div>;
 
@@ -52,7 +48,7 @@ export default function IncidentDetail() {
     <div className="flex flex-col h-full bg-surface-dark dark:bg-surface-dark overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 p-3 border-b border-border-dark flex-shrink-0">
-        <button type="button" onClick={handleBack}
+        <button type="button" onClick={() => { setIncidentDetailReport(null); setSelectedReportId(null); }}
           className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-dark/50 text-text-muted-dark hover:text-text-dark transition-colors"
           aria-label="Back">
           <ArrowLeft size={18} aria-hidden="true" />

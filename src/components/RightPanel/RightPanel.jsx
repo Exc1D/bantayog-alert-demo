@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Article, Bell, ChartBar } from '@phosphor-icons/react';
 import { useMapPanel } from '../../contexts/MapPanelContext';
@@ -26,6 +26,10 @@ export default function RightPanel() {
   };
 
   const [activeTab, setActiveTab] = useState(getInitialTab);
+
+  useEffect(() => {
+    setActiveTab(getInitialTab);
+  }, [location.pathname]);
 
   // If an incident is selected, show detail instead of tabs
   if (incidentDetailReport) {
