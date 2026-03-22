@@ -104,7 +104,48 @@ export function useReports(filters = {}) {
     }
   }, [lastDoc, hasMore, filters.municipality]);
 
-  return { reports, loading, error, loadMore, hasMore };
+  async function verifyReport(id, dispatchData) {
+    const { verifiedBy, verifierRole, responseAction, assignedUnit, notes } = dispatchData;
+    await updateDoc(doc(db, 'reports', id), {
+      'verification.status': 'verified',
+      'verification.verifiedBy': verifiedBy,
+      'verification.verifiedAt': serverTimestamp(),
+      'verification.verifierRole': verifierRole,
+      'verification.responseAction': responseAction,
+      'verification.assignedUnit': assignedUnit,
+      'verification.notes': notes ?? '',
+    });
+    await logAuditEvent(
+      new AuditEvent({
+        eventType: AuditEventType.REPORT_VERIFIED,
+        userId: verifiedBy,
+        userRole: verifierRole,
+        targetId: id,
+        targetType: 'report',
+        metadata: { responseAction, assignedUnit, notes },
+      })
+    );
+  }
+
+  async function rejectReport(id, { rejectedBy, reason }) {
+    await updateDoc(doc(db, 'reports', id), {
+      'verification.status': 'rejected',
+      'verification.rejectedBy': rejectedBy,
+      'verification.rejectedAt': serverTimestamp(),
+      'verification.rejectionReason': reason,
+    });
+    await logAuditEvent(
+      new AuditEvent({
+        eventType: AuditEventType.REPORT_REJECTED,
+        userId: rejectedBy,
+        targetId: id,
+        targetType: 'report',
+        metadata: { reason },
+      })
+    );
+  }
+
+  return { reports, loading, error, loadMore, hasMore, verifyReport, rejectReport };
 }
 
 export async function submitReport(reportData, evidenceFiles, user) {
@@ -362,14 +403,21 @@ export async function rejectReport(reportId, adminId, adminRole, notes = '') {
     throw new Error('Admin privileges required to reject reports.');
   }
 
+  // First, write audit log (before delete, so the record exists if delete fails)
+  await logAuditEvent(
+    new AuditEvent({
+      eventType: AuditEventType.REPORT_DELETE,
+      userId: adminId,
+      userRole: adminRole,
+      targetType: 'report',
+      targetId: reportId,
+      metadata: { reason: notes, action: 'report_rejected_and_deleted', adminRole },
+    })
+  );
+
+  // Then hard-delete the report document
   const reportRef = doc(db, 'reports', reportId);
-  await updateDoc(reportRef, {
-    'verification.status': 'rejected',
-    'verification.verifiedBy': adminId,
-    'verification.verifiedAt': serverTimestamp(),
-    'verification.verifierRole': adminRole,
-    'verification.notes': notes,
-  });
+  await deleteDoc(reportRef);
 }
 
 export async function resolveReport(

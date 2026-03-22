@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from './MarkerClusterGroup';
 import 'leaflet/dist/leaflet.css';
@@ -126,8 +127,15 @@ function MapResizeHandler() {
   return null;
 }
 
-export default function LeafletMap({ reports = [], onReportClick }) {
+export default function LeafletMap({ reports = [], reportLocations = [], flyToReportId = null }) {
+  const navigate = useNavigate();
   const mapRef = useRef(null);
+
+  useEffect(() => {
+    if (!flyToReportId || !mapRef.current) return;
+    const loc = reportLocations.find((r) => r.id === flyToReportId);
+    if (loc) mapRef.current.flyTo([loc.lat, loc.lng], 15);
+  }, [flyToReportId, reportLocations]);
   const [currentTileIndex, setCurrentTileIndex] = useState(0);
   const [activeLayer, setActiveLayer] = useState('streets');
   const [filters, setFilters] = useState({
@@ -169,9 +177,9 @@ export default function LeafletMap({ reports = [], onReportClick }) {
 
   const handleMarkerClick = useCallback(
     (report) => {
-      if (onReportClick) onReportClick(report);
+      navigate(`/report/${report.id}`);
     },
-    [onReportClick]
+    [navigate]
   );
 
   const handleLocate = () => {
