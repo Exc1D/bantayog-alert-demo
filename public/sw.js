@@ -159,6 +159,11 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Security invariants:
+  // - Firestore tokens and auth state are never cached (firebaseio.com/googleapis.com excluded at line 176-182)
+  // - IndexedDB offline queue (offlineQueueDB) only stores pending report action URLs/methods/headers/body, no auth tokens or user PII
+  // - App shell and map tiles are the only cached content
+
   if (request.method !== 'GET') {
     if (!navigator.onLine && isSyncableRequest(request)) {
       event.respondWith(
