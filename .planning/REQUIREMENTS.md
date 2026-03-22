@@ -7,10 +7,10 @@
 
 ### Security
 
-- [ ] **SEC-01**: CSP `frame-ancestors 'none'` directive added to firebase.json hosting headers — prevents clickjacking via iframe embedding
-- [ ] **SEC-02**: CSP `upgrade-insecure-requests` directive added — auto-upgrades HTTP resources to HTTPS
-- [ ] **SEC-03**: Avatar upload validates file type by checking magic bytes (file signature), not just file extension — prevents polyglot file attacks
-- [ ] **SEC-04**: Avatar upload re-encodes images through a safe intermediate format (canvas export to JPEG/PNG) — strips embedded JavaScript, metadata, and polyglot payloads
+- [x] **SEC-01**: CSP `frame-ancestors 'none'` directive added to firebase.json hosting headers — prevents clickjacking via iframe embedding
+- [x] **SEC-02**: CSP `upgrade-insecure-requests` directive added — auto-upgrades HTTP resources to HTTPS
+- [x] **SEC-03**: Avatar upload validates file type by checking magic bytes (file signature), not just file extension — prevents polyglot file attacks
+- [x] **SEC-04**: Avatar upload re-encodes images through a safe intermediate format (canvas export to JPEG/PNG) — strips embedded JavaScript, metadata, and polyglot payloads
 - [ ] **SEC-05**: All user-generated report content is sanitized before rendering — prevents XSS in name, description, and location fields
 - [ ] **SEC-06**: Service worker does not cache sensitive user data (auth state, Firestore tokens, user profiles) — only public map tiles and app shell
 - [ ] **SEC-07**: Service worker cache version increments on every deploy — ensures users receive updated app assets, not stale SW code
