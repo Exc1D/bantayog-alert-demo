@@ -14,6 +14,12 @@
 
 SEC-01, SEC-02, SEC-03, SEC-04, SEC-05, SEC-06, SEC-07
 
+**Plans:** 2 plans
+
+**Plan List:**
+- [ ] 01-PLAN.md -- CSP headers verification + Avatar upload security (magic bytes + canvas re-encoding)
+- [ ] 02-PLAN.md -- Report XSS sanitization + SW hardening + cache versioning
+
 ### Success Criteria
 
 1. CSP frame-ancestors 'none' present in firebase.json and takes effect on deployed site
@@ -28,13 +34,14 @@ SEC-01, SEC-02, SEC-03, SEC-04, SEC-05, SEC-06, SEC-07
 
 | Item | File | Description |
 |------|------|-------------|
-| CSP frame-ancestors | firebase.json | Add frame-ancestors 'none' to hosting headers |
-| CSP upgrade-insecure-requests | firebase.json | Add upgrade-insecure-requests to hosting headers |
-| Avatar magic-byte validation | AvatarUpload.jsx | Read file header bytes, validate against declared MIME type |
-| Avatar re-encoding | AvatarUpload.jsx | Draw image to canvas, export as clean JPEG or PNG |
-| Report XSS audit | useReports.js, FeedPost.jsx | Verify no unsafe rendering paths; add sanitization if found |
-| SW sensitive data audit | public/sw.js | Confirm no sensitive data in caches |
-| SW cache versioning | public/sw.js | Increment cache version constant |
+| CSP frame-ancestors | firebase.json | Verify frame-ancestors 'none' in hosting headers (already present) |
+| CSP upgrade-insecure-requests | firebase.json | Verify upgrade-insecure-requests in hosting headers (already present) |
+| Avatar magic-byte validation | src/utils/imageCompression.js | validateMagicBytes function reads file header bytes |
+| Avatar re-encoding | src/utils/imageCompression.js | reencodeImageClean uses canvas.toBlob to strip payloads |
+| Avatar wiring | src/hooks/useAuth.js | updateProfilePicture calls both functions before upload |
+| Report XSS sanitization | src/components/Feed/FeedPost.jsx, src/hooks/useReports.js | DOMPurify sanitization on location/description fields |
+| SW sensitive data audit | public/sw.js | Confirm no Firestore tokens or user PII in caches |
+| SW cache versioning | package.json | Build script auto-bumps CACHE_NAME via sed |
 
 ---
 
