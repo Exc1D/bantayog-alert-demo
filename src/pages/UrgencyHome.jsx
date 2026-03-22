@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { Warning, MapPin, ArrowRight } from '@phosphor-icons/react';
@@ -7,13 +7,6 @@ export default function UrgencyHome({ onDismiss }) {
   const navigate = useNavigate();
   const { location } = useGeolocation();
   const [transitioning, setTransitioning] = useState(false);
-
-  // Silently capture GPS — no UI indication per spec
-  useEffect(() => {
-    if (location) {
-      // GPS already captured by useGeolocation hook
-    }
-  }, [location]);
 
   function handleMaybeLater() {
     setTransitioning(true);
