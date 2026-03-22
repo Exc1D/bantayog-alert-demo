@@ -5,6 +5,7 @@ import TabNavigation from './TabNavigation';
 import EnhancedSidebar from './EnhancedSidebar';
 import LoadingSpinner from '../Common/LoadingSpinner';
 import PersistentMapPanel from '../Map/PersistentMapPanel';
+import RightPanel from '../RightPanel/RightPanel';
 import { MapPanelProvider, useMapPanel } from '../../contexts/MapPanelContext';
 import useIsLg from '../../hooks/useIsLg';
 
@@ -117,10 +118,8 @@ function AppShellInner() {
             />
           </>
         )}
-        <main className={mapMode === 'full' ? 'hidden' : 'flex-1 overflow-auto'}>
-          <Suspense fallback={<PageFallback />}>
-            <Outlet />
-          </Suspense>
+        <main className={mapMode === 'full' ? 'hidden' : 'flex-1 overflow-hidden'}>
+          <RightPanel />
         </main>
       </div>
     );
@@ -140,9 +139,9 @@ function AppShellInner() {
   );
 }
 
-export default function AppShell() {
+export default function AppShell({ initialMapMode = 'hidden' }) {
   return (
-    <MapPanelProvider>
+    <MapPanelProvider initialMapMode={initialMapMode}>
       <AppShellInner />
     </MapPanelProvider>
   );

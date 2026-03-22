@@ -12,7 +12,7 @@ vi.mock('./EnhancedSidebar', () => ({
 }));
 
 import AppShell from './AppShell';
-import { useMapPanel } from '../../contexts/MapPanelContext';
+import { useMapPanel, MapPanelProvider } from '../../contexts/MapPanelContext';
 
 function renderAppShell(path = '/') {
   return render(
@@ -37,8 +37,8 @@ function renderAppShellWithMapMode(mapMode) {
   return render(
     <MemoryRouter initialEntries={['/']}>
       <Routes>
-        <Route element={<AppShell />}>
-          <Route path="/" element={<MapModeSetter mapMode={mapMode} />} />
+        <Route element={<AppShell initialMapMode={mapMode} />}>
+          <Route path="/" element={<div>Map content</div>} />
         </Route>
       </Routes>
     </MemoryRouter>
