@@ -4,6 +4,7 @@ import { db, getAuthInstance, getStorageInstance } from '../utils/firebaseConfig
 import { captureException, addBreadcrumb } from '../utils/sentry';
 import { getStoragePathFromUrl } from '../utils/firebaseStorage';
 import { logAuditEvent, AuditEvent, AuditEventType } from '../utils/auditLogger';
+import { validateMagicBytes, reencodeImageClean } from '../utils/imageCompression';
 
 // Lazy-load firebase/auth functions alongside the auth instance
 async function getFirebaseAuth() {
@@ -200,11 +201,20 @@ export function useAuth() {
       }
     }
 
+    // Validate magic bytes to ensure file content matches declared MIME type
+    const validation = await validateMagicBytes(file);
+    if (!validation.valid) {
+      throw new Error('Invalid image file. The file content does not match its declared type.');
+    }
+
+    // Re-encode via canvas to strip embedded scripts, EXIF, and polyglot payloads
+    const cleanBlob = await reencodeImageClean(file, { type: 'image/jpeg', quality: 0.85 });
+
     const avatarRef = ref(
       storageInstance,
       `avatars/${authInstance.currentUser.uid}/${Date.now()}-${file.name}`
     );
-    await uploadBytes(avatarRef, file);
+    await uploadBytes(avatarRef, cleanBlob);
     const photoURL = await getDownloadURL(avatarRef);
 
     await updateProfile(authInstance.currentUser, { photoURL });
