@@ -10,6 +10,16 @@ vi.mock('../Map/PersistentMapPanel', () => ({
 vi.mock('./EnhancedSidebar', () => ({
   default: () => <nav aria-label="enhanced sidebar" data-testid="enhanced-sidebar" />,
 }));
+vi.mock('./IconSidebar', () => ({
+  default: () => <nav aria-label="icon sidebar" data-testid="icon-sidebar" />,
+}));
+vi.mock('../RightPanel/RightPanel', () => ({
+  default: () => <div data-testid="right-panel">RightPanel</div>,
+}));
+vi.mock('../RightPanel/FeedPanel', () => ({ default: () => <div>FeedPanel</div> }));
+vi.mock('../RightPanel/AlertsPanel', () => ({ default: () => <div>AlertsPanel</div> }));
+vi.mock('../RightPanel/DataPanel', () => ({ default: () => <div>DataPanel</div> }));
+vi.mock('../RightPanel/IncidentDetail', () => ({ default: () => <div>IncidentDetail</div> }));
 
 import AppShell from './AppShell';
 import { useMapPanel, MapPanelProvider } from '../../contexts/MapPanelContext';
@@ -23,7 +33,7 @@ function renderAppShell(path = '/') {
           <Route path="/feed" element={<div>Feed content</div>} />
         </Route>
       </Routes>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 
@@ -41,7 +51,7 @@ function renderAppShellWithMapMode(mapMode) {
           <Route path="/" element={<div>Map content</div>} />
         </Route>
       </Routes>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 
@@ -62,7 +72,7 @@ describe('AppShell', () => {
     expect(screen.getByRole('navigation', { name: /main navigation/i })).toBeInTheDocument();
   });
 
-  it('renders outlet content', () => {
+  it('renders outlet content on mobile', () => {
     renderAppShell('/');
     expect(screen.getByText('Map content')).toBeInTheDocument();
   });
@@ -82,12 +92,9 @@ describe('AppShell', () => {
       mockUseIsLg.mockReturnValue(true);
     });
 
-    it('renders EnhancedSidebar and not TabNavigation on lg screens', () => {
+    it('renders EnhancedSidebar on lg screens', () => {
       renderAppShell();
       expect(screen.getByTestId('enhanced-sidebar')).toBeInTheDocument();
-      expect(
-        screen.queryByRole('navigation', { name: /main navigation/i })
-      ).not.toBeInTheDocument();
     });
 
     it('renders PersistentMapPanel on lg screens', () => {
@@ -95,14 +102,12 @@ describe('AppShell', () => {
       expect(screen.getByTestId('persistent-map-panel')).toBeInTheDocument();
     });
 
-    it('renders TabNavigation and not EnhancedSidebar on mobile', () => {
-      mockUseIsLg.mockReturnValue(false);
-      renderAppShell();
-      expect(screen.getByRole('navigation', { name: /main navigation/i })).toBeInTheDocument();
-      expect(screen.queryByTestId('enhanced-sidebar')).not.toBeInTheDocument();
+    it('renders RightPanel on desktop (replaces Outlet)', () => {
+      renderAppShellWithMapMode('pins');
+      expect(screen.getByTestId('right-panel')).toBeInTheDocument();
     });
 
-    it("hides main content when mapMode === 'full'", () => {
+    it('hides main content when mapMode === full', () => {
       renderAppShellWithMapMode('full');
       expect(screen.getByRole('main')).toHaveClass('hidden');
     });
