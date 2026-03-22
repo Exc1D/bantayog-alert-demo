@@ -48,6 +48,23 @@ export default {
           textMuted: '#5A6978',
           accent: '#EF5350',
         },
+
+        // ── Dark emergency command center palette ───────────────────
+        'bg-app': '#0F1923',
+        'surface-dark': '#182635',
+        'border-dark': '#2A3F55',
+
+        // Status colors
+        'emergency': '#C62828',
+        'emergency-dark': '#EF5350',
+        'safe': '#2E7D32',
+        'safe-dark': '#4CAF50',
+        'warning-amber': '#E65100',
+        'warning-amber-dark': '#FF9800',
+
+        // Text
+        'text-dark': '#E1E4E8',
+        'text-muted-dark': '#8B99A8',
       },
       fontFamily: {
         // System stack — no font fetch, fastest possible render
@@ -55,11 +72,16 @@ export default {
         // Legacy (used by existing components during transition)
         display: ['DM Serif Display', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'monospace'],
+        // Accessibility-focused font
+        hyperlegible: ['Atkinson Hyperlegible', 'sans-serif'],
       },
       animation: {
         'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'slide-up': 'slide-up 0.3s ease-out',
         'fade-in': 'fade-in 0.2s ease-out',
+        // Dark emergency command center animations
+        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'shimmer': 'shimmer 1.5s linear infinite',
       },
       keyframes: {
         'slide-up': {
@@ -69,6 +91,15 @@ export default {
         'fade-in': {
           from: { opacity: '0' },
           to: { opacity: '1' },
+        },
+        // Dark emergency command center keyframes
+        'pulse-glow': {
+          '0%, 100%': { boxShadow: '0 0 8px 2px rgba(198, 40, 40, 0.4)' },
+          '50%': { boxShadow: '0 0 24px 8px rgba(198, 40, 40, 0.7)' },
+        },
+        'shimmer': {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
         },
       },
       boxShadow: {
