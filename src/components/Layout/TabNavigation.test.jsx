@@ -15,7 +15,7 @@ describe('TabNavigation', () => {
     renderWithRouter();
     expect(screen.getByText('Map')).toBeInTheDocument();
     expect(screen.getByText('Feed')).toBeInTheDocument();
-    expect(screen.getByText('Alerts')).toBeInTheDocument();
+    expect(screen.getByText('Weather')).toBeInTheDocument();
     expect(screen.getByText('Profile')).toBeInTheDocument();
   });
 
@@ -23,7 +23,7 @@ describe('TabNavigation', () => {
     renderWithRouter();
     expect(screen.getByRole('link', { name: /map/i })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: /feed/i })).toHaveAttribute('href', '/feed');
-    expect(screen.getByRole('link', { name: /alerts/i })).toHaveAttribute('href', '/alerts');
+    expect(screen.getByRole('link', { name: /weather/i })).toHaveAttribute('href', '/weather');
     expect(screen.getByRole('link', { name: /profile/i })).toHaveAttribute('href', '/profile');
   });
 
