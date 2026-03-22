@@ -14,6 +14,8 @@ CSP headers are set in `firebase.json` under `hosting.headers`.
 - `img-src 'self' data: blob: *.tile.openstreetmap.org *.firebasestorage.app`
 - `connect-src 'self' *.googleapis.com *.firebaseapp.com api.openweathermap.org *.ingest.sentry.io`
 - `frame-src 'self' *.firebaseapp.com`
+- `frame-ancestors 'none'` (prevents clickjacking)
+- `upgrade-insecure-requests` (auto-upgrades HTTP to HTTPS)
 - `object-src 'none'`
 
 When adding new external connections (new API, CDN, etc.), update `connect-src` in `firebase.json` before deploying. CSP violations will show in the browser console.
