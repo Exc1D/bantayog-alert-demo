@@ -143,7 +143,9 @@ describe('imageCompression', () => {
   describe('validateMagicBytes', () => {
     it('returns valid for JPEG with correct magic bytes', async () => {
       // JPEG magic bytes: FF D8 FF
-      const jpegBytes = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00]);
+      const jpegBytes = new Uint8Array([
+        0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00,
+      ]);
       const jpegFile = new File([jpegBytes], 'test.jpg', { type: 'image/jpeg' });
       const result = await validateMagicBytes(jpegFile);
       expect(result.valid).toBe(true);
@@ -152,7 +154,9 @@ describe('imageCompression', () => {
 
     it('returns valid for PNG with correct magic bytes', async () => {
       // PNG magic bytes: 89 50 4E 47 0D 0A 1A 0A
-      const pngBytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d]);
+      const pngBytes = new Uint8Array([
+        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
+      ]);
       const pngFile = new File([pngBytes], 'test.png', { type: 'image/png' });
       const result = await validateMagicBytes(pngFile);
       expect(result.valid).toBe(true);
@@ -171,10 +175,22 @@ describe('imageCompression', () => {
     it('returns valid for WebP with correct RIFF + WEBP headers', async () => {
       // WebP: RIFF at 0, WEBP at 8
       const webpBytes = new Uint8Array([
-        0x52, 0x49, 0x46, 0x46, // RIFF
-        0x00, 0x00, 0x00, 0x00, // file size placeholder
-        0x57, 0x45, 0x42, 0x50, // WEBP
-        0x00, 0x00, 0x00, 0x00, // extra
+        0x52,
+        0x49,
+        0x46,
+        0x46, // RIFF
+        0x00,
+        0x00,
+        0x00,
+        0x00, // file size placeholder
+        0x57,
+        0x45,
+        0x42,
+        0x50, // WEBP
+        0x00,
+        0x00,
+        0x00,
+        0x00, // extra
       ]);
       const webpFile = new File([webpBytes], 'test.webp', { type: 'image/webp' });
       const result = await validateMagicBytes(webpFile);
@@ -202,10 +218,22 @@ describe('imageCompression', () => {
     it('returns invalid when file has wrong WebP second signature', async () => {
       // RIFF header correct but WEBP signature missing at offset 8
       const badWebpBytes = new Uint8Array([
-        0x52, 0x49, 0x46, 0x46, // RIFF
-        0x00, 0x00, 0x00, 0x00,
-        0x41, 0x42, 0x43, 0x44, // wrong signature (ABCD)
-        0x00, 0x00, 0x00, 0x00,
+        0x52,
+        0x49,
+        0x46,
+        0x46, // RIFF
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x41,
+        0x42,
+        0x43,
+        0x44, // wrong signature (ABCD)
+        0x00,
+        0x00,
+        0x00,
+        0x00,
       ]);
       const badWebpFile = new File([badWebpBytes], 'test.webp', { type: 'image/webp' });
       const result = await validateMagicBytes(badWebpFile);
@@ -216,7 +244,9 @@ describe('imageCompression', () => {
   describe('reencodeImageClean', () => {
     it('produces a blob smaller than the original', async () => {
       // Create a small JPEG-like file
-      const originalBytes = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00]);
+      const originalBytes = new Uint8Array([
+        0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00,
+      ]);
       const originalFile = new File([originalBytes], 'test.jpg', { type: 'image/jpeg' });
 
       // Mock canvas.toBlob to return a smaller blob
@@ -232,7 +262,10 @@ describe('imageCompression', () => {
       };
 
       try {
-        const result = await reencodeImageClean(originalFile, { type: 'image/jpeg', quality: 0.85 });
+        const result = await reencodeImageClean(originalFile, {
+          type: 'image/jpeg',
+          quality: 0.85,
+        });
         expect(result).toBeInstanceOf(Blob);
         expect(result.type).toBe('image/jpeg');
       } finally {

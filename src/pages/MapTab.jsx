@@ -33,9 +33,7 @@ export default function MapTab() {
       <CriticalAlertBanner reports={reports} />
 
       {/* Mobile urgency home screen */}
-      {!isLg && showUrgency && (
-        <UrgencyHome onDismiss={() => setShowUrgency(false)} />
-      )}
+      {!isLg && showUrgency && <UrgencyHome onDismiss={() => setShowUrgency(false)} />}
 
       {/* Mobile map-dominant view */}
       {!isLg && !showUrgency && (

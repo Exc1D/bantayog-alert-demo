@@ -19,9 +19,12 @@ export default function ReportPage() {
   const [photoFile, setPhotoFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const municipality = location?.lat != null && location?.lng != null
-    ? (resolveMunicipality(location.lat, location.lng).municipality === 'Unknown' ? null : resolveMunicipality(location.lat, location.lng).municipality)
-    : null;
+  const municipality =
+    location?.lat != null && location?.lng != null
+      ? resolveMunicipality(location.lat, location.lng).municipality === 'Unknown'
+        ? null
+        : resolveMunicipality(location.lat, location.lng).municipality
+      : null;
 
   async function handleSubmit({ description }) {
     if (submitting) return;
@@ -31,11 +34,15 @@ export default function ReportPage() {
     }
     setSubmitting(true);
     try {
-      await submitReport({
-        reportType: 'situation',
-        disaster: { type: disasterType, description },
-        location: { lat: location.lat, lng: location.lng, accuracy: location.accuracy ?? 0 },
-      }, photoFile ? [photoFile] : [], user);
+      await submitReport(
+        {
+          reportType: 'situation',
+          disaster: { type: disasterType, description },
+          location: { lat: location.lat, lng: location.lng, accuracy: location.accuracy ?? 0 },
+        },
+        photoFile ? [photoFile] : [],
+        user
+      );
       addToast('Report sent successfully', 'success');
       navigate('/');
     } catch (err) {
@@ -47,9 +54,32 @@ export default function ReportPage() {
 
   return (
     <div className="flex flex-col h-full bg-surface-dark dark:bg-surface-dark">
-      {step === 1 && <ReportTypeGrid selected={disasterType} onSelect={t => { setDisasterType(t); setStep(2); }} />}
-      {step === 2 && <CameraCapture photoFile={photoFile} onPhotoSelect={setPhotoFile} onNext={() => setStep(3)} />}
-      {step === 3 && <ReportConfirm disasterType={disasterType} photoFile={photoFile} municipality={municipality} onSubmit={handleSubmit} submitting={submitting} onBack={() => setStep(2)} />}
+      {step === 1 && (
+        <ReportTypeGrid
+          selected={disasterType}
+          onSelect={(t) => {
+            setDisasterType(t);
+            setStep(2);
+          }}
+        />
+      )}
+      {step === 2 && (
+        <CameraCapture
+          photoFile={photoFile}
+          onPhotoSelect={setPhotoFile}
+          onNext={() => setStep(3)}
+        />
+      )}
+      {step === 3 && (
+        <ReportConfirm
+          disasterType={disasterType}
+          photoFile={photoFile}
+          municipality={municipality}
+          onSubmit={handleSubmit}
+          submitting={submitting}
+          onBack={() => setStep(2)}
+        />
+      )}
     </div>
   );
 }
