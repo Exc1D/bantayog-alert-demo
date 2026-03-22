@@ -25,13 +25,12 @@ export default function IncidentDetail() {
   const { reports } = useReports();
 
   const report = reports?.find(r => r.id === incidentDetailReport?.id) ?? incidentDetailReport;
-  const Icon = DISASTER_ICONS[report?.disaster?.type] ?? Warning;
 
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') { setIncidentDetailReport(null); setSelectedReportId(null); } };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [setIncidentDetailReport, setSelectedReportId]);
 
 
   if (!report) return <div className="p-4 text-text-muted-dark text-sm">Select a report</div>;

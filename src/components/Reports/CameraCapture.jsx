@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Camera, Video, Images, ArrowRight } from '@phosphor-icons/react';
+import { Camera, Images, ArrowRight } from '@phosphor-icons/react';
 
 export default function CameraCapture({ photoFile, onPhotoSelect, onNext }) {
   const [preview, setPreview] = useState(photoFile ? URL.createObjectURL(photoFile) : null);

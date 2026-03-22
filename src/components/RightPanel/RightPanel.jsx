@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Article, Bell, ChartBar } from '@phosphor-icons/react';
 import { useMapPanel } from '../../contexts/MapPanelContext';
@@ -13,23 +13,30 @@ const TABS = [
   { id: 'data', label: 'Data', icon: ChartBar },
 ];
 
+function getTabFromPathname(pathname) {
+  if (pathname === '/alerts') return 'alerts';
+  if (pathname === '/feed') return 'feed';
+  if (pathname === '/weather') return 'data';
+  return 'feed';
+}
+
 export default function RightPanel() {
   const location = useLocation();
   const { incidentDetailReport } = useMapPanel();
 
-  // Derive initial tab from route
-  const getInitialTab = () => {
-    if (location.pathname === '/alerts') return 'alerts';
-    if (location.pathname === '/feed') return 'feed';
-    if (location.pathname === '/weather') return 'data';
-    return 'feed'; // default
-  };
-
-  const [activeTab, setActiveTab] = useState(getInitialTab);
+  const [activeTab, setActiveTab] = useState(() => getTabFromPathname(location.pathname));
+  const userSelected = useRef(false);
 
   useEffect(() => {
-    setActiveTab(getInitialTab);
+    if (!userSelected.current) {
+      setActiveTab(getTabFromPathname(location.pathname));
+    }
   }, [location.pathname]);
+
+  function handleTabClick(id) {
+    userSelected.current = true;
+    setActiveTab(id);
+  }
 
   // If an incident is selected, show detail instead of tabs
   if (incidentDetailReport) {
@@ -44,7 +51,7 @@ export default function RightPanel() {
           <button
             key={id}
             type="button"
-            onClick={() => setActiveTab(id)}
+            onClick={() => handleTabClick(id)}
             className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium
                        transition-colors border-b-2 -mb-px
                        ${activeTab === id

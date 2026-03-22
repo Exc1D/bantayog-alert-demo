@@ -51,7 +51,7 @@ export default function AlertsPanel() {
       });
   }, [reports, lat, lng]);
 
-  if (sorted.length === 0) return <div className="flex flex-col items-center justify-center h-full gap-2 text-text-muted-dark"><Bell size={32} aria-hidden="true" /><p className="text-sm font-medium">No active alerts</p><p className="text-xs">You're all caught up</p></div>;
+  if (sorted.length === 0) return <div className="flex flex-col items-center justify-center h-full gap-2 text-text-muted-dark"><Bell size={32} aria-hidden="true" /><p className="text-sm font-medium">No active alerts</p><p className="text-xs">You are all caught up</p></div>;
 
   return (
     <div className="h-full overflow-y-auto">
