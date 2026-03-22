@@ -14,11 +14,11 @@
 
 SEC-01, SEC-02, SEC-03, SEC-04, SEC-05, SEC-06, SEC-07
 
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 **Plan List:**
 - [x] 01-PLAN.md -- CSP headers verification + Avatar upload security (magic bytes + canvas re-encoding)
-- [ ] 02-PLAN.md -- Report XSS sanitization + SW hardening + cache versioning
+- [x] 02-PLAN.md -- Report XSS sanitization + SW hardening + cache versioning
 
 ### Success Criteria
 
@@ -53,9 +53,9 @@ SEC-01, SEC-02, SEC-03, SEC-04, SEC-05, SEC-06, SEC-07
 | SEC-02: CSP upgrade-insecure-requests | Phase 1 | Complete |
 | SEC-03: Avatar magic-byte validation | Phase 1 | Complete |
 | SEC-04: Avatar re-encoding | Phase 1 | Complete |
-| SEC-05: Report XSS sanitization | Phase 1 | Pending |
-| SEC-06: SW no sensitive data | Phase 1 | Pending |
-| SEC-07: SW cache versioning | Phase 1 | Pending |
+| SEC-05: Report XSS sanitization | Phase 1 | Complete |
+| SEC-06: SW no sensitive data | Phase 1 | Complete |
+| SEC-07: SW cache versioning | Phase 1 | Complete |
 
 **Coverage:** 7/7 requirements mapped to Phase 1
 
