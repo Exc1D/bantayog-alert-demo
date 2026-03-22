@@ -2,12 +2,10 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Article, Bell, ChartBar } from '@phosphor-icons/react';
 import { useMapPanel } from '../../contexts/MapPanelContext';
-
-// Placeholder panels — replaced by Tasks 5–8
-const FeedPanel = () => <div className="p-4 text-text-muted-dark text-sm">Feed — coming soon</div>;
-const AlertsPanel = () => <div className="p-4 text-text-muted-dark text-sm">Alerts — coming soon</div>;
-const DataPanel = () => <div className="p-4 text-text-muted-dark text-sm">Data — coming soon</div>;
-const IncidentDetail = () => <div className="p-4 text-text-muted-dark text-sm">Detail — coming soon</div>;
+import FeedPanel from './FeedPanel';
+import AlertsPanel from './AlertsPanel';
+import DataPanel from './DataPanel';
+import IncidentDetail from './IncidentDetail';
 
 const TABS = [
   { id: 'feed', label: 'Feed', icon: Article },
