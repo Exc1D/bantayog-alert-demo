@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useReports } from '../hooks/useReports';
 import CriticalAlertBanner from '../components/Map/CriticalAlertBanner';
 import MapSkeleton from '../components/Map/MapSkeleton';
 import { useMapPanel } from '../contexts/MapPanelContext';
 import useIsLg from '../hooks/useIsLg';
+import UrgencyHome from './UrgencyHome';
+import FloatingReportButton from '../components/Layout/FloatingReportButton';
 
 // LeafletMap is imported statically but the route is lazy-loaded (React.lazy
 // in App.jsx), so Leaflet only parses when the Map tab is first visited.
@@ -14,6 +15,7 @@ import LeafletMap from '../components/Map/LeafletMap';
 
 export default function MapTab() {
   const [mapReady, setMapReady] = useState(false);
+  const [showUrgency, setShowUrgency] = useState(true);
   const { reports } = useReports();
   const { setMapMode } = useMapPanel();
   const isLg = useIsLg();
@@ -30,40 +32,27 @@ export default function MapTab() {
     <div className="flex flex-col h-full relative">
       <CriticalAlertBanner reports={reports} />
 
-      {/* Map container — hidden on lg+ (map lives in PersistentMapPanel) */}
-      {!isLg && (
+      {/* Mobile urgency home screen */}
+      {!isLg && showUrgency && (
+        <UrgencyHome onDismiss={() => setShowUrgency(false)} />
+      )}
+
+      {/* Mobile map-dominant view */}
+      {!isLg && !showUrgency && (
+        <div className="flex-1 relative overflow-hidden">
+          {!mapReady && <MapSkeleton />}
+          {mapReady && <LeafletMap reports={reports} />}
+          <FloatingReportButton />
+        </div>
+      )}
+
+      {/* Desktop layout — map always visible via PersistentMapPanel */}
+      {isLg && (
         <div className="flex-1 relative overflow-hidden">
           {!mapReady && <MapSkeleton />}
           {mapReady && <LeafletMap reports={reports} />}
         </div>
       )}
-
-      {/* Floating report button */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] lg:left-auto lg:right-6 lg:translate-x-0">
-        <Link
-          to="/report"
-          className="bg-urgent text-white font-bold text-sm px-6 py-3 rounded-full shadow-lg
-                     flex items-center gap-2 active:scale-95 transition-transform"
-        >
-          {/* Exclamation triangle SVG */}
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-            <line x1="12" y1="9" x2="12" y2="13" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
-          </svg>
-          REPORT EMERGENCY
-        </Link>
-      </div>
     </div>
   );
 }
