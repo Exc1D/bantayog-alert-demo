@@ -26,7 +26,7 @@ function SidebarTab({ label, href, icon: Icon, end }) {
         `group relative w-9 h-9 rounded-lg flex items-center justify-center
          transition-colors tooltip-parent
          ${isActive
-           ? 'bg-surface-dark text-text-dark dark:bg-surface-dark'
+           ? 'bg-surface-dark text-text-dark dark:bg-surface-dark dark:text-text-dark'
            : 'text-text-muted-dark dark:text-text-muted-dark hover:text-text-dark hover:bg-surface-dark/50'
          }`
       }
