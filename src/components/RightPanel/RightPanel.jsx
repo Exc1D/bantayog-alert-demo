@@ -1,14 +1,61 @@
-/**
- * RightPanel — placeholder shell for the desktop right panel.
- * Task 5 (FeedPanel), Task 6 (AlertsPanel), Task 7 (DataPanel),
- * and Task 8 (IncidentDetail) will fill this in.
- */
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Article, Bell, ChartBar } from '@phosphor-icons/react';
+import FeedPanel from './FeedPanel';
+import AlertsPanel from './AlertsPanel';
+import DataPanel from './DataPanel';
+import IncidentDetail from './IncidentDetail';
+import { useMapPanel } from '../../contexts/MapPanelContext';
+
+const TABS = [
+  { id: 'feed', label: 'Feed', icon: Article },
+  { id: 'alerts', label: 'Alerts', icon: Bell },
+  { id: 'data', label: 'Data', icon: ChartBar },
+];
+
 export default function RightPanel() {
+  const location = useLocation();
+  const { incidentDetailReport } = useMapPanel();
+
+  const getInitialTab = () => {
+    if (location.pathname === '/alerts') return 'alerts';
+    if (location.pathname === '/weather') return 'data';
+    return 'feed';
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
+
+  if (incidentDetailReport) {
+    return <IncidentDetail />;
+  }
+
   return (
-    <aside className="hidden lg:flex flex-col bg-white dark:bg-dark-card border-l border-border/60 dark:border-dark-border h-[calc(100vh-60px)] fixed top-[60px] right-0 w-80 shrink-0 overflow-y-auto">
-      <div className="flex items-center justify-center h-full text-textMuted dark:text-dark-textMuted text-sm">
-        RightPanel — coming in Tasks 5–8
+    <div className="flex flex-col h-full bg-surface-dark dark:bg-surface-dark border-l border-border-dark">
+      <div className="flex border-b border-border-dark">
+        {TABS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setActiveTab(id)}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium
+                       transition-colors border-b-2 -mb-px
+                       ${activeTab === id
+                         ? 'text-text-dark dark:text-text-dark border-emergency dark:border-emergency-dark'
+                         : 'text-text-muted-dark dark:text-text-muted-dark border-transparent hover:text-text-dark dark:hover:text-text-dark'
+                       }`}
+            role="tab"
+            aria-selected={activeTab === id}
+          >
+            <Icon size={16} weight={activeTab === id ? 'fill' : 'regular'} aria-hidden="true" />
+            {label}
+          </button>
+        ))}
       </div>
-    </aside>
+      <div className="flex-1 overflow-hidden">
+        {activeTab === 'feed' && <FeedPanel />}
+        {activeTab === 'alerts' && <AlertsPanel />}
+        {activeTab === 'data' && <DataPanel />}
+      </div>
+    </div>
   );
 }
