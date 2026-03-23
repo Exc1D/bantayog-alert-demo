@@ -1,8 +1,12 @@
-import { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 
 const MapPanelContext = createContext(null);
 
 export function MapPanelProvider({ children }) {
+  const [mapMode, setMapMode] = useState('hidden');
+  const [highlightedReportId, setHighlightedReportId] = useState(null);
+  const [reportLocations, setReportLocations] = useState([]);
+  const [reports, setReports] = useState([]);
   const [selectedReportId, setSelectedReportId] = useState(null);
   const [incidentDetailReport, setIncidentDetailReport] = useState(null);
 
@@ -16,28 +20,30 @@ export function MapPanelProvider({ children }) {
 
   const closeIncidentDetail = useCallback(() => {
     setIncidentDetailReport(null);
+    setSelectedReportId(null);
   }, []);
 
-  const value = useMemo(
-    () => ({
-      selectedReportId,
-      incidentDetailReport,
-      selectReport,
-      openIncidentDetail,
-      closeIncidentDetail,
-    }),
-    [selectedReportId, incidentDetailReport, selectReport, openIncidentDetail, closeIncidentDetail]
+  return (
+    <MapPanelContext.Provider
+      value={{
+        mapMode, setMapMode,
+        highlightedReportId, setHighlightedReportId,
+        reportLocations, setReportLocations,
+        reports, setReports,
+        selectedReportId, setSelectedReportId,
+        incidentDetailReport, setIncidentDetailReport,
+        selectReport, openIncidentDetail, closeIncidentDetail,
+      }}
+    >
+      {children}
+    </MapPanelContext.Provider>
   );
-
-  return <MapPanelContext.Provider value={value}>{children}</MapPanelContext.Provider>;
 }
 
 export function useMapPanel() {
-  const context = useContext(MapPanelContext);
-  if (!context) {
-    throw new Error('useMapPanel must be used within a MapPanelProvider');
-  }
-  return context;
+  const ctx = useContext(MapPanelContext);
+  if (!ctx) throw new Error('useMapPanel must be used within a MapPanelProvider');
+  return ctx;
 }
 
 export default MapPanelContext;
