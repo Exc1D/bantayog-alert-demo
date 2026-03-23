@@ -1,32 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { Warning, MapPin, ArrowRight } from '@phosphor-icons/react';
 
 export default function UrgencyHome({ onDismiss }) {
-  const navigate = useNavigate();
   const { location } = useGeolocation();
-  const [transitioning, setTransitioning] = useState(false);
-
-  useEffect(() => {
-    if (location) {
-      // GPS already captured silently per spec
-    }
-  }, [location]);
 
   function handleMaybeLater() {
-    if (onDismiss) {
-      onDismiss();
-    } else {
-      setTransitioning(true);
-      setTimeout(() => navigate('/'), 200);
-    }
+    onDismiss();
   }
 
   return (
     <div
-      className={`flex flex-col items-center justify-center h-full bg-bg-app-light dark:bg-bg-app
-                  transition-opacity duration-200 ${transitioning ? 'opacity-0' : 'opacity-100'}`}
+      className="flex flex-col items-center justify-center h-full bg-bg-app-light dark:bg-bg-app"
     >
       <Link
         to="/report"
