@@ -1,15 +1,5 @@
 import { ArrowLeft, MapPin, Clock, CheckCircle } from '@phosphor-icons/react';
-import { Warning, Drop, Fire, Car, Users, Question } from '@phosphor-icons/react';
 import { useMapPanel } from '../../contexts/MapPanelContext';
-
-const DISASTER_ICONS = {
-  flooding: Drop,
-  landslide: Warning,
-  fire: Fire,
-  accident: Car,
-  crowding: Users,
-  other: Question,
-};
 
 function timeAgo(timestamp) {
   if (!timestamp?.seconds) return '';
