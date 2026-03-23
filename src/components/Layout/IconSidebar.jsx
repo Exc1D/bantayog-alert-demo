@@ -24,7 +24,7 @@ function SidebarTab({ label, href, icon: Icon, end }) {
       aria-label={label}
       className={({ isActive }) =>
         `group relative w-9 h-9 rounded-lg flex items-center justify-center
-         transition-colors tooltip-parent
+         transition-colors
          ${isActive
            ? 'bg-surface-dark text-text-dark dark:bg-surface-dark dark:text-text-dark'
            : 'text-text-muted-dark dark:text-text-muted-dark hover:text-text-dark hover:bg-surface-dark/50'
@@ -43,7 +43,7 @@ function SidebarTab({ label, href, icon: Icon, end }) {
             <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-emergency dark:bg-emergency-dark rounded-r" />
           )}
           {/* Hover tooltip */}
-          <span className="absolute left-full ml-2 px-2 py-1 bg-shell text-white text-xs
+          <span className="absolute left-full ml-2 px-2 py-1 bg-[#1C1C1E] text-white text-xs
                            rounded opacity-0 group-hover:opacity-100 pointer-events-none
                            whitespace-nowrap z-50 transition-opacity">
             {label}
