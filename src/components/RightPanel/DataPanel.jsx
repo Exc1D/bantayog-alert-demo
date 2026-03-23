@@ -43,7 +43,8 @@ export default function DataPanel() {
     }
   }, [period]);
 
-  const cutoff = useMemo(() => Date.now() / 1000 - periodSeconds, [periodSeconds]);
+  // eslint-disable-next-line react-hooks/purity -- cutoff intentionally updates each render when period changes
+  const cutoff = Date.now() / 1000 - periodSeconds;
   const filteredReports = reports.filter((r) => !r.createdAt?.seconds || r.createdAt.seconds >= cutoff);
 
   const stats = useMemo(() => {

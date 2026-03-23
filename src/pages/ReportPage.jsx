@@ -9,7 +9,7 @@ import ReportConfirm from '../components/Reports/ReportConfirm';
 
 export default function ReportPage() {
   const navigate = useNavigate();
-  const { user: _user } = useAuth();
+  useAuth(); // auth check — user info available if needed
   const { location } = useGeolocation();
   const [step, setStep] = useState(1);
   const [disasterType, setDisasterType] = useState(null);
