@@ -39,9 +39,10 @@ export default function RightPanel() {
             onClick={() => setActiveTab(id)}
             className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium
                        transition-colors border-b-2 -mb-px
-                       ${activeTab === id
-                         ? 'text-dark-text dark:text-dark-text border-emergency dark:border-emergency-dark'
-                         : 'text-muted-dark dark:text-muted-dark border-transparent hover:text-dark-text dark:hover:text-dark-text'
+                       ${
+                         activeTab === id
+                           ? 'text-dark-text dark:text-dark-text border-emergency dark:border-emergency-dark'
+                           : 'text-muted-dark dark:text-muted-dark border-transparent hover:text-dark-text dark:hover:text-dark-text'
                        }`}
             role="tab"
             aria-selected={activeTab === id}

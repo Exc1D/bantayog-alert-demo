@@ -36,11 +36,7 @@ export default function TabNavigation() {
                   ${isActive ? 'bg-emergency dark:bg-emergency-dark' : 'bg-transparent'}`}
                 aria-hidden="true"
               />
-              <Icon
-                size={20}
-                weight={isActive ? 'fill' : 'regular'}
-                aria-hidden="true"
-              />
+              <Icon size={20} weight={isActive ? 'fill' : 'regular'} aria-hidden="true" />
               <span>{label}</span>
             </>
           )}

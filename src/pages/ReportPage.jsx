@@ -16,7 +16,9 @@ export default function ReportPage() {
   const [photoFile, setPhotoFile] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const municipality = location ? resolveMunicipality(location.lat, location.lng).municipality : null;
+  const municipality = location
+    ? resolveMunicipality(location.lat, location.lng).municipality
+    : null;
 
   async function handleSubmit({ description: _description }) {
     if (submitting) return;
@@ -32,9 +34,32 @@ export default function ReportPage() {
 
   return (
     <div className="flex flex-col h-full bg-surface-dark dark:bg-surface-dark">
-      {step === 1 && <ReportTypeGrid selected={disasterType} onSelect={(t) => { setDisasterType(t); setStep(2); }} />}
-      {step === 2 && <CameraCapture photoFile={photoFile} onPhotoSelect={setPhotoFile} onNext={() => setStep(3)} />}
-      {step === 3 && <ReportConfirm disasterType={disasterType} photoFile={photoFile} municipality={municipality} onSubmit={handleSubmit} submitting={submitting} onBack={() => setStep(2)} />}
+      {step === 1 && (
+        <ReportTypeGrid
+          selected={disasterType}
+          onSelect={(t) => {
+            setDisasterType(t);
+            setStep(2);
+          }}
+        />
+      )}
+      {step === 2 && (
+        <CameraCapture
+          photoFile={photoFile}
+          onPhotoSelect={setPhotoFile}
+          onNext={() => setStep(3)}
+        />
+      )}
+      {step === 3 && (
+        <ReportConfirm
+          disasterType={disasterType}
+          photoFile={photoFile}
+          municipality={municipality}
+          onSubmit={handleSubmit}
+          submitting={submitting}
+          onBack={() => setStep(2)}
+        />
+      )}
     </div>
   );
 }

@@ -23,7 +23,10 @@ function MunicipalityBar({ name, count, maxCount }) {
     <div className="flex items-center gap-2">
       <span className="text-xs text-muted-dark dark:text-muted-dark w-20 truncate">{name}</span>
       <div className="flex-1 h-4 bg-dark-bg dark:bg-dark-bg rounded-full overflow-hidden">
-        <div className="h-full bg-emergency/70 dark:bg-emergency-dark/70 rounded-full transition-all" style={{ width: `${pct}%` }} />
+        <div
+          className="h-full bg-emergency/70 dark:bg-emergency-dark/70 rounded-full transition-all"
+          style={{ width: `${pct}%` }}
+        />
       </div>
       <span className="text-xs text-dark-text dark:text-dark-text w-6 text-right">{count}</span>
     </div>
@@ -36,16 +39,22 @@ export default function DataPanel() {
 
   const periodSeconds = useMemo(() => {
     switch (period) {
-      case '24h': return 86400;
-      case '7d':  return 604800;
-      case '30d': return 2592000;
-      default:    return 604800;
+      case '24h':
+        return 86400;
+      case '7d':
+        return 604800;
+      case '30d':
+        return 2592000;
+      default:
+        return 604800;
     }
   }, [period]);
 
   // eslint-disable-next-line react-hooks/purity -- cutoff intentionally updates each render when period changes
   const cutoff = Date.now() / 1000 - periodSeconds;
-  const filteredReports = reports.filter((r) => !r.createdAt?.seconds || r.createdAt.seconds >= cutoff);
+  const filteredReports = reports.filter(
+    (r) => !r.createdAt?.seconds || r.createdAt.seconds >= cutoff
+  );
 
   const stats = useMemo(() => {
     const active = reports.filter((r) => r.status === 'active').length;
@@ -80,7 +89,11 @@ export default function DataPanel() {
       </div>
       <div className="grid grid-cols-3 gap-2">
         <StatCard label="Total" value={stats.total} color="text-dark-text dark:text-dark-text" />
-        <StatCard label="Active" value={stats.active} color="text-emergency dark:text-emergency-dark" />
+        <StatCard
+          label="Active"
+          value={stats.active}
+          color="text-emergency dark:text-emergency-dark"
+        />
         <StatCard label="Resolved" value={stats.resolved} color="text-safe" />
       </div>
       <div className="flex flex-col gap-1.5">
@@ -89,16 +102,22 @@ export default function DataPanel() {
           By Municipality
         </h3>
         {municipalityCounts.length === 0 ? (
-          <p className="text-xs text-muted-dark dark:text-muted-dark italic">No data for this period</p>
+          <p className="text-xs text-muted-dark dark:text-muted-dark italic">
+            No data for this period
+          </p>
         ) : (
-          municipalityCounts.slice(0, 8).map(([name, count]) => (
-            <MunicipalityBar key={name} name={name} count={count} maxCount={maxCount} />
-          ))
+          municipalityCounts
+            .slice(0, 8)
+            .map(([name, count]) => (
+              <MunicipalityBar key={name} name={name} count={count} maxCount={maxCount} />
+            ))
         )}
       </div>
       <div className="flex items-center gap-2 p-3 bg-surface-dark/30 dark:bg-surface-dark/30 rounded-lg border border-dark-border">
         <ChartBar size={18} className="text-muted-dark dark:text-muted-dark" aria-hidden="true" />
-        <span className="text-xs text-muted-dark dark:text-muted-dark">{filteredReports.length} reports in the last {period}</span>
+        <span className="text-xs text-muted-dark dark:text-muted-dark">
+          {filteredReports.length} reports in the last {period}
+        </span>
       </div>
     </div>
   );

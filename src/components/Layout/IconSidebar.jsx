@@ -1,12 +1,6 @@
 // src/components/Layout/IconSidebar.jsx
 import { NavLink } from 'react-router-dom';
-import {
-  MapTrifold,
-  Article,
-  Bell,
-  User,
-  PlusCircle,
-} from '@phosphor-icons/react';
+import { MapTrifold, Article, Bell, User, PlusCircle } from '@phosphor-icons/react';
 
 const TABS = [
   { label: 'Map', href: '/', icon: MapTrifold, end: true },
@@ -25,27 +19,26 @@ function SidebarTab({ label, href, icon: Icon, end }) {
       className={({ isActive }) =>
         `group relative w-9 h-9 rounded-lg flex items-center justify-center
          transition-colors
-         ${isActive
-           ? 'bg-surface dark:bg-dark-bg text-dark-text dark:text-dark-text'
-           : 'text-muted-dark dark:text-muted-dark hover:text-dark-text hover:bg-dark-bg/50'
+         ${
+           isActive
+             ? 'bg-surface dark:bg-dark-bg text-dark-text dark:text-dark-text'
+             : 'text-muted-dark dark:text-muted-dark hover:text-dark-text hover:bg-dark-bg/50'
          }`
       }
     >
       {({ isActive }) => (
         <>
-          <Icon
-            size={22}
-            weight={isActive ? 'fill' : 'regular'}
-            aria-hidden="true"
-          />
+          <Icon size={22} weight={isActive ? 'fill' : 'regular'} aria-hidden="true" />
           {/* Active indicator — accent left border */}
           {isActive && (
             <span className="absolute left-0 top-1 bottom-1 w-0.5 bg-emergency dark:bg-emergency-dark rounded-r" />
           )}
           {/* Hover tooltip */}
-          <span className="absolute left-full ml-2 px-2 py-1 bg-[#1C1C1E] text-white text-xs
+          <span
+            className="absolute left-full ml-2 px-2 py-1 bg-[#1C1C1E] text-white text-xs
                            rounded opacity-0 group-hover:opacity-100 pointer-events-none
-                           whitespace-nowrap z-50 transition-opacity">
+                           whitespace-nowrap z-50 transition-opacity"
+          >
             {label}
           </span>
         </>

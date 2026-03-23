@@ -26,13 +26,21 @@ export function MapPanelProvider({ children }) {
   return (
     <MapPanelContext.Provider
       value={{
-        mapMode, setMapMode,
-        highlightedReportId, setHighlightedReportId,
-        reportLocations, setReportLocations,
-        reports, setReports,
-        selectedReportId, setSelectedReportId,
-        incidentDetailReport, setIncidentDetailReport,
-        selectReport, openIncidentDetail, closeIncidentDetail,
+        mapMode,
+        setMapMode,
+        highlightedReportId,
+        setHighlightedReportId,
+        reportLocations,
+        setReportLocations,
+        reports,
+        setReports,
+        selectedReportId,
+        setSelectedReportId,
+        incidentDetailReport,
+        setIncidentDetailReport,
+        selectReport,
+        openIncidentDetail,
+        closeIncidentDetail,
       }}
     >
       {children}

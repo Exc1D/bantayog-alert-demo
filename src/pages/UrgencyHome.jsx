@@ -10,9 +10,7 @@ export default function UrgencyHome({ onDismiss }) {
   }
 
   return (
-    <div
-      className="flex flex-col items-center justify-center h-full bg-bg-app-light dark:bg-bg-app"
-    >
+    <div className="flex flex-col items-center justify-center h-full bg-bg-app-light dark:bg-bg-app">
       <Link
         to="/report"
         className="relative flex flex-col items-center gap-3 bg-emergency dark:bg-emergency-dark

@@ -34,33 +34,57 @@ export default function IncidentDetail() {
           <ArrowLeft size={18} aria-hidden="true" />
         </button>
         <div className="flex-1">
-          <h2 className="text-sm font-bold text-dark-text dark:text-dark-text capitalize">{report.disaster?.type ?? 'Incident'}</h2>
+          <h2 className="text-sm font-bold text-dark-text dark:text-dark-text capitalize">
+            {report.disaster?.type ?? 'Incident'}
+          </h2>
           <p className="text-xs text-muted-dark dark:text-muted-dark">{report.municipality}</p>
         </div>
-        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${report.status === 'resolved' ? 'bg-safe/20 text-safe' : report.disaster?.severity === 'critical' ? 'bg-emergency/20 text-emergency dark:text-emergency-dark' : 'bg-warning-amber/20 text-warning-amber'}`}>
+        <span
+          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${report.status === 'resolved' ? 'bg-safe/20 text-safe' : report.disaster?.severity === 'critical' ? 'bg-emergency/20 text-emergency dark:text-emergency-dark' : 'bg-warning-amber/20 text-warning-amber'}`}
+        >
           {report.status === 'resolved' ? 'Resolved' : report.disaster?.severity}
         </span>
       </div>
       <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-3">
         <div className="flex items-start gap-2">
-          <MapPin size={16} className="text-muted-dark dark:text-muted-dark flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <MapPin
+            size={16}
+            className="text-muted-dark dark:text-muted-dark flex-shrink-0 mt-0.5"
+            aria-hidden="true"
+          />
           <div>
             <p className="text-sm text-dark-text dark:text-dark-text">{report.municipality}</p>
-            {report.location && <p className="text-xs text-muted-dark dark:text-muted-dark font-mono">{report.location.lat?.toFixed(5)}, {report.location.lng?.toFixed(5)}</p>}
+            {report.location && (
+              <p className="text-xs text-muted-dark dark:text-muted-dark font-mono">
+                {report.location.lat?.toFixed(5)}, {report.location.lng?.toFixed(5)}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Clock size={16} className="text-muted-dark dark:text-muted-dark" aria-hidden="true" />
-          <span className="text-xs text-muted-dark dark:text-muted-dark">{timeAgo(report.createdAt)}</span>
+          <span className="text-xs text-muted-dark dark:text-muted-dark">
+            {timeAgo(report.createdAt)}
+          </span>
         </div>
         {report.disaster?.description && (
-          <p className="text-sm text-dark-text dark:text-dark-text leading-relaxed">{report.disaster.description}</p>
+          <p className="text-sm text-dark-text dark:text-dark-text leading-relaxed">
+            {report.disaster.description}
+          </p>
         )}
         {report.photoURLs?.length > 0 && (
           <div className="grid grid-cols-2 gap-2">
             {report.photoURLs.map((url, i) => (
-              <div key={i} className="aspect-square bg-dark-bg dark:bg-dark-bg rounded-lg overflow-hidden">
-                <img src={url} alt={`Evidence ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+              <div
+                key={i}
+                className="aspect-square bg-dark-bg dark:bg-dark-bg rounded-lg overflow-hidden"
+              >
+                <img
+                  src={url}
+                  alt={`Evidence ${i + 1}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
               </div>
             ))}
           </div>
