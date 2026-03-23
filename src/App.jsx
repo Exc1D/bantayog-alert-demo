@@ -1,198 +1,67 @@
-import { useState, useEffect, useCallback, lazy, Suspense, useTransition } from 'react';
-import Header from './components/Layout/Header';
-import Sidebar from './components/Layout/Sidebar';
-import TabNavigation from './components/Layout/TabNavigation';
-import Footer from './components/Layout/Footer';
-import LoadingSpinner from './components/Common/LoadingSpinner';
+import { lazy, Suspense, useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import MapErrorBoundary from './components/Map/MapErrorBoundary';
 import ReportFormErrorBoundary from './components/Reports/ReportFormErrorBoundary';
-import OfflineIndicator from './components/Common/OfflineIndicator';
 import { AuthProvider } from './contexts/AuthContext';
 import { ReportsProvider } from './contexts/ReportsContext';
+import { MapPanelProvider } from './contexts/MapPanelContext';
 import { ToastProvider } from './components/Common/Toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import SignUpPromptModal from './components/Common/SignUpPromptModal';
+import AppShell from './components/Layout/AppShell';
+import LoadingSpinner from './components/Common/LoadingSpinner';
 
 const MapTab = lazy(() => import('./pages/MapTab'));
 const FeedTab = lazy(() => import('./pages/FeedTab'));
 const AlertsTab = lazy(() => import('./pages/AlertsTab'));
 const WeatherTab = lazy(() => import('./pages/WeatherTab'));
 const ProfileTab = lazy(() => import('./pages/ProfileTab'));
+const ReportPage = lazy(() => import('./pages/ReportPage'));
 const ReportModal = lazy(() => import('./components/Reports/ReportModal'));
-const AdminShell = lazy(() => import('./components/Admin/AdminShell'));
-const AdminGuard = lazy(() => import('./components/Admin/AdminGuard'));
-
-const VALID_TABS = [
-  'map',
-  'feed',
-  'alerts',
-  'weather',
-  'profile',
-  'admin',
-  'admin-queue',
-  'admin-map',
-  'admin-reports',
-  'admin-alerts',
-];
-const noop = () => {};
 
 const TAB_TITLES = {
-  map: 'Map - BANTAYOG ALERT',
-  feed: 'Feed - BANTAYOG ALERT',
-  alerts: 'Alerts - BANTAYOG ALERT',
-  weather: 'Weather - BANTAYOG ALERT',
-  profile: 'Profile - BANTAYOG ALERT',
-  admin: 'Admin Queue - BANTAYOG ALERT',
-  'admin-map': 'Admin Map - BANTAYOG ALERT',
-  'admin-reports': 'Admin Reports - BANTAYOG ALERT',
-  'admin-alerts': 'Admin Alerts - BANTAYOG ALERT',
+  '/': 'Map - BANTAYOG ALERT',
+  '/feed': 'Feed - BANTAYOG ALERT',
+  '/alerts': 'Alerts - BANTAYOG ALERT',
+  '/weather': 'Weather - BANTAYOG ALERT',
+  '/profile': 'Profile - BANTAYOG ALERT',
+  '/report': 'Report - BANTAYOG ALERT',
 };
 
-function getTabFromHash() {
-  const hash = window.location.hash.replace('#', '');
-  return VALID_TABS.includes(hash) ? hash : 'map';
+function DocumentTitleUpdater() {
+  // Simple approach: update title based on current path
+  const path = window.location.pathname;
+  document.title = TAB_TITLES[path] || 'BANTAYOG ALERT';
+  return null;
 }
 
-function AppContent() {
-  const [activeTab, setActiveTab] = useState(getTabFromHash);
+const LoadingFallback = () => (
+  <div className="h-[calc(100vh-112px)] lg:h-[calc(100vh-56px)] flex items-center justify-center">
+    <LoadingSpinner />
+  </div>
+);
+
+function AppRoutes() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [showSignUpPrompt, setShowSignUpPrompt] = useState(false);
-  const [_isPending, startTransition] = useTransition();
 
-  // Sync tab changes to URL hash + browser history
-  const changeTab = useCallback((tab) => {
-    const validTab = VALID_TABS.includes(tab) ? tab : 'map';
-    startTransition(() => {
-      setActiveTab(validTab);
-    });
-    const newHash = `#${validTab}`;
-    if (window.location.hash !== newHash) {
-      window.history.pushState(null, '', newHash);
-    }
-  }, []);
-
-  // Listen for browser back/forward navigation (popstate)
-  useEffect(() => {
-    const handlePopState = () => {
-      setActiveTab(getTabFromHash());
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  // Set initial hash on mount if not already present
-  useEffect(() => {
-    if (!window.location.hash) {
-      window.history.replaceState(null, '', '#map');
-    }
-  }, []);
-
-  // Update document title on tab change
-  useEffect(() => {
-    document.title = TAB_TITLES[activeTab] || 'BANTAYOG ALERT';
-  }, [activeTab]);
-
-  const handleViewMap = () => {
-    changeTab('map');
-  };
-
-  const openSignUpPrompt = () => {
-    setShowSignUpPrompt(true);
-  };
-
+  const openSignUpPrompt = () => setShowSignUpPrompt(true);
+  const closeSignUpPrompt = () => setShowSignUpPrompt(false);
   const handleSignUpNow = () => {
     setShowSignUpPrompt(false);
-    changeTab('profile');
+    window.location.href = '/profile';
   };
-
-  const handleOpenProfileTab = () => {
-    changeTab('profile');
-  };
-
   const handleOpenReportModal = () => setShowReportModal(true);
 
-  const renderTab = () => {
-    switch (activeTab) {
-      case 'map':
-        return (
-          <MapErrorBoundary>
-            <MapTab onViewReport={noop} />
-          </MapErrorBoundary>
-        );
-      case 'feed':
-        return <FeedTab onViewMap={handleViewMap} onRequireSignUp={openSignUpPrompt} />;
-      case 'alerts':
-        return <AlertsTab />;
-      case 'weather':
-        return <WeatherTab />;
-      case 'profile':
-        return <ProfileTab />;
-      case 'admin':
-        return (
-          <AdminGuard onDenied={() => changeTab('map')}>
-            <AdminShell activeTab={activeTab} onTabChange={changeTab} />
-          </AdminGuard>
-        );
-      case 'admin-queue':
-      case 'admin-map':
-      case 'admin-reports':
-      case 'admin-alerts':
-        return (
-          <AdminGuard onDenied={() => changeTab('map')}>
-            <AdminShell activeTab={activeTab} onTabChange={changeTab} />
-          </AdminGuard>
-        );
-      default:
-        return (
-          <MapErrorBoundary>
-            <MapTab onViewReport={noop} />
-          </MapErrorBoundary>
-        );
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-topo dark:bg-topo flex flex-col transition-colors">
-      {/* Skip to main content link for accessibility */}
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-accent focus:text-white focus:rounded-lg focus:font-semibold focus:text-sm"
-      >
-        Skip to main content
-      </a>
-      <OfflineIndicator />
-      <Header onProfileClick={handleOpenProfileTab} />
+    <>
+      <DocumentTitleUpdater />
 
-      {/* Desktop Sidebar - Sidebar handles its own responsive visibility */}
-      <Sidebar activeTab={activeTab} onTabChange={changeTab} />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-0 lg:ml-56" id="main-content">
-        {/* Mobile Tab Navigation - hidden on desktop */}
-        <div className="lg:hidden">
-          <TabNavigation activeTab={activeTab} onTabChange={changeTab} />
-        </div>
-
-        <main id={`tabpanel-${activeTab}`} className="flex-1 flex flex-col min-h-0">
-          <Suspense
-            fallback={
-              <div className="h-[calc(100vh-112px)] lg:h-[calc(100vh-56px)] flex items-center justify-center">
-                <LoadingSpinner />
-              </div>
-            }
-          >
-            {renderTab()}
-          </Suspense>
-        </main>
-      </div>
-
-      {activeTab !== 'profile' && <Footer className="lg:hidden" />}
-
-      {/* Emergency Report Button */}
+      {/* Floating Report Button — mobile only */}
       <button
         onClick={handleOpenReportModal}
-        className="fixed bottom-6 right-4 z-50 flex items-center gap-2 report-btn-glow text-white rounded-full emergency-pulse transition-all duration-200 px-5 py-3.5 sm:px-6"
+        className="fixed bottom-20 lg:bottom-6 right-4 z-50 flex items-center gap-2 report-btn-glow text-white rounded-full emergency-pulse transition-all duration-200 px-5 py-3.5 sm:px-6"
         aria-label="Report a hazard"
       >
         <svg
@@ -214,24 +83,78 @@ function AppContent() {
       </button>
 
       {/* Report Modal */}
-      {showReportModal && (
-        <Suspense fallback={null}>
-          <ReportFormErrorBoundary>
-            <ReportModal
-              isOpen={showReportModal}
-              onClose={() => setShowReportModal(false)}
-              onAnonymousReportSubmitted={openSignUpPrompt}
-            />
-          </ReportFormErrorBoundary>
-        </Suspense>
-      )}
+      <Suspense fallback={null}>
+        <ReportFormErrorBoundary>
+          <ReportModal
+            isOpen={showReportModal}
+            onClose={() => setShowReportModal(false)}
+            onAnonymousReportSubmitted={openSignUpPrompt}
+          />
+        </ReportFormErrorBoundary>
+      </Suspense>
 
       <SignUpPromptModal
         isOpen={showSignUpPrompt}
-        onClose={() => setShowSignUpPrompt(false)}
+        onClose={closeSignUpPrompt}
         onSignUpNow={handleSignUpNow}
       />
-    </div>
+
+      <Routes>
+        {/* AppShell wraps all main routes */}
+        <Route element={<AppShell />}>
+          <Route
+            path="/"
+            element={
+              <MapErrorBoundary>
+                <Suspense fallback={<LoadingFallback />}>
+                  <MapTab onViewReport={() => {}} />
+                </Suspense>
+              </MapErrorBoundary>
+            }
+          />
+          <Route
+            path="/feed"
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <FeedTab onViewMap={() => {}} onRequireSignUp={openSignUpPrompt} />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/alerts"
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <AlertsTab />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/weather"
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <WeatherTab />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <ProfileTab />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/report"
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <ReportPage />
+              </Suspense>
+            }
+          />
+        </Route>
+      </Routes>
+    </>
   );
 }
 
@@ -242,7 +165,11 @@ export default function App() {
         <ToastProvider>
           <AuthProvider>
             <ReportsProvider>
-              <AppContent />
+              <MapPanelProvider>
+                <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
+              </MapPanelProvider>
             </ReportsProvider>
           </AuthProvider>
         </ToastProvider>
