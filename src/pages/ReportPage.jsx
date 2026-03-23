@@ -9,7 +9,7 @@ import ReportConfirm from '../components/Reports/ReportConfirm';
 
 export default function ReportPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { location } = useGeolocation();
   const [step, setStep] = useState(1);
   const [disasterType, setDisasterType] = useState(null);
@@ -18,7 +18,7 @@ export default function ReportPage() {
 
   const municipality = location ? resolveMunicipality(location.lat, location.lng).municipality : null;
 
-  async function handleSubmit({ description }) {
+  async function handleSubmit({ description: _description }) {
     if (submitting) return;
     setSubmitting(true);
     try {

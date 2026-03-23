@@ -26,7 +26,7 @@ export default function IncidentDetail() {
   if (!incidentDetailReport) return null;
 
   const report = incidentDetailReport;
-  const Icon = DISASTER_ICONS[report.disaster?.type] ?? Warning;
+  const _Icon = DISASTER_ICONS[report.disaster?.type] ?? Warning;
 
   function handleBack() {
     setIncidentDetailReport(null);

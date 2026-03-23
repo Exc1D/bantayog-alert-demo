@@ -57,7 +57,7 @@ export default function AlertsPanel() {
       <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-dark dark:text-muted-dark">
         <Bell size={32} aria-hidden="true" />
         <p className="text-sm font-medium">No active alerts</p>
-        <p className="text-xs">You're all caught up</p>
+        <p className="text-xs">You&apos;re all caught up</p>
       </div>
     );
   }
@@ -65,7 +65,7 @@ export default function AlertsPanel() {
   return (
     <div className="h-full overflow-y-auto">
       {sortedAlerts.map((report) => (
-        <AlertItem key={report.id} report={report} userLat={userLat} userLng={userLng} onSelect={(r) => {}} />
+        <AlertItem key={report.id} report={report} userLat={userLat} userLng={userLng} onSelect={() => {}} />
       ))}
     </div>
   );

@@ -5,21 +5,15 @@ export default function CameraCapture({ photoFile, onPhotoSelect, onNext }) {
   const [preview, setPreview] = useState(photoFile ? URL.createObjectURL(photoFile) : null);
   const inputRef = useRef(null);
 
-  // Revoke blob URL when preview changes or component unmounts
+  // Create preview URL when photoFile changes, revoke on cleanup
   useEffect(() => {
-    return () => {
-      if (preview) {
-        URL.revokeObjectURL(preview);
-      }
-    };
-  }, [preview]);
-
-  // Revoke old blob URL when photoFile prop changes
-  useEffect(() => {
-    if (photoFile && preview === null) {
-      const url = URL.createObjectURL(photoFile);
-      setPreview(url);
+    if (!photoFile) {
+      setPreview(null);
+      return;
     }
+    const url = URL.createObjectURL(photoFile);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
   }, [photoFile]);
 
   function handleCapture(e) {

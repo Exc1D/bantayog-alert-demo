@@ -43,7 +43,7 @@ export default function DataPanel() {
     }
   }, [period]);
 
-  const cutoff = Date.now() / 1000 - periodSeconds;
+  const cutoff = useMemo(() => Date.now() / 1000 - periodSeconds, [periodSeconds]);
   const filteredReports = reports.filter((r) => !r.createdAt?.seconds || r.createdAt.seconds >= cutoff);
 
   const stats = useMemo(() => {

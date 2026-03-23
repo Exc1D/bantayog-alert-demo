@@ -1,22 +1,14 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useReportsContext } from '../contexts/ReportsContext';
 import LeafletMap from '../components/Map/LeafletMap';
 import UrgencyHome from './UrgencyHome';
 import FloatingReportButton from '../components/Layout/FloatingReportButton';
+import useIsLg from '../hooks/useIsLg';
 
 export default function MapTab({ onViewReport }) {
   const { reports } = useReportsContext();
   const [showUrgency, setShowUrgency] = useState(true);
-  const [isLg, setIsLg] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(min-width: 1024px)');
-    setIsLg(mediaQuery.matches);
-
-    const handler = (e) => setIsLg(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
-  }, []);
+  const isLg = useIsLg();
 
   // Filter out resolved reports — resolved pins should not appear on the map
   const mapReports = useMemo(() => {
