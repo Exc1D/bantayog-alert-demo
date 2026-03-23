@@ -29,8 +29,8 @@ export default function UrgencyHome({ onDismiss }) {
       <button
         type="button"
         onClick={handleMaybeLater}
-        className="mt-8 text-sm text-text-muted-dark dark:text-text-muted-dark
-                   hover:text-text-dark dark:hover:text-text-dark transition-colors
+        className="mt-8 text-sm text-muted-dark dark:text-muted-dark
+                   hover:text-dark-text dark:hover:text-dark-text transition-colors
                    flex items-center gap-1"
         aria-label="Continue to map"
       >
@@ -39,7 +39,7 @@ export default function UrgencyHome({ onDismiss }) {
       </button>
 
       {location && (
-        <div className="absolute bottom-4 flex items-center gap-1 text-xs text-text-muted-dark dark:text-text-muted-dark">
+        <div className="absolute bottom-4 flex items-center gap-1 text-xs text-muted-dark dark:text-muted-dark">
           <MapPin size={12} aria-hidden="true" />
           <span>Location available</span>
         </div>

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import ErrorBoundary from './components/Common/ErrorBoundary';
 import MapErrorBoundary from './components/Map/MapErrorBoundary';
 import ReportFormErrorBoundary from './components/Reports/ReportFormErrorBoundary';
@@ -43,6 +43,7 @@ const LoadingFallback = () => (
 );
 
 function AppRoutes() {
+  const navigate = useNavigate();
   const [showReportModal, setShowReportModal] = useState(false);
   const [showSignUpPrompt, setShowSignUpPrompt] = useState(false);
 
@@ -50,7 +51,7 @@ function AppRoutes() {
   const closeSignUpPrompt = () => setShowSignUpPrompt(false);
   const handleSignUpNow = () => {
     setShowSignUpPrompt(false);
-    window.location.href = '/profile';
+    navigate('/profile');
   };
   const handleOpenReportModal = () => setShowReportModal(true);
 

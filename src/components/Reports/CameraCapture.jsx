@@ -1,9 +1,26 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Camera, Images, ArrowRight } from '@phosphor-icons/react';
 
 export default function CameraCapture({ photoFile, onPhotoSelect, onNext }) {
   const [preview, setPreview] = useState(photoFile ? URL.createObjectURL(photoFile) : null);
   const inputRef = useRef(null);
+
+  // Revoke blob URL when preview changes or component unmounts
+  useEffect(() => {
+    return () => {
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
+  // Revoke old blob URL when photoFile prop changes
+  useEffect(() => {
+    if (photoFile && preview === null) {
+      const url = URL.createObjectURL(photoFile);
+      setPreview(url);
+    }
+  }, [photoFile]);
 
   function handleCapture(e) {
     const file = e.target.files?.[0];
@@ -15,10 +32,10 @@ export default function CameraCapture({ photoFile, onPhotoSelect, onNext }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 relative bg-surface-dark dark:bg-surface-dark flex flex-col items-center justify-center p-4">
+      <div className="flex-1 relative bg-dark-bg dark:bg-dark-bg flex flex-col items-center justify-center p-4">
         <input ref={inputRef} type="file" accept="image/*" capture="environment" onChange={handleCapture} className="absolute inset-0 opacity-0 cursor-pointer" aria-label="Capture photo" />
         {!preview ? (
-          <div className="flex flex-col items-center gap-4 text-text-muted-dark dark:text-text-muted-dark">
+          <div className="flex flex-col items-center gap-4 text-muted-dark dark:text-muted-dark">
             <Camera size={64} aria-hidden="true" />
             <p className="text-sm">Tap to take a photo</p>
           </div>
@@ -30,11 +47,11 @@ export default function CameraCapture({ photoFile, onPhotoSelect, onNext }) {
         )}
       </div>
       <div className="p-4 flex gap-3">
-        <button type="button" onClick={() => inputRef.current?.click()} className="flex-1 py-3 rounded-xl border border-border-dark text-text-dark dark:text-text-dark flex items-center justify-center gap-2 text-sm">
+        <button type="button" onClick={() => inputRef.current?.click()} className="flex-1 py-3 rounded-xl border border-dark-border text-dark-text dark:text-dark-text flex items-center justify-center gap-2 text-sm">
           <Images size={18} aria-hidden="true" />
           Gallery
         </button>
-        <button type="button" onClick={onNext} disabled={!photoFile} className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors ${photoFile ? 'bg-emergency dark:bg-emergency-dark text-white active:scale-95' : 'bg-surface-dark/50 dark:bg-surface-dark/50 text-text-muted-dark dark:text-text-muted-dark cursor-not-allowed'}`}>
+        <button type="button" onClick={onNext} disabled={!photoFile} className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors ${photoFile ? 'bg-emergency dark:bg-emergency-dark text-white active:scale-95' : 'bg-surface-dark/50 dark:bg-surface-dark/50 text-muted-dark dark:text-muted-dark cursor-not-allowed'}`}>
           Next <ArrowRight size={16} aria-hidden="true" />
         </button>
       </div>

@@ -26,8 +26,8 @@ function SidebarTab({ label, href, icon: Icon, end }) {
         `group relative w-9 h-9 rounded-lg flex items-center justify-center
          transition-colors
          ${isActive
-           ? 'bg-surface-dark text-text-dark dark:bg-surface-dark dark:text-text-dark'
-           : 'text-text-muted-dark dark:text-text-muted-dark hover:text-text-dark hover:bg-surface-dark/50'
+           ? 'bg-surface dark:bg-dark-bg text-dark-text dark:text-dark-text'
+           : 'text-muted-dark dark:text-muted-dark hover:text-dark-text hover:bg-dark-bg/50'
          }`
       }
     >
@@ -58,7 +58,7 @@ export default function IconSidebar() {
   return (
     <nav
       aria-label="Main navigation"
-      className="w-11 bg-surface-dark dark:bg-surface-dark border-r border-border-dark
+      className="w-11 bg-surface dark:bg-dark-bg border-r border-dark-border
                  flex flex-col items-center py-3 gap-1 flex-shrink-0"
     >
       {/* Report shortcut — desktop "+" icon */}
@@ -71,7 +71,7 @@ export default function IconSidebar() {
         <PlusCircle size={22} weight="fill" aria-hidden="true" />
       </NavLink>
 
-      <div className="w-6 h-px bg-border-dark my-1" aria-hidden="true" />
+      <div className="w-6 h-px bg-dark-border my-1" aria-hidden="true" />
 
       {TABS.map(({ label, href, icon, end }) => (
         <SidebarTab key={href} label={label} href={href} icon={icon} end={end} />

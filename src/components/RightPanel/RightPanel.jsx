@@ -30,8 +30,8 @@ export default function RightPanel() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-surface-dark dark:bg-surface-dark border-l border-border-dark">
-      <div className="flex border-b border-border-dark">
+    <div className="flex flex-col h-full bg-surface dark:bg-dark-bg border-l border-dark-border">
+      <div className="flex border-b border-dark-border">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
@@ -40,8 +40,8 @@ export default function RightPanel() {
             className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium
                        transition-colors border-b-2 -mb-px
                        ${activeTab === id
-                         ? 'text-text-dark dark:text-text-dark border-emergency dark:border-emergency-dark'
-                         : 'text-text-muted-dark dark:text-text-muted-dark border-transparent hover:text-text-dark dark:hover:text-text-dark'
+                         ? 'text-dark-text dark:text-dark-text border-emergency dark:border-emergency-dark'
+                         : 'text-muted-dark dark:text-muted-dark border-transparent hover:text-dark-text dark:hover:text-dark-text'
                        }`}
             role="tab"
             aria-selected={activeTab === id}

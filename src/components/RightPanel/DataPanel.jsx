@@ -10,8 +10,8 @@ const PERIODS = [
 
 function StatCard({ label, value, color }) {
   return (
-    <div className="bg-surface-dark/50 dark:bg-surface-dark rounded-lg p-3 border border-border-dark">
-      <p className="text-xs text-text-muted-dark dark:text-text-muted-dark mb-1">{label}</p>
+    <div className="bg-surface-dark/50 dark:bg-surface-dark rounded-lg p-3 border border-dark-border">
+      <p className="text-xs text-muted-dark dark:text-muted-dark mb-1">{label}</p>
       <p className={`text-2xl font-bold ${color}`}>{value ?? 0}</p>
     </div>
   );
@@ -21,11 +21,11 @@ function MunicipalityBar({ name, count, maxCount }) {
   const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-text-muted-dark dark:text-text-muted-dark w-20 truncate">{name}</span>
-      <div className="flex-1 h-4 bg-surface-dark dark:bg-surface-dark rounded-full overflow-hidden">
+      <span className="text-xs text-muted-dark dark:text-muted-dark w-20 truncate">{name}</span>
+      <div className="flex-1 h-4 bg-dark-bg dark:bg-dark-bg rounded-full overflow-hidden">
         <div className="h-full bg-emergency/70 dark:bg-emergency-dark/70 rounded-full transition-all" style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-xs text-text-dark dark:text-text-dark w-6 text-right">{count}</span>
+      <span className="text-xs text-dark-text dark:text-dark-text w-6 text-right">{count}</span>
     </div>
   );
 }
@@ -65,39 +65,39 @@ export default function DataPanel() {
 
   return (
     <div className="h-full overflow-y-auto p-3 flex flex-col gap-3">
-      <div className="flex gap-1 bg-surface-dark/50 dark:bg-surface-dark rounded-lg p-1 border border-border-dark">
+      <div className="flex gap-1 bg-surface-dark/50 dark:bg-surface-dark rounded-lg p-1 border border-dark-border">
         {PERIODS.map(({ id, label }) => (
           <button
             key={id}
             type="button"
             onClick={() => setPeriod(id)}
-            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${period === id ? 'bg-emergency/20 text-text-dark dark:text-text-dark' : 'text-text-muted-dark dark:text-text-muted-dark hover:text-text-dark dark:hover:text-text-dark'}`}
+            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${period === id ? 'bg-emergency/20 text-dark-text dark:text-dark-text' : 'text-muted-dark dark:text-muted-dark hover:text-dark-text dark:hover:text-dark-text'}`}
           >
             {label}
           </button>
         ))}
       </div>
       <div className="grid grid-cols-3 gap-2">
-        <StatCard label="Total" value={stats.total} color="text-text-dark dark:text-text-dark" />
+        <StatCard label="Total" value={stats.total} color="text-dark-text dark:text-dark-text" />
         <StatCard label="Active" value={stats.active} color="text-emergency dark:text-emergency-dark" />
         <StatCard label="Resolved" value={stats.resolved} color="text-safe" />
       </div>
       <div className="flex flex-col gap-1.5">
-        <h3 className="text-xs font-semibold text-text-muted-dark dark:text-text-muted-dark flex items-center gap-1">
+        <h3 className="text-xs font-semibold text-muted-dark dark:text-muted-dark flex items-center gap-1">
           <MapPin size={14} aria-hidden="true" />
           By Municipality
         </h3>
         {municipalityCounts.length === 0 ? (
-          <p className="text-xs text-text-muted-dark dark:text-text-muted-dark italic">No data for this period</p>
+          <p className="text-xs text-muted-dark dark:text-muted-dark italic">No data for this period</p>
         ) : (
           municipalityCounts.slice(0, 8).map(([name, count]) => (
             <MunicipalityBar key={name} name={name} count={count} maxCount={maxCount} />
           ))
         )}
       </div>
-      <div className="flex items-center gap-2 p-3 bg-surface-dark/30 dark:bg-surface-dark/30 rounded-lg border border-border-dark">
-        <ChartBar size={18} className="text-text-muted-dark dark:text-text-muted-dark" aria-hidden="true" />
-        <span className="text-xs text-text-muted-dark dark:text-text-muted-dark">{filteredReports.length} reports in the last {period}</span>
+      <div className="flex items-center gap-2 p-3 bg-surface-dark/30 dark:bg-surface-dark/30 rounded-lg border border-dark-border">
+        <ChartBar size={18} className="text-muted-dark dark:text-muted-dark" aria-hidden="true" />
+        <span className="text-xs text-muted-dark dark:text-muted-dark">{filteredReports.length} reports in the last {period}</span>
       </div>
     </div>
   );

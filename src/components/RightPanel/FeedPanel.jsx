@@ -25,7 +25,7 @@ function timeAgo(timestamp) {
 function severityColor(severity) {
   switch (severity) {
     case 'critical': return 'bg-emergency dark:bg-emergency-dark';
-    case 'urgent':   return 'bg-warning-amber dark:bg-warning-amber-dark';
+    case 'urgent':   return 'bg-warning-amber dark:bg-warning';
     case 'low':      return 'bg-blue-500';
     default:         return 'bg-gray-400';
   }
@@ -35,7 +35,7 @@ function FeedItem({ report, onSelect }) {
   const Icon = DISASTER_ICONS[report.disaster?.type] ?? Question;
   return (
     <div
-      className="flex items-start gap-3 p-3 hover:bg-surface-dark/50 cursor-pointer transition-colors border-l-2 border-transparent hover:border-border-dark"
+      className="flex items-start gap-3 p-3 hover:bg-dark-bg/50 cursor-pointer transition-colors border-l-2 border-transparent hover:border-dark-border"
       onClick={() => onSelect(report)}
     >
       <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${report.status === 'resolved' ? 'bg-safe/20 text-safe' : 'bg-emergency/10 text-emergency dark:text-emergency-dark'}`}>
@@ -43,11 +43,11 @@ function FeedItem({ report, onSelect }) {
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-text-dark dark:text-text-dark capitalize">{report.disaster?.type ?? 'Unknown'}</span>
+          <span className="text-sm font-medium text-dark-text dark:text-dark-text capitalize">{report.disaster?.type ?? 'Unknown'}</span>
           <span className={`w-1.5 h-1.5 rounded-full ${severityColor(report.disaster?.severity)}`} />
-          <span className="text-xs text-text-muted-dark dark:text-text-muted-dark">{report.municipality}</span>
+          <span className="text-xs text-muted-dark dark:text-muted-dark">{report.municipality}</span>
         </div>
-        <div className="flex items-center gap-1 mt-0.5 text-xs text-text-muted-dark dark:text-text-muted-dark">
+        <div className="flex items-center gap-1 mt-0.5 text-xs text-muted-dark dark:text-muted-dark">
           <Clock size={12} aria-hidden="true" />
           <span>{timeAgo(report.createdAt)}</span>
           {report.status === 'resolved' && (
@@ -63,18 +63,18 @@ function ResolvedItem({ report }) {
   const [expanded, setExpanded] = useState(false);
   const Icon = DISASTER_ICONS[report.disaster?.type] ?? Question;
   return (
-    <div className="border-t border-border-dark">
-      <button type="button" onClick={() => setExpanded(!expanded)} className="w-full flex items-center gap-3 p-3 hover:bg-surface-dark/50 transition-colors">
+    <div className="border-t border-dark-border">
+      <button type="button" onClick={() => setExpanded(!expanded)} className="w-full flex items-center gap-3 p-3 hover:bg-dark-bg/50 transition-colors">
         <div className="w-6 h-6 rounded-full bg-safe/20 flex items-center justify-center flex-shrink-0">
           <Icon size={12} weight="fill" className="text-safe" aria-hidden="true" />
         </div>
-        <span className="text-xs text-text-muted-dark dark:text-text-muted-dark flex-1 text-left capitalize">{report.disaster?.type}</span>
-        <span className="text-xs text-text-muted-dark dark:text-text-muted-dark">{report.municipality}</span>
-        <span className="text-xs text-text-muted-dark dark:text-text-muted-dark">{timeAgo(report.createdAt)}</span>
+        <span className="text-xs text-muted-dark dark:text-muted-dark flex-1 text-left capitalize">{report.disaster?.type}</span>
+        <span className="text-xs text-muted-dark dark:text-muted-dark">{report.municipality}</span>
+        <span className="text-xs text-muted-dark dark:text-muted-dark">{timeAgo(report.createdAt)}</span>
       </button>
       {expanded && (
         <div className="px-3 pb-3 pl-9 border-l-2 border-safe/30">
-          <p className="text-xs text-text-muted-dark dark:text-text-muted-dark italic">{report.resolutionNote ?? 'No resolution notes provided.'}</p>
+          <p className="text-xs text-muted-dark dark:text-muted-dark italic">{report.resolutionNote ?? 'No resolution notes provided.'}</p>
         </div>
       )}
     </div>
@@ -92,7 +92,7 @@ export default function FeedPanel() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="flex flex-col gap-2 items-center text-text-muted-dark dark:text-text-muted-dark">
+        <div className="flex flex-col gap-2 items-center text-muted-dark dark:text-muted-dark">
           <div className="w-6 h-6 border-2 border-text-muted-dark border-t-transparent rounded-full animate-spin" />
           <span className="text-xs">Loading...</span>
         </div>
@@ -102,7 +102,7 @@ export default function FeedPanel() {
 
   if (reports.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-2 text-text-muted-dark dark:text-text-muted-dark">
+      <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-dark dark:text-muted-dark">
         <Article size={32} aria-hidden="true" />
         <p className="text-sm font-medium">No reports yet</p>
       </div>
@@ -115,8 +115,8 @@ export default function FeedPanel() {
         <FeedItem key={report.id} report={report} onSelect={(r) => setSelectedReportId(r.id)} />
       ))}
       {resolvedReports.length > 0 && (
-        <div className="border-t border-border-dark">
-          <button type="button" onClick={() => setShowResolved(!showResolved)} className="w-full px-3 py-2 text-xs text-text-muted-dark dark:text-text-muted-dark hover:text-text-dark dark:hover:text-text-dark hover:bg-surface-dark/30 transition-colors text-left">
+        <div className="border-t border-dark-border">
+          <button type="button" onClick={() => setShowResolved(!showResolved)} className="w-full px-3 py-2 text-xs text-muted-dark dark:text-muted-dark hover:text-dark-text dark:hover:text-dark-text hover:bg-dark-bg/30 transition-colors text-left">
             Show resolved ({resolvedReports.length})
           </button>
           {showResolved && resolvedReports.map((report) => (

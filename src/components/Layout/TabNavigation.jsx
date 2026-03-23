@@ -12,7 +12,7 @@ export default function TabNavigation() {
   return (
     <nav
       aria-label="Main navigation"
-      className="bg-surface-light dark:bg-surface-dark border-t border-border-dark
+      className="bg-surface dark:bg-dark-bg border-t border-dark-border
                  grid grid-cols-4"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
@@ -26,7 +26,7 @@ export default function TabNavigation() {
             `flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-medium
              transition-colors focus-visible:outline-none focus-visible:ring-2
              focus-visible:ring-emergency focus-visible:ring-inset relative
-             ${isActive ? 'text-text-dark dark:text-text-dark' : 'text-text-muted-dark dark:text-text-muted-dark'}`
+             ${isActive ? 'text-dark-text dark:text-dark-text' : 'text-muted-dark dark:text-muted-dark'}`
           }
         >
           {({ isActive }) => (
