@@ -165,19 +165,22 @@ const SEVERITY_STYLES = {
     bg: 'bg-red-600 dark:bg-red-700',
     text: 'text-white dark:text-gray-100',
     border: 'border-red-600 dark:border-red-500',
-    badge: 'bg-red-600/10 dark:bg-red-400/30 text-red-600 dark:text-red-300 border-red-600/20 dark:border-red-400/30',
+    badge:
+      'bg-red-600/10 dark:bg-red-400/30 text-red-600 dark:text-red-300 border-red-600/20 dark:border-red-400/30',
   },
   warning: {
     bg: 'bg-amber-500 dark:bg-amber-600',
     text: 'text-white dark:text-gray-100',
     border: 'border-amber-500 dark:border-amber-600',
-    badge: 'bg-amber-500/10 dark:bg-amber-400/30 text-amber-600 dark:text-amber-300 border-amber-500/20 dark:border-amber-400/30',
+    badge:
+      'bg-amber-500/10 dark:bg-amber-400/30 text-amber-600 dark:text-amber-300 border-amber-500/20 dark:border-amber-400/30',
   },
   info: {
     bg: 'bg-gray-700 dark:bg-gray-600',
     text: 'text-white dark:text-gray-100',
     border: 'border-gray-700 dark:border-gray-500',
-    badge: 'bg-gray-700/10 dark:bg-white/20 text-gray-800 dark:text-gray-100 border-gray-700/20 dark:border-white/20',
+    badge:
+      'bg-gray-700/10 dark:bg-white/20 text-gray-800 dark:text-gray-100 border-gray-700/20 dark:border-white/20',
   },
 };
 
