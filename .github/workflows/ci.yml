@@ -45,6 +45,19 @@ jobs:
           echo "CI_FIREBASE_KEY length: ${#CI_FIREBASE_KEY}"
           echo "CI_OW_KEY length: ${#CI_OW_KEY}"
 
+      - name: Check for .env.production
+        run: |
+          echo "=== Checking for .env.production file ==="
+          if [ -f ".env.production" ]; then
+            echo "FOUND .env.production - contents:"
+            cat .env.production
+          else
+            echo ".env.production NOT FOUND"
+          fi
+
+      - name: Remove .env.production to prevent placeholder override
+        run: rm -f .env.production
+
       - name: Build project
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
