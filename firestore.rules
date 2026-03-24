@@ -379,6 +379,14 @@ service cloud.firestore {
 
       // No deletes - TTL policy handles purging
       allow delete: if false;
+
+      // Notifications subcollection - logs of sent push notifications
+      // Written by Cloud Functions after FCM sends, read by admins for audit
+      match /notifications/{notificationId} {
+        allow read: if isAdmin();  // Admin read for audit trail
+        allow create: if isAdmin(); // Only admins/Cloud Functions can create
+        allow update, delete: if false;  // Immutable records
+      }
     }
   }
 }
