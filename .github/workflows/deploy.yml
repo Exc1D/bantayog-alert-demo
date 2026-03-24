@@ -24,42 +24,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Check for .env.production
+            - name: Setup production environment
         run: |
-          echo "=== Checking for .env.production file ==="
-          if [ -f ".env.production" ]; then
-            echo "FOUND .env.production - contents:"
-            cat .env.production
-          else
-            echo ".env.production NOT FOUND"
-          fi
-
-      - name: Remove .env.production to prevent placeholder override
-        run: rm -f .env.production
-
-      - name: Debug env vars
-        env:
-          FIREBASE_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
-          OW_KEY: ${{ secrets.VITE_OPENWEATHER_API_KEY }}
-        run: |
-          echo "FIREBASE_KEY length: ${#FIREBASE_KEY}"
-          echo "OW_KEY length: ${#OW_KEY}"
-          echo "FIREBASE_KEY prefix: ${FIREBASE_KEY:0:10}"
-          echo "OW_KEY prefix: ${OW_KEY:0:10}"
+          echo "=== Using .env.production for build ==="
+          cp .env.production .env
+          echo "Environment copied successfully"
 
       - name: Build project
-        env:
-          VITE_APP_ENV: production
-          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
-          VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
-          VITE_FIREBASE_VAPID_KEY: ${{ secrets.VITE_FIREBASE_VAPID_KEY }}
-          VITE_OPENWEATHER_API_KEY: ${{ secrets.VITE_OPENWEATHER_API_KEY }}
-          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
         run: npm run build
 
       - name: Check Firebase token
