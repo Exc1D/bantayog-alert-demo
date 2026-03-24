@@ -349,8 +349,8 @@ service cloud.firestore {
     // ============================================
 
     match /announcements/{announcementId} {
-      // Authenticated users can read announcements
-      allow read: if isSignedIn();
+      // Anyone can read announcements (public official alerts)
+      allow read: if true;
 
       // Admins can create announcements with full validation
       allow create: if isAdmin()
