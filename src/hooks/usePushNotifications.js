@@ -143,6 +143,11 @@ export function usePushNotifications({ userId, municipality } = {}) {
       return null;
     }
 
+    // Guard: if user was already asked before, just return current permission without prompting
+    if (localStorage.getItem(NOTIFICATION_ASKED_KEY) === 'true') {
+      return getNotificationPermission();
+    }
+
     // Mark that we've asked the user (so we don't ask on every visit)
     localStorage.setItem(NOTIFICATION_ASKED_KEY, 'true');
 

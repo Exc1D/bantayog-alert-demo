@@ -36,6 +36,10 @@ service cloud.firestore {
       );
     }
 
+    function isSuperAdmin() {
+      return userRole().matches('^superadmin_.*');
+    }
+
     function isVerifiedReporter() {
       let data = userData();
       return data != null && data.isVerified == true;
