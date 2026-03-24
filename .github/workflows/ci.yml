@@ -37,6 +37,14 @@ jobs:
       - name: Run tests
         run: npm run test:run
 
+      - name: Debug env vars in CI
+        env:
+          CI_FIREBASE_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          CI_OW_KEY: ${{ secrets.VITE_OPENWEATHER_API_KEY }}
+        run: |
+          echo "CI_FIREBASE_KEY length: ${#CI_FIREBASE_KEY}"
+          echo "CI_OW_KEY length: ${#CI_OW_KEY}"
+
       - name: Build project
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
