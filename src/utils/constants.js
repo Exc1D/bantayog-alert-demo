@@ -142,16 +142,14 @@ export const SEVERITY_OPTIONS = [
   {
     id: 'critical',
     label: 'Critical',
-    icon: '\u{1F534}',
     description: 'Immediate danger or life-threatening',
   },
   {
     id: 'moderate',
     label: 'Moderate',
-    icon: '\u{1F7E0}',
     description: 'Significant impact but manageable',
   },
-  { id: 'minor', label: 'Minor', icon: '\u{1F7E2}', description: 'Low impact, informational' },
+  { id: 'minor', label: 'Minor', description: 'Low impact, informational' },
 ];
 
 export const STATUS_COLORS = {

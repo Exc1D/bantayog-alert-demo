@@ -13,6 +13,9 @@ import ResolutionModal from './ResolutionModal';
 import LoadingSpinner from '../Common/LoadingSpinner';
 import { FEATURE_FLAGS } from '../../config/featureFlags';
 import FeatureFlag, { FeatureFlagDisabled } from '../Common/FeatureFlag';
+import DisasterIcon from '../Common/DisasterIcon';
+import AdminAlertsTab from './AdminAlertsTab';
+import CreateAnnouncementForm from './CreateAnnouncementForm';
 
 const FEED_RESOLVED_RETENTION_MS = 24 * 60 * 60 * 1000;
 
@@ -52,6 +55,7 @@ export default function AdminDashboard() {
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState('pending');
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const { isAdmin, isSuperAdmin, userProfile } = useAuthContext();
   const { addToast } = useToast();
@@ -187,7 +191,9 @@ export default function AdminDashboard() {
       ? pendingReports
       : activeTab === 'verified'
         ? verifiedReports
-        : archivedReports;
+        : activeTab === 'archived'
+          ? archivedReports
+          : [];
 
   return (
     <FeatureFlag
@@ -291,6 +297,16 @@ export default function AdminDashboard() {
           >
             Archived ({archivedReports.length})
           </button>
+          <button
+            onClick={() => setActiveTab('announcements')}
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+              activeTab === 'announcements'
+                ? 'bg-purple-600 text-white shadow-sm'
+                : 'bg-white dark:bg-dark-elevated text-textLight dark:text-dark-textLight hover:bg-stone-50 dark:hover:bg-dark-border border border-stone-200 dark:border-dark-border'
+            }`}
+          >
+            Announcements
+          </button>
         </div>
 
         {/* Report List */}
@@ -342,7 +358,7 @@ export default function AdminDashboard() {
                         }
                       }}
                     >
-                      <span className="text-lg">{disasterType.icon}</span>
+                      <DisasterIcon typeId={report.disaster?.type} size={24} className="text-lg" />
                       <div className="min-w-0">
                         <p className="font-bold text-xs uppercase tracking-wide dark:text-dark-text">
                           {disasterType.label}
@@ -477,6 +493,43 @@ export default function AdminDashboard() {
           }}
           report={selectedReport}
         />
+
+        {/* Announcements tab */}
+        {activeTab === 'announcements' && (
+          <div className="mt-3">
+            <div className="flex justify-end mb-3">
+              <button
+                onClick={() => setShowCreateForm(!showCreateForm)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-accent hover:bg-accent/90 text-white rounded-lg text-xs font-bold transition-colors"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                {showCreateForm ? 'Cancel' : 'New Announcement'}
+              </button>
+            </div>
+            {showCreateForm && (
+              <div className="bg-white dark:bg-dark-card rounded-xl p-4 shadow-card border border-stone-100 dark:border-dark-border mb-3">
+                <h3 className="text-sm font-bold uppercase tracking-wide text-textLight dark:text-dark-textLight mb-3">
+                  Create Announcement
+                </h3>
+                <CreateAnnouncementForm onSuccess={() => setShowCreateForm(false)} />
+              </div>
+            )}
+            <AdminAlertsTab />
+          </div>
+        )}
       </div>
     </FeatureFlag>
   );

@@ -11,13 +11,13 @@ const ShareButton = memo(function ShareButton({ report, className = '' }) {
     const municipality = report.location?.municipality || 'Unknown';
     const barangay = report.location?.barangay ? `, ${report.location.barangay}` : '';
 
-    const text = `🚨 Bantayog Alert Report
-${disasterType.icon} ${disasterType.label.toUpperCase()} (${severity.toUpperCase()})
-📍 ${municipality}${barangay}
-📊 Status: ${status.toUpperCase()}
+    const text = ` Bantayog Alert Report
+${disasterType.label.toUpperCase()} (${severity.toUpperCase()})
+${municipality}${barangay}
+Status: ${status.toUpperCase()}
 ${report.disaster?.description ? `\n${report.disaster.description.slice(0, 200)}` : ''}
-${report.disaster?.waterLevel ? `\n💧 Water Level: ${report.disaster.waterLevel}cm` : ''}
-${report.disaster?.windSpeed ? `\n💨 Wind Speed: ${report.disaster.windSpeed} kph` : ''}
+${report.disaster?.waterLevel ? `\nWater Level: ${report.disaster.waterLevel}cm` : ''}
+${report.disaster?.windSpeed ? `\nWind Speed: ${report.disaster.windSpeed} kph` : ''}
 
 View on Bantayog Alert`;
 

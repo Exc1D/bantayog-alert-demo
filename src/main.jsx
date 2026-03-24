@@ -58,11 +58,21 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 performance.mark('react-render-complete');
 
+// Register service workers
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    // Register the main app service worker (caching, offline support)
     navigator.serviceWorker.register('/sw.js').catch((error) => {
       captureException(error, { tags: { component: 'serviceWorker' } });
     });
+
+    // Register Firebase messaging service worker for push notifications
+    navigator.serviceWorker
+      .register(new URL('./firebase-messaging-sw.js', import.meta.url), { type: 'module' })
+      .catch((error) => {
+        // Firebase messaging SW is optional - don't capture error as it may not be critical
+        console.warn('Firebase messaging service worker registration failed:', error.message);
+      });
   });
 }
 

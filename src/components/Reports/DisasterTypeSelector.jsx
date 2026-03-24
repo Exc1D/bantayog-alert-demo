@@ -1,4 +1,5 @@
 import { DISASTER_TYPES } from '../../data/disasterTypes';
+import DisasterIcon from '../Common/DisasterIcon';
 
 const TYPE_COLORS = {
   flood: 'border-blue-400 bg-blue-50',
@@ -35,7 +36,7 @@ export default function DisasterTypeSelector({ selectedType, onSelect }) {
                   : 'border-stone-200 hover:border-stone-300 bg-white hover:bg-stone-50'
               }`}
             >
-              <span className="text-2xl mb-1">{type.icon}</span>
+              <DisasterIcon typeId={type.id} size={32} className="text-2xl mb-1" />
               <span className="text-[11px] font-semibold text-center leading-tight text-text">
                 {type.label}
               </span>

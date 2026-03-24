@@ -9,6 +9,7 @@ import { getSafeMediaUrls } from '../../utils/mediaSafety';
 import RequirePermission, { AccessDenied } from '../Common/RequirePermission';
 import { PERMISSIONS } from '../../utils/rbac';
 import { SEVERITY_OPTIONS } from '../../utils/constants';
+import DisasterIcon from '../Common/DisasterIcon';
 
 const SEV_STYLES = {
   critical: 'bg-red-600 text-white',
@@ -108,7 +109,7 @@ export default function VerificationPanel({ report, onDone }) {
       {/* Report Summary */}
       <div className="bg-stone-50 dark:bg-dark-elevated border border-stone-200 dark:border-dark-border rounded-lg p-3">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-lg">{disasterType.icon}</span>
+          <DisasterIcon typeId={report.disaster?.type} size={24} className="text-lg" />
           <h3 className="font-bold text-sm uppercase tracking-wide dark:text-dark-text">
             {disasterType.label}
           </h3>
@@ -168,13 +169,13 @@ export default function VerificationPanel({ report, onDone }) {
           <option value="">-- Select hazard type --</option>
           {CLASSIFIABLE_TYPES.map((type) => (
             <option key={type.id} value={type.id}>
-              {type.icon} {type.label} — {type.description}
+              {type.label} — {type.description}
             </option>
           ))}
         </select>
         {selectedType && (
           <div className="mt-1.5 flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg px-2.5 py-1.5">
-            <span className="text-base">{getDisasterType(selectedType).icon}</span>
+            <DisasterIcon typeId={selectedType} size={20} className="text-base" />
             <span className="font-semibold">{getDisasterType(selectedType).label}</span>
           </div>
         )}
@@ -210,9 +211,6 @@ export default function VerificationPanel({ report, onDone }) {
                   : 'border-stone-200 dark:border-dark-border hover:border-stone-300 dark:hover:border-dark-textMuted text-textLight dark:text-dark-textLight dark:bg-dark-elevated'
               }`}
             >
-              <span className="mr-1" aria-hidden="true">
-                {level.icon}
-              </span>{' '}
               {level.label}
             </button>
           ))}

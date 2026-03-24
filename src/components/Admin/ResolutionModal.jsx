@@ -11,6 +11,7 @@ import { getDisasterType } from '../../data/disasterTypes';
 import { sanitizeText, truncateText, containsXSS } from '../../utils/sanitization';
 import RequirePermission, { AccessDenied } from '../Common/RequirePermission';
 import { PERMISSIONS } from '../../utils/rbac';
+import DisasterIcon from '../Common/DisasterIcon';
 
 export default function ResolutionModal({ isOpen, onClose, report }) {
   const [evidencePhotos, setEvidencePhotos] = useState([]);
@@ -91,7 +92,8 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
         <div className="text-xs space-y-1 text-textLight dark:text-dark-textLight">
           <p>
             <span className="font-semibold text-text dark:text-dark-text">Type:</span>{' '}
-            {disasterType.icon} {disasterType.label}
+            <DisasterIcon typeId={report.disaster?.type} size={16} className="inline" />{' '}
+            {disasterType.label}
           </p>
           <p>
             <span className="font-semibold text-text dark:text-dark-text">Location:</span>{' '}
