@@ -46,10 +46,7 @@ export default function AlertsTab() {
       ) : (
         <div className="space-y-3">
           {announcements.map((announcement) => (
-            <AnnouncementCard
-              key={announcement.id}
-              announcement={announcement}
-            />
+            <AnnouncementCard key={announcement.id} announcement={announcement} />
           ))}
         </div>
       )}

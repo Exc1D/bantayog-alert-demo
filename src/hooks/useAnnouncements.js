@@ -54,8 +54,8 @@ export function useAnnouncements(municipality) {
           captureException(err, {
             tags: { component: 'useAnnouncements', action: 'onSnapshot' },
           });
-           
-      setError(err);
+
+          setError(err);
           setLoading(false);
         }
       );

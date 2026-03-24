@@ -95,28 +95,25 @@ export function usePushNotifications({ userId, municipality } = {}) {
   }, [isSupported]);
 
   // Store FCM token in user profile in Firestore
-  const storeTokenInProfile = useCallback(
-    async (fcmToken, userUid) => {
-      if (!fcmToken || !userUid) return;
+  const storeTokenInProfile = useCallback(async (fcmToken, userUid) => {
+    if (!fcmToken || !userUid) return;
 
-      try {
-        const userTokenRef = doc(db, 'users', userUid, 'fcm_tokens', 'current');
-        await setDoc(
-          userTokenRef,
-          {
-            token: fcmToken,
-            updatedAt: serverTimestamp(),
-            platform: 'web',
-          },
-          { merge: true }
-        );
-      } catch (err) {
-        // Non-critical error - just log it
-        console.warn('Failed to store FCM token in profile:', err.message);
-      }
-    },
-    []
-  );
+    try {
+      const userTokenRef = doc(db, 'users', userUid, 'fcm_tokens', 'current');
+      await setDoc(
+        userTokenRef,
+        {
+          token: fcmToken,
+          updatedAt: serverTimestamp(),
+          platform: 'web',
+        },
+        { merge: true }
+      );
+    } catch (err) {
+      // Non-critical error - just log it
+      console.warn('Failed to store FCM token in profile:', err.message);
+    }
+  }, []);
 
   // Get or refresh FCM token
   const getFCMToken = useCallback(async () => {

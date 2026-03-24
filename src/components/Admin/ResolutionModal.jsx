@@ -92,7 +92,8 @@ export default function ResolutionModal({ isOpen, onClose, report }) {
         <div className="text-xs space-y-1 text-textLight dark:text-dark-textLight">
           <p>
             <span className="font-semibold text-text dark:text-dark-text">Type:</span>{' '}
-            <DisasterIcon typeId={report.disaster?.type} size={16} className="inline" /> {disasterType.label}
+            <DisasterIcon typeId={report.disaster?.type} size={16} className="inline" />{' '}
+            {disasterType.label}
           </p>
           <p>
             <span className="font-semibold text-text dark:text-dark-text">Location:</span>{' '}

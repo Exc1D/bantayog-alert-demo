@@ -1,5 +1,15 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot, or, orderBy, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  or,
+  orderBy,
+  updateDoc,
+  doc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { db } from '../../utils/firebaseConfig';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useToast } from '../Common/Toast';
@@ -159,9 +169,7 @@ export default function AdminAlertsTab() {
             const typeLabel = ANNOUNCEMENT_TYPE_LABELS[announcement.type] || announcement.type;
             const sevBadge = SEVERITY_BADGES[announcement.severity] || SEVERITY_BADGES.info;
             const scopeBadge =
-              announcement.scope === 'Provincial'
-                ? SCOPE_BADGES.Provincial
-                : SCOPE_BADGES.default;
+              announcement.scope === 'Provincial' ? SCOPE_BADGES.Provincial : SCOPE_BADGES.default;
 
             return (
               <div
@@ -174,10 +182,14 @@ export default function AdminAlertsTab() {
                       <span className="text-xs font-bold uppercase tracking-wide dark:text-dark-text">
                         {typeLabel}
                       </span>
-                      <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${sevBadge}`}>
+                      <span
+                        className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${sevBadge}`}
+                      >
                         {announcement.severity}
                       </span>
-                      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${scopeBadge}`}>
+                      <span
+                        className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${scopeBadge}`}
+                      >
                         {announcement.scope}
                       </span>
                     </div>
