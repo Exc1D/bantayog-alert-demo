@@ -186,25 +186,7 @@ export function usePushNotifications({ userId, municipality } = {}) {
     }
   }, [isSupported, userId, storeTokenInProfile]);
 
-  // Auto-subscribe to municipality topic when user logs in or changes municipality
-  useEffect(() => {
-    if (!userId || !municipality || !isInitialized) return;
-
-    const previousMunicipality = previousMunicipalityRef.current;
-    const topic = formatMunicipalityTopic(municipality);
-
-    // Only subscribe if municipality changed
-    if (topic && topic !== previousMunicipality) {
-      previousMunicipalityRef.current = topic;
-
-      // Auto-subscribe to municipality topic
-      subscribeToTopic(topic).catch((err) => {
-        console.warn('Auto-subscribe to municipality topic failed:', err.message);
-      });
-    }
-  }, [userId, municipality, isInitialized, subscribeToTopic]);
-
-  // Initialize: check for existing token and set up auto-subscribe
+  // Auto-subscribe to municipality topic when user logs in or changes municipality (moved after subscribeToTopic definition)
   useEffect(() => {
     let mounted = true;
 
@@ -304,6 +286,24 @@ export function usePushNotifications({ userId, municipality } = {}) {
     },
     [token, userId, getFCMToken, requestPermission, storeTokenInProfile]
   );
+
+  // Auto-subscribe to municipality topic when user logs in or changes municipality
+  useEffect(() => {
+    if (!userId || !municipality || !isInitialized) return;
+
+    const previousMunicipality = previousMunicipalityRef.current;
+    const topic = formatMunicipalityTopic(municipality);
+
+    // Only subscribe if municipality changed
+    if (topic && topic !== previousMunicipality) {
+      previousMunicipalityRef.current = topic;
+
+      // Auto-subscribe to municipality topic
+      subscribeToTopic(topic).catch((err) => {
+        console.warn('Auto-subscribe to municipality topic failed:', err.message);
+      });
+    }
+  }, [userId, municipality, isInitialized, subscribeToTopic]);
 
   const unsubscribeFromTopic = useCallback(
     async (topic) => {

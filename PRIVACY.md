@@ -143,7 +143,7 @@ You have the right to lodge a complaint with a supervisory authority:
 
 **Authority**: National Privacy Commission (Philippines)  
 **Website**: https://privacy.gov.ph  
-**For Philippines Residents**: National Privacy Commission (NPC)
+**For Philippine residents**: National Privacy Commission (NPC)
 
 ---
 

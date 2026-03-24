@@ -36,7 +36,7 @@ We process your personal data based on:
 
 ## Your Rights Under the Data Privacy Act of 2012 (RA 10173)
 
-As a resident of the Philippines, you have the following rights under the Data Privacy Act of 2012 (RA 10173), you have the following rights:
+As a resident of the Philippines, you have the following rights under the Data Privacy Act of 2012 (RA 10173):
 
 ### Right to Access (Section 19, RA 10173)
 
@@ -143,7 +143,7 @@ You have the right to lodge a complaint with a supervisory authority:
 
 **Authority**: National Privacy Commission (Philippines)  
 **Website**: https://privacy.gov.ph  
-**For Philippines Residents: National Privacy Commission (NPC)
+**For Philippine residents**: National Privacy Commission (NPC)
 
 ---
 
