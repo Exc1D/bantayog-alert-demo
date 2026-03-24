@@ -5,7 +5,7 @@
   },
   "storage": [
     {
-      "bucket": "bantayog-alert-demo-36b27.firebasestorage.app",
+      "bucket": "bantayogalert.firebasestorage.app",
       "rules": "storage.rules"
     }
   ],
