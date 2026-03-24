@@ -24,6 +24,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Debug env vars
+        env:
+          FIREBASE_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          OW_KEY: ${{ secrets.VITE_OPENWEATHER_API_KEY }}
+        run: |
+          echo "FIREBASE_KEY length: ${#FIREBASE_KEY}"
+          echo "OW_KEY length: ${#OW_KEY}"
+          echo "FIREBASE_KEY prefix: ${FIREBASE_KEY:0:10}"
+          echo "OW_KEY prefix: ${OW_KEY:0:10}"
+
       - name: Build project
         env:
           VITE_APP_ENV: production
