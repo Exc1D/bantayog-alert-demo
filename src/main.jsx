@@ -67,7 +67,7 @@ if ('serviceWorker' in navigator) {
     });
 
     // Register Firebase messaging service worker for push notifications
-    navigator.serviceWorker.register('/firebase-messaging-sw.js').catch((error) => {
+    navigator.serviceWorker.register(new URL('./firebase-messaging-sw.js', import.meta.url), { type: 'module' }).catch((error) => {
       // Firebase messaging SW is optional - don't capture error as it may not be critical
       console.warn('Firebase messaging service worker registration failed:', error.message);
     });

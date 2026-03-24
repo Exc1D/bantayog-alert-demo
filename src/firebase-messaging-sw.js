@@ -1,33 +1,23 @@
 // Firebase Messaging Service Worker
-// This file handles background push notifications from Firebase Cloud Messaging
+// Firebase v9+ pattern with onBackgroundMessage from firebase/messaging/sw
+// This file is bundled by Vite, so import.meta.env.VITE_* variables are replaced at build time
 
 import { initializeApp } from 'firebase/app';
-import { getMessaging, onBackgroundMessage, setBackgroundMessageHandler } from 'firebase/messaging';
+import { getMessaging, onBackgroundMessage } from 'firebase/messaging/sw';
+import { firebaseConfig } from '../config/index.js';
 
-// Firebase configuration - must match the app's firebaseConfig
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-};
-
-// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
-// Handle background messages
-setBackgroundMessageHandler(messaging, (payload) => {
+onBackgroundMessage(messaging, (payload) => {
   const { notification, data } = payload;
+  console.log('Firebase background message received:', payload);
 
   if (!notification) {
-    return Promise.resolve();
+    return;
   }
 
-  const notificationTitle = notification.title || 'Bantayog Alert';
-  const notificationOptions = {
+  const options = {
     body: notification.body || 'New notification',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-72x72.png',
@@ -40,19 +30,19 @@ setBackgroundMessageHandler(messaging, (payload) => {
       disasterType: data?.disasterType || null,
       severity: data?.severity || null,
     },
-    tag: data?.tag || 'general',
+    tag: data?.tag || 'background-notification',
     renotify: true,
     actions: data?.actions || [],
   };
 
   // Determine priority based on severity
   if (data?.severity === 'critical') {
-    notificationOptions.priority = 'high';
-    notificationOptions.sticky = true;
-    notificationOptions.requireInteraction = true;
+    options.priority = 'high';
+    options.sticky = true;
+    options.requireInteraction = true;
   }
 
-  return self.registration.showNotification(notificationTitle, notificationOptions);
+  return self.registration.showNotification(notification.title || 'Bantayog Alert', options);
 });
 
 // Handle notification clicks
@@ -93,5 +83,3 @@ self.addEventListener('pushsubscriptionchange', (event) => {
     })
   );
 });
-
-export {};
