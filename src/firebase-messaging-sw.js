@@ -70,7 +70,7 @@ self.addEventListener('notificationclick', (event) => {
 // Handle push subscription changes (FCM token refresh)
 self.addEventListener('pushsubscriptionchange', (event) => {
   event.waitUntil(
-    registration.pushManager.subscribe({ userVisibleOnly: true }).then((subscription) => {
+    self.registration.pushManager.subscribe({ userVisibleOnly: true }).then((subscription) => {
       // Notify the app about the new subscription
       return self.clients.matchAll({ type: 'window' }).then((clients) => {
         clients.forEach((client) => {

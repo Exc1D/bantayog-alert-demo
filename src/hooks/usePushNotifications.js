@@ -304,6 +304,7 @@ export function usePushNotifications({ userId, municipality } = {}) {
       previousMunicipalityRef.current = topic;
 
       // Auto-subscribe to municipality topic
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- setError is called inside subscribeToTopic, not directly
       subscribeToTopic(topic).catch((err) => {
         console.warn('Auto-subscribe to municipality topic failed:', err.message);
       });
