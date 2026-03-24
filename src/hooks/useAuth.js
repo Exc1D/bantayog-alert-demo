@@ -90,7 +90,10 @@ export function useAuth() {
     const credential = await createUserWithEmailAndPassword(authInstance, email, password);
     console.log('[Auth] signUp: Auth user created, uid:', credential.user.uid);
     await updateProfile(credential.user, { displayName: name });
-    console.log('[Auth] signUp: profile updated, attempting Firestore setDoc to /users/', credential.user.uid);
+    console.log(
+      '[Auth] signUp: profile updated, attempting Firestore setDoc to /users/',
+      credential.user.uid
+    );
 
     let firestoreSuccess = false;
     try {
@@ -118,7 +121,14 @@ export function useAuth() {
       firestoreSuccess = true;
       console.log('[Auth] signUp: Firestore setDoc SUCCESS for uid:', credential.user.uid);
     } catch (err) {
-      console.error('[Auth] signUp: Firestore setDoc FAILED with code:', err.code, 'message:', err.message, 'serverTime:', err.serverTimestamp);
+      console.error(
+        '[Auth] signUp: Firestore setDoc FAILED with code:',
+        err.code,
+        'message:',
+        err.message,
+        'serverTime:',
+        err.serverTimestamp
+      );
       captureException(err, { tags: { component: 'useAuth', action: 'signUpFirestore' } });
       throw new Error('Failed to create user profile. Please try again.');
     }
