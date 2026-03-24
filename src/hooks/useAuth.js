@@ -111,9 +111,10 @@ export function useAuth() {
           dataCollectionEnabled: true,
         },
       });
+      console.log('[Auth] Firestore user document written successfully for uid:', credential.user.uid);
     } catch (err) {
       captureException(err, { tags: { component: 'useAuth', action: 'signUpFirestore' } });
-      console.error('[Auth] Failed to write user document to Firestore:', err.message, err.code);
+      console.error('[Auth] Firestore write error:', err.code, err.message, err.serverTimestamp);
       throw new Error('Failed to create user profile. Please try again.');
     }
 
