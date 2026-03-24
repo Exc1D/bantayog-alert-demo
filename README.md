@@ -287,3 +287,4 @@ This project is licensed under the [MIT License](LICENSE).
 - [Tailwind CSS](https://tailwindcss.com/) — utility-first CSS framework
 - [Vite](https://vitejs.dev/) — next-generation frontend tooling
 - [Sentry](https://sentry.io/) — error monitoring and performance tracking
+
