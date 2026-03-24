@@ -121,6 +121,30 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
         </div>
       </div>
 
+      {/* Critical metrics — above the fold for emergency clarity */}
+      {(report.disaster?.waterLevel || report.disaster?.windSpeed || report.disaster?.casualties > 0) && (
+        <div className="px-3.5 pt-3 flex flex-wrap gap-2">
+          {report.disaster?.waterLevel && (
+            <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 rounded-lg px-3 py-1.5 flex items-center gap-2">
+              <span className="text-sm">💧</span>
+              <span className="text-xs font-bold text-blue-700 dark:text-blue-400">{report.disaster.waterLevel}cm</span>
+            </div>
+          )}
+          {report.disaster?.windSpeed && (
+            <div className="bg-cyan-50 dark:bg-cyan-950/30 border border-cyan-100 dark:border-cyan-900/40 rounded-lg px-3 py-1.5 flex items-center gap-2">
+              <span className="text-sm">💨</span>
+              <span className="text-xs font-bold text-cyan-700 dark:text-cyan-400">{report.disaster.windSpeed} kph</span>
+            </div>
+          )}
+          {report.disaster?.casualties > 0 && (
+            <div className="bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 rounded-lg px-3 py-1.5 flex items-center gap-2">
+              <span className="text-sm">⚠️</span>
+              <span className="text-xs font-bold text-red-700 dark:text-red-400">{report.disaster.casualties}</span>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Photo */}
       {photos.length > 0 && (
         <div className="relative">
@@ -246,9 +270,13 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
       />
 
       {showComments && (
-        <div className="p-3 border-t border-borderLight dark:border-dark-border bg-surface dark:bg-dark-elevated">
+        <div
+          role="status"
+          aria-live="polite"
+          className="p-3 border-t border-borderLight dark:border-dark-border bg-surface dark:bg-dark-elevated"
+        >
           <p className="text-[11px] text-textMuted dark:text-dark-textMuted text-center">
-            Comments coming soon
+            Comments are being developed. Check back soon.
           </p>
         </div>
       )}
