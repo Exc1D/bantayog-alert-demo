@@ -59,6 +59,25 @@ export const TABS = [
     ),
   },
   {
+    id: 'alerts',
+    label: 'Alerts',
+    icon: (active, isDark) => (
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={active ? (isDark ? '#E1E4E8' : '#1B2A41') : isDark ? '#5A6978' : '#5D6B7E'}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+      </svg>
+    ),
+  },
+  {
     id: 'profile',
     label: 'Profile',
     icon: (active, isDark) => (
