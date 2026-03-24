@@ -113,6 +113,7 @@ exports.unsubscribeFromTopic = notifications.unsubscribeFromTopic;
 exports.sendReportNotification = notifications.sendReportNotification;
 exports.sendVerificationNotification = notifications.sendVerificationNotification;
 exports.sendAlertToAll = notifications.sendAlertToAll;
+exports.sendPushNotification = notifications.sendPushNotification;
 
 exports.cleanupOldRateLimits = functions.pubsub.schedule('0 * * * *').onRun(async () => {
   const cutoff = admin.firestore.Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);

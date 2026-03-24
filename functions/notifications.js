@@ -250,3 +250,105 @@ exports.sendAlertToAll = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('internal', 'Failed to send alert');
   }
 });
+
+/**
+ * Sends a push notification via FCM and logs it to an announcements subcollection.
+ * @param {Object} data - { title, body, topic, url, announcementId }
+ * @param {string} data.title - Notification title
+ * @param {string} data.body - Notification body
+ * @param {string} [data.topic='all-citizens'] - FCM topic to send to
+ * @param {string} [data.url] - Deep link URL for the notification
+ * @param {string} [data.announcementId] - If provided, logs notification under announcements/{id}/notifications/
+ */
+exports.sendPushNotification = functions.https.onCall(async (data, context) => {
+  // Require authentication
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'Authentication required');
+  }
+
+  // Verify admin role (same pattern as sendAlertToAll)
+  const userDoc = await db.collection('users').doc(context.auth.uid).get();
+  const userRole = userDoc.data()?.role;
+  if (!userRole || (!userRole.startsWith('admin_') && userRole !== 'superadmin_provincial')) {
+    throw new functions.https.HttpsError('permission-denied', 'Admin access required');
+  }
+
+  const { title, body, topic = 'all-citizens', url, announcementId } = data;
+
+  if (!title || !body) {
+    throw new functions.https.HttpsError('invalid-argument', 'Title and body are required');
+  }
+
+  // Normalize topic name (replace spaces with underscores, lowercase)
+  const normalizedTopic = topic.toLowerCase().replace(/\s+/g, '_');
+
+  const notification = {
+    notification: { title, body },
+    data: {
+      type: 'announcement',
+      url: url || '/#feed',
+    },
+    android: {
+      notification: {
+        channelId: 'alerts',
+        priority: 'high',
+        sound: 'default',
+      },
+    },
+    apns: {
+      payload: {
+        aps: {
+          sound: 'default',
+          badge: 1,
+        },
+      },
+    },
+    topic: normalizedTopic,
+  };
+
+  let messageId;
+  let notificationRecord = {
+    title,
+    body,
+    topic: normalizedTopic,
+    url: url || '/#feed',
+    sentAt: admin.firestore.FieldValue.serverTimestamp(),
+    sentBy: context.auth.uid,
+    sentByRole: userRole,
+    status: 'sent',
+  };
+
+  try {
+    messageId = await admin.messaging().send(notification);
+    notificationRecord.fcmMessageId = messageId;
+  } catch (error) {
+    console.error('Failed to send push notification:', error);
+    notificationRecord.status = 'failed';
+    notificationRecord.error = error.message;
+    notificationRecord.fcmMessageId = null;
+
+    // Still write the failed record to the subcollection if announcementId provided
+    if (announcementId) {
+      await db
+        .collection('announcements')
+        .doc(announcementId)
+        .collection('notifications')
+        .add(notificationRecord);
+    }
+
+    throw new functions.https.HttpsError('internal', 'Failed to send push notification', {
+      error: error.message,
+    });
+  }
+
+  // Write successful notification record to the announcements subcollection
+  if (announcementId) {
+    await db
+      .collection('announcements')
+      .doc(announcementId)
+      .collection('notifications')
+      .add(notificationRecord);
+  }
+
+  return { success: true, messageId, topic: normalizedTopic };
+});
