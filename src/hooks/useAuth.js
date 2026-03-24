@@ -89,27 +89,33 @@ export function useAuth() {
     const credential = await createUserWithEmailAndPassword(authInstance, email, password);
     await updateProfile(credential.user, { displayName: name });
 
-    await setDoc(doc(db, 'users', credential.user.uid), {
-      userId: credential.user.uid,
-      email,
-      displayName: name,
-      photoURL: '',
-      municipality: municipality || '',
-      role: 'user',
-      createdAt: serverTimestamp(),
-      lastActive: serverTimestamp(),
-      stats: {
-        reportsSubmitted: 0,
-        reportsVerified: 0,
-        reportsResolved: 0,
-        upvotesReceived: 0,
-      },
-      settings: {
-        notifications: true,
-        shareLocation: true,
-        dataCollectionEnabled: true,
-      },
-    });
+    try {
+      await setDoc(doc(db, 'users', credential.user.uid), {
+        userId: credential.user.uid,
+        email,
+        displayName: name,
+        photoURL: '',
+        municipality: municipality || '',
+        role: 'user',
+        createdAt: serverTimestamp(),
+        lastActive: serverTimestamp(),
+        stats: {
+          reportsSubmitted: 0,
+          reportsVerified: 0,
+          reportsResolved: 0,
+          upvotesReceived: 0,
+        },
+        settings: {
+          notifications: true,
+          shareLocation: true,
+          dataCollectionEnabled: true,
+        },
+      });
+    } catch (err) {
+      captureException(err, { tags: { component: 'useAuth', action: 'signUpFirestore' } });
+      console.error('[Auth] Failed to write user document to Firestore:', err.message, err.code);
+      throw new Error('Failed to create user profile. Please try again.');
+    }
 
     logAuditEvent(
       new AuditEvent({
