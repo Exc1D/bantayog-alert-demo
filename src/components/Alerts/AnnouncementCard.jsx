@@ -162,23 +162,22 @@ const ANNOUNCEMENT_TYPES = {
 
 const SEVERITY_STYLES = {
   critical: {
-    bg: 'bg-[#FF3B30]',
-    text: 'text-white',
-    border: 'border-[#FF3B30]',
-    badge: 'bg-[#FF3B30]/10 text-[#FF3B30] border border-[#FF3B30]/20',
+    bg: 'bg-red-600 dark:bg-red-700',
+    text: 'text-white dark:text-gray-100',
+    border: 'border-red-600 dark:border-red-500',
+    badge: 'bg-red-600/10 dark:bg-red-400/30 text-red-600 dark:text-red-300 border-red-600/20 dark:border-red-400/30',
   },
   warning: {
-    bg: 'bg-[#FF9500]',
-    text: 'text-white',
-    border: 'border-[#FF9500]',
-    badge: 'bg-[#FF9500]/10 text-[#FF9500] border border-[#FF9500]/20',
+    bg: 'bg-amber-500 dark:bg-amber-600',
+    text: 'text-white dark:text-gray-100',
+    border: 'border-amber-500 dark:border-amber-600',
+    badge: 'bg-amber-500/10 dark:bg-amber-400/30 text-amber-600 dark:text-amber-300 border-amber-500/20 dark:border-amber-400/30',
   },
   info: {
-    bg: 'bg-[#1C1C1E]',
-    text: 'text-white',
-    border: 'border-[#1C1C1E]',
-    badge:
-      'bg-[#1C1C1E]/10 text-[#1C1C1E] border border-[#1C1C1E]/20 dark:bg-white/10 dark:text-white dark:border-white/20',
+    bg: 'bg-gray-700 dark:bg-gray-600',
+    text: 'text-white dark:text-gray-100',
+    border: 'border-gray-700 dark:border-gray-500',
+    badge: 'bg-gray-700/10 dark:bg-white/20 text-gray-800 dark:text-gray-100 border-gray-700/20 dark:border-white/20',
   },
 };
 

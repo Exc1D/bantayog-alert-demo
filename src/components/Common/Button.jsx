@@ -32,7 +32,7 @@ export default function Button({
       onClick={onClick}
       disabled={disabled || loading}
       className={`
-        inline-flex items-center justify-center gap-2 rounded-xl font-semibold
+        inline-flex items-center justify-center gap-2 rounded-md font-semibold
         transition-all duration-200 focus:outline-none focus:ring-2
         active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed
         ${VARIANTS[variant]}
