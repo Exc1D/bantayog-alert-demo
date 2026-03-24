@@ -85,10 +85,14 @@ export function useAuth() {
   };
 
   const signUp = async (email, password, name, municipality) => {
+    console.log('[Auth] signUp: starting for', email);
     const { authInstance, createUserWithEmailAndPassword, updateProfile } = await getFirebaseAuth();
     const credential = await createUserWithEmailAndPassword(authInstance, email, password);
+    console.log('[Auth] signUp: Auth user created, uid:', credential.user.uid);
     await updateProfile(credential.user, { displayName: name });
+    console.log('[Auth] signUp: profile updated, attempting Firestore setDoc to /users/', credential.user.uid);
 
+    let firestoreSuccess = false;
     try {
       await setDoc(doc(db, 'users', credential.user.uid), {
         userId: credential.user.uid,
@@ -111,24 +115,35 @@ export function useAuth() {
           dataCollectionEnabled: true,
         },
       });
-      console.log('[Auth] Firestore user document written successfully for uid:', credential.user.uid);
+      firestoreSuccess = true;
+      console.log('[Auth] signUp: Firestore setDoc SUCCESS for uid:', credential.user.uid);
     } catch (err) {
+      console.error('[Auth] signUp: Firestore setDoc FAILED with code:', err.code, 'message:', err.message, 'serverTime:', err.serverTimestamp);
       captureException(err, { tags: { component: 'useAuth', action: 'signUpFirestore' } });
-      console.error('[Auth] Firestore write error:', err.code, err.message, err.serverTimestamp);
       throw new Error('Failed to create user profile. Please try again.');
     }
 
-    logAuditEvent(
-      new AuditEvent({
-        eventType: AuditEventType.PROFILE_UPDATE,
-        userId: credential.user.uid,
-        userEmail: email,
-        userRole: 'user',
-        targetType: 'user',
-        targetId: credential.user.uid,
-        metadata: { action: 'account_created' },
-      })
-    );
+    if (!firestoreSuccess) {
+      console.log('[Auth] signUp: skipping audit log due to Firestore failure');
+      throw new Error('Failed to create user profile. Please try again.');
+    }
+
+    try {
+      await logAuditEvent(
+        new AuditEvent({
+          eventType: AuditEventType.PROFILE_UPDATE,
+          userId: credential.user.uid,
+          userEmail: email,
+          userRole: 'user',
+          targetType: 'user',
+          targetId: credential.user.uid,
+          metadata: { action: 'account_created' },
+        })
+      );
+      console.log('[Auth] signUp: audit log SUCCESS');
+    } catch (auditErr) {
+      console.warn('[Auth] signUp: audit log FAILED (non-fatal):', auditErr.message);
+    }
 
     return credential.user;
   };
