@@ -13,6 +13,7 @@ import ResolutionModal from './ResolutionModal';
 import LoadingSpinner from '../Common/LoadingSpinner';
 import { FEATURE_FLAGS } from '../../config/featureFlags';
 import FeatureFlag, { FeatureFlagDisabled } from '../Common/FeatureFlag';
+import DisasterIcon from '../Common/DisasterIcon';
 
 const FEED_RESOLVED_RETENTION_MS = 24 * 60 * 60 * 1000;
 
@@ -342,7 +343,7 @@ export default function AdminDashboard() {
                         }
                       }}
                     >
-                      <span className="text-lg">{disasterType.icon}</span>
+                      <DisasterIcon typeId={report.disaster?.type} size={24} className="text-lg" />
                       <div className="min-w-0">
                         <p className="font-bold text-xs uppercase tracking-wide dark:text-dark-text">
                           {disasterType.label}

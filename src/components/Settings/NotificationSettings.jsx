@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
+import { useAuthContext } from '../../contexts/AuthContext';
 import { MUNICIPALITIES } from '../../utils/constants';
 import { useToast } from '../Common/Toast';
 
 export default function NotificationSettings() {
+  const { user, userProfile } = useAuthContext();
+  const userId = user?.uid;
+  const municipality = userProfile?.municipality;
+
   const {
     token,
     permission,
@@ -11,7 +16,7 @@ export default function NotificationSettings() {
     requestPermission,
     subscribeToTopic,
     unsubscribeFromTopic,
-  } = usePushNotifications();
+  } = usePushNotifications({ userId, municipality });
   const { addToast } = useToast();
   const [subscriptions, setSubscriptions] = useState(new Set());
   const [loading, setLoading] = useState(false);

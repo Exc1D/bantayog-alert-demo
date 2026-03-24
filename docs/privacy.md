@@ -1,4 +1,4 @@
-# Privacy Policy & GDPR Compliance
+# Privacy Policy & Data Privacy Act Compliance
 
 ## Data Collection Policy
 
@@ -34,11 +34,11 @@ We process your personal data based on:
 
 ---
 
-## Your Rights Under GDPR
+## Your Rights Under the Data Privacy Act of 2012 (RA 10173)
 
-As a resident of the European Economic Area (EEA) or under applicable privacy laws, you have the following rights:
+As a resident of the Philippines, you have the following rights under the Data Privacy Act of 2012 (RA 10173), you have the following rights:
 
-### Right to Access (Article 15)
+### Right to Access (Section 19, RA 10173)
 
 You have the right to obtain confirmation as to whether or not personal data concerning you is being processed, and where that is the case, access to the following information:
 
@@ -48,11 +48,11 @@ You have the right to obtain confirmation as to whether or not personal data con
 - The envisaged period for which the personal data will be stored
 - The existence of the right to request rectification or erasure
 
-### Right to Rectification (Article 16)
+### Right to Rectification (Section 20, RA 10173)
 
 You have the right to have inaccurate personal data rectified. You may also have incomplete personal data completed.
 
-### Right to Erasure (Article 17)
+### Right to Erasure (Section 22, RA 10173)
 
 Also known as the "right to be forgotten," you have the right to have your personal data erased when:
 
@@ -61,15 +61,15 @@ Also known as the "right to be forgotten," you have the right to have your perso
 - You object to the processing
 - The personal data has been unlawfully processed
 
-### Right to Data Portability (Article 20)
+### Right to Data Portability (Section 25, RA 10173)
 
 You have the right to receive your personal data in a structured, commonly used, and machine-readable format, and to transmit that data to another controller.
 
-### Right to Object (Article 21)
+### Right to Object (Section 24, RA 10173)
 
 You have the right to object to processing based on legitimate interests or public task.
 
-### Right to Withdraw Consent (Article 7)
+### Right to Withdraw Consent (Section 13, RA 10173)
 
 Where processing is based on consent, you have the right to withdraw your consent at any time.
 
@@ -128,7 +128,7 @@ For data protection inquiries, please contact:
 
 **Email**: dpo@bantayog-alert.example.com  
 **Address**: Bantayog Alert, Data Protection Officer  
-**Response Time**: We aim to respond within 30 days as required by GDPR
+**Response Time**: We aim to respond within 30 days as required by the Data Privacy Act
 
 ### How to Exercise Your Rights
 
@@ -143,7 +143,7 @@ You have the right to lodge a complaint with a supervisory authority:
 
 **Authority**: National Privacy Commission (Philippines)  
 **Website**: https://privacy.gov.ph  
-**For EU Residents**: Your local Data Protection Authority
+**For Philippines Residents: National Privacy Commission (NPC)
 
 ---
 

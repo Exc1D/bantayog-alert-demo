@@ -325,7 +325,7 @@ service cloud.firestore {
       // Format: /users/{userId}/audit/{auditId}
       allow create: if isSignedIn()
         && request.resource.data.userId == request.auth.uid
-        && request.resource.data.keys().hasAll(['userId', 'eventType', 'timestamp', 'details'])
+        && request.resource.data.keys().hasAll(['userId', 'eventType', 'timestamp', 'metadata'])
         && request.resource.data.timestamp == request.time;
     }
 
@@ -336,7 +336,7 @@ service cloud.firestore {
       // Users can create audit entries for their own actions
       allow create: if isSignedIn() 
         && request.auth.uid == userId
-        && request.resource.data.keys().hasAll(['eventType', 'timestamp', 'details'])
+        && request.resource.data.keys().hasAll(['eventType', 'timestamp', 'metadata'])
         && request.resource.data.timestamp == request.time;
     }
   }

@@ -5,6 +5,7 @@ import { getDisasterType } from '../../data/disasterTypes';
 import { MARKER_COLORS, DISASTER_ICONS } from '../../utils/constants';
 import { formatTimeAgo } from '../../utils/timeUtils';
 import { sanitizeMediaUrl } from '../../utils/mediaSafety';
+import DisasterIcon from '../Common/DisasterIcon';
 
 // Cache marker icons to avoid recreating DOM elements
 const iconCache = new Map();
@@ -113,7 +114,7 @@ export default memo(function DisasterMarker({ report, onClick }) {
       <Popup>
         <div className="font-sans min-w-[200px] max-w-[260px]">
           <div className="flex items-center gap-1.5 mb-1">
-            <span className="text-base">{disasterType.icon}</span>
+            <DisasterIcon typeId={report.disaster?.type} size={20} className="text-base" />
             <span className="font-bold text-sm uppercase tracking-wide">{disasterType.label}</span>
           </div>
 
