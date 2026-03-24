@@ -20,7 +20,6 @@ export function useAnnouncements(municipality) {
 
     try {
       // Base query: active == true, ordered by createdAt descending
-      const baseConstraints = [where('active', '==', true), orderBy('createdAt', 'desc')];
 
       let announcementsQuery;
       if (municipality) {
@@ -55,7 +54,8 @@ export function useAnnouncements(municipality) {
           captureException(err, {
             tags: { component: 'useAnnouncements', action: 'onSnapshot' },
           });
-          setError(err);
+           
+      setError(err);
           setLoading(false);
         }
       );
@@ -63,6 +63,7 @@ export function useAnnouncements(municipality) {
       captureException(err, {
         tags: { component: 'useAnnouncements', action: 'query' },
       });
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setError(err);
       setLoading(false);
     }
