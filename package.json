@@ -42,6 +42,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "react-leaflet": "^4.2.1",
     "react-leaflet-markercluster": "3.0.0-rc1",
+    "recharts": "^3.8.0",
     "terser": "^5.46.1",
     "validator": "^13.15.26",
     "vite-plugin-compression": "^0.5.1",

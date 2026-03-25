@@ -4,7 +4,10 @@ import { db } from '../../utils/firebaseConfig';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { getDisasterType } from '../../data/disasterTypes';
 import { formatTimeAgo } from '../../utils/timeUtils';
-import { deleteReport } from '../../hooks/useReports';
+import { deleteReport, verifyReport, resolveReport } from '../../hooks/useReports';
+import AnalyticsChart from './AnalyticsChart';
+import MunicipalityChart from './MunicipalityChart';
+import BulkActionsToolbar from './BulkActionsToolbar';
 import { useToast } from '../Common/Toast';
 import { captureException } from '../../utils/sentry';
 import Modal from '../Common/Modal';
@@ -56,6 +59,7 @@ export default function AdminDashboard() {
   const [deleting, setDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState('pending');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const { isAdmin, isSuperAdmin, userProfile } = useAuthContext();
   const { addToast } = useToast();
@@ -195,6 +199,80 @@ export default function AdminDashboard() {
           ? archivedReports
           : [];
 
+  const allReports = [...pendingReports, ...verifiedReports, ...archivedReports];
+
+  const allSelected =
+    displayReports.length > 0 &&
+    displayReports.every((r) => selectedIds.includes(r.id));
+
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const toggleAll = () => {
+    if (allSelected) {
+      setSelectedIds((prev) => prev.filter((id) => !displayReports.find((r) => r.id === id)));
+    } else {
+      setSelectedIds((prev) => [
+        ...prev,
+        ...displayReports.filter((r) => !prev.includes(r.id)).map((r) => r.id),
+      ]);
+    }
+  };
+
+  const handleBulkVerify = async () => {
+    for (const id of selectedIds) {
+      await verifyReport(id);
+    }
+    addToast(`${selectedIds.length} report(s) verified`, 'success');
+    setSelectedIds([]);
+  };
+
+  const handleBulkResolve = async () => {
+    for (const id of selectedIds) {
+      await resolveReport(id);
+    }
+    addToast(`${selectedIds.length} report(s) resolved`, 'success');
+    setSelectedIds([]);
+  };
+
+  const handleCsvExport = () => {
+    const headers = [
+      'id',
+      'disaster_type',
+      'severity',
+      'municipality',
+      'description',
+      'status',
+      'timestamp',
+      'resolved_at',
+    ];
+    const rows = displayReports.map((r) => [
+      r.id,
+      r.disaster?.type || '',
+      r.disaster?.severity || '',
+      r.location?.municipality || '',
+      r.disaster?.description || '',
+      r.verification?.status || '',
+      r.timestamp?.toDate?.().toISOString() || '',
+      r.resolution?.resolvedAt?.toDate?.().toISOString() || '',
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+      )
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bantayog-reports-${activeTab}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <FeatureFlag
       flag={FEATURE_FLAGS.ADMIN_ANALYTICS}
@@ -230,6 +308,24 @@ export default function AdminDashboard() {
       }
     >
       <div>
+        {/* Analytics Charts */}
+        <AnalyticsChart reports={allReports} />
+        {isSuperAdmin && <MunicipalityChart reports={allReports} />}
+
+        {/* Bulk Actions Toolbar */}
+        {activeTab !== 'announcements' && (
+          <BulkActionsToolbar
+            selectedIds={selectedIds}
+            onToggleAll={toggleAll}
+            onBulkVerify={handleBulkVerify}
+            onBulkResolve={handleBulkResolve}
+            onCsvExport={handleCsvExport}
+            allSelected={allSelected}
+            activeTab={activeTab}
+            reports={displayReports}
+          />
+        )}
+
         {/* Admin Header */}
         <div className="bg-white dark:bg-dark-elevated border border-border/60 dark:border-dark-border rounded-xl p-4 mb-3">
           <div className="flex items-center gap-2">
@@ -347,6 +443,14 @@ export default function AdminDashboard() {
                   className="bg-white dark:bg-dark-card rounded-xl p-3 shadow-card border border-stone-100 dark:border-dark-border hover:shadow-card-hover transition-shadow"
                 >
                   <div className="flex items-center justify-between gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(report.id)}
+                      onChange={() => toggleSelect(report.id)}
+                      className="rounded border-stone-300 shrink-0"
+                      aria-label={`Select report ${report.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                    />
                     <div
                       className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer active:scale-[0.99]"
                       onClick={() => {
