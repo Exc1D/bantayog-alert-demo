@@ -21,8 +21,7 @@ export default function BulkActionsToolbar({
   const handleConfirm = async () => {
     if (confirming === 'verify') {
       await onBulkVerify();
-    }
-    if (confirming === 'resolve') {
+    } else if (confirming === 'resolve') {
       await onBulkResolve();
     }
     setConfirming(null);

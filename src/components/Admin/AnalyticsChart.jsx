@@ -22,7 +22,13 @@ function groupByDate(reports, days) {
     buckets[d.toISOString().slice(0, 10)] = 0;
   }
   reports.forEach((r) => {
-    const ts = r.timestamp?.toMillis ? r.timestamp.toMillis() : new Date(r.timestamp).getTime();
+    const ts = (() => {
+        const raw = r.timestamp;
+        if (raw?.toMillis) return raw.toMillis();
+        if (raw instanceof Date) return raw.getTime();
+        if (typeof raw === 'number') return raw;
+        return null;
+      })();
     if (ts >= cutoff) {
       const key = new Date(ts).toISOString().slice(0, 10);
       if (buckets[key] !== undefined) buckets[key]++;

@@ -18,9 +18,9 @@ export default function NotificationPrefs() {
   useEffect(() => {
     if (!user) return;
     const loadPrefs = async () => {
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      if (snap.exists() && snap.data().settings?.notifications) {
-        setPrefs(snap.data().settings.notifications);
+      const snap = await getDoc(doc(db, 'users', user.uid, 'settings', 'notifications'));
+      if (snap.exists()) {
+        setPrefs(snap.data());
       }
       setLoading(false);
     };
@@ -30,11 +30,7 @@ export default function NotificationPrefs() {
   const savePref = async (key, value) => {
     const next = { ...prefs, [key]: value };
     setPrefs(next);
-    await setDoc(
-      doc(db, 'users', user.uid),
-      { settings: { notifications: next } },
-      { merge: true }
-    );
+    await setDoc(doc(db, 'users', user.uid, 'settings', 'notifications'), next);
   };
 
   const toggle = (key) => savePref(key, !prefs[key]);
