@@ -1,10 +1,14 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { useAuthContext } from '../contexts/AuthContext';
+import { useReportsContext } from '../contexts/ReportsContext';
 import { MUNICIPALITIES } from '../utils/constants';
 import Button from '../components/Common/Button';
-import AdminDashboard from '../components/Admin/AdminDashboard';
-import { useToast } from '../components/Common/Toast';
 import PrivacySettings from '../components/Common/PrivacySettings';
+import ThemeToggle from '../components/Layout/ThemeToggle';
+import NotificationPrefs from '../components/Profile/NotificationPrefs';
+import ReportHistoryCard from '../components/Profile/ReportHistoryCard';
+import { useTheme } from '../contexts/ThemeContext';
+import { useToast } from '../components/Common/Toast';
 import { logAuditEvent, AuditEvent, AuditEventType } from '../utils/auditLogger';
 
 function AuthForm() {
@@ -254,7 +258,9 @@ function AuthForm() {
 }
 
 function UserProfile() {
-  const { user, userProfile, signOut, isAdmin, updateProfilePicture } = useAuthContext();
+  const { user, userProfile, signOut, updateProfilePicture } = useAuthContext();
+  const { reports } = useReportsContext();
+  const { isDark, toggleTheme } = useTheme();
   const { addToast } = useToast();
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const fileInputRef = useRef(null);
@@ -274,9 +280,7 @@ function UserProfile() {
 
   const handlePhotoChange = async (event) => {
     const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
+    if (!file) return;
 
     if (!file.type.startsWith('image/')) {
       addToast('Please upload an image file.', 'warning');
@@ -286,7 +290,6 @@ function UserProfile() {
     setUploadingPhoto(true);
     try {
       await updateProfilePicture(file);
-
       logAuditEvent(
         new AuditEvent({
           eventType: AuditEventType.PROFILE_UPDATE,
@@ -297,7 +300,6 @@ function UserProfile() {
           metadata: { action: 'profile_picture_updated' },
         })
       );
-
       addToast('Profile picture updated.', 'success');
     } catch (error) {
       addToast(error.message || 'Could not update profile picture.', 'error');
@@ -309,8 +311,15 @@ function UserProfile() {
 
   const profilePhoto = userProfile?.photoURL || user?.photoURL;
 
+  // Filter to current user's reports for "My Reports" section
+  const myReports = useMemo(
+    () => (reports || []).filter((r) => r.authorId === user?.uid).slice(0, 3),
+    [reports, user?.uid]
+  );
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      {/* 4.1 — Profile Header */}
       <div className="bg-white rounded-xl p-5 shadow-card border border-stone-100 dark:bg-dark-card dark:border-dark-border">
         <div className="flex items-center gap-3">
           {profilePhoto ? (
@@ -364,44 +373,79 @@ function UserProfile() {
             </Button>
           </div>
         )}
+      </div>
 
-        {userProfile?.stats && (
-          <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-stone-100 dark:border-dark-border">
-            <div className="text-center">
-              <p className="text-xl font-bold text-accent">{userProfile.stats.reportsSubmitted}</p>
-              <p className="text-[10px] text-textLight dark:text-dark-textLight uppercase tracking-wider font-semibold">
-                Reports
+      {/* 4.2 — Stats */}
+      {userProfile?.stats && (
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { key: 'reportsSubmitted', label: 'Reports', color: 'text-accent' },
+            { key: 'reportsVerified', label: 'Verified', color: 'text-emerald-600' },
+            { key: 'upvotesReceived', label: 'Upvotes', color: 'text-amber-500' },
+          ].map(({ key, label, color }) => (
+            <div
+              key={key}
+              className="bg-white dark:bg-dark-card rounded-xl p-3 shadow-card border border-stone-100 dark:border-dark-border text-center"
+            >
+              <p className={`text-xl font-bold ${color}`}>{userProfile.stats[key]}</p>
+              <p className="text-[10px] text-textLight dark:text-dark-textLight uppercase tracking-wider font-semibold mt-0.5">
+                {label}
               </p>
             </div>
-            <div className="text-center">
-              <p className="text-xl font-bold text-emerald-600">
-                {userProfile.stats.reportsVerified}
-              </p>
-              <p className="text-[10px] text-textLight dark:text-dark-textLight uppercase tracking-wider font-semibold">
-                Verified
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-xl font-bold text-amber-500">
-                {userProfile.stats.upvotesReceived}
-              </p>
-              <p className="text-[10px] text-textLight dark:text-dark-textLight uppercase tracking-wider font-semibold">
-                Upvotes
-              </p>
-            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 4.3 — My Reports */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs font-bold uppercase tracking-wide text-textLight dark:text-dark-textLight">
+            My Reports
+          </h3>
+          {/* NOTE: Feed tab does not yet support ?author=uid filtering */}
+          <a
+            href="#feed"
+            className="text-xs text-accent hover:underline font-medium"
+          >
+            View All
+          </a>
+        </div>
+        {myReports.length > 0 ? (
+          <div className="space-y-2">
+            {myReports.map((report) => (
+              <ReportHistoryCard key={report.id} report={report} />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-dark-card rounded-xl p-5 shadow-card border border-stone-100 dark:border-dark-border text-center">
+            <p className="text-sm text-textLight dark:text-dark-textLight">
+              No reports submitted yet.
+            </p>
           </div>
         )}
+      </div>
 
-        <div className="mt-4 space-y-2">
-          <Button variant="secondary" onClick={handleSignOut} className="w-full">
-            Sign Out
-          </Button>
+      {/* 4.4 — Preferences */}
+      <div>
+        <h3 className="text-xs font-bold uppercase tracking-wide text-textLight dark:text-dark-textLight mb-3">
+          Preferences
+        </h3>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between bg-white dark:bg-dark-card rounded-xl p-4 shadow-card border border-stone-100 dark:border-dark-border">
+            <span className="text-sm font-medium dark:text-dark-text">Dark Mode</span>
+            <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
+          </div>
+          <NotificationPrefs />
         </div>
       </div>
 
-      {!user?.isAnonymous && <PrivacySettings />}
+      {/* 4.5 — Privacy & Data */}
+      <PrivacySettings />
 
-      {isAdmin && <AdminDashboard />}
+      {/* 4.6 — Sign Out */}
+      <Button variant="secondary" onClick={handleSignOut} className="w-full">
+        Sign Out
+      </Button>
     </div>
   );
 }
