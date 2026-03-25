@@ -19,9 +19,10 @@ const FeedTab = lazy(() => import('./pages/FeedTab'));
 const WeatherTab = lazy(() => import('./pages/WeatherTab'));
 const AlertsTab = lazy(() => import('./pages/AlertsTab'));
 const ProfileTab = lazy(() => import('./pages/ProfileTab'));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 const ReportModal = lazy(() => import('./components/Reports/ReportModal'));
 
-const VALID_TABS = ['map', 'feed', 'weather', 'alerts', 'profile'];
+const VALID_TABS = ['map', 'feed', 'weather', 'alerts', 'profile', 'admin'];
 const noop = () => {};
 
 const TAB_TITLES = {
@@ -30,6 +31,7 @@ const TAB_TITLES = {
   weather: 'Weather - BANTAYOG ALERT',
   alerts: 'Alerts - BANTAYOG ALERT',
   profile: 'Profile - BANTAYOG ALERT',
+  admin: 'Admin Dashboard - BANTAYOG ALERT',
 };
 
 function getTabFromHash() {
@@ -111,6 +113,8 @@ function AppContent() {
         return <AlertsTab />;
       case 'profile':
         return <ProfileTab />;
+      case 'admin':
+        return <AdminDashboardPage />;
       default:
         return (
           <MapErrorBoundary>
