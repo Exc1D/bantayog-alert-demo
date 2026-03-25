@@ -1,5 +1,5 @@
-const CACHE_NAME = 'bantayog-alert-v3';
-const TILE_CACHE = 'bantayog-tiles-v1';
+const CACHE_NAME = 'bantayog-alert-v4';
+const TILE_CACHE = 'bantayog-tiles-v2';
 const OFFLINE_QUEUE_DB = 'bantayog-offline-queue';
 const OFFLINE_QUEUE_DB_VERSION = 1;
 const MAX_TILE_CACHE_SIZE = 500;

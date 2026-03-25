@@ -72,7 +72,12 @@ export default defineConfig(({ mode }) => {
                 return 'vendor-turf';
               }
               if (id.includes('date-fns')) {
-                return 'vendor-date';
+                return 'vendor-react';
+              }
+              // (vendor -> vendor-react -> vendor-date -> vendor-react)
+              // vendor-react: recharts + date-fns (avoid circular chunks with base vendor)
+              if (id.includes('recharts') || id.includes('date-fns')) {
+                return 'vendor-react';
               }
               if (id.includes('@sentry')) {
                 return 'vendor-sentry';
@@ -88,9 +93,6 @@ export default defineConfig(({ mode }) => {
               }
               if (id.includes('firebase')) {
                 return 'vendor-firebase';
-              }
-              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-                return 'vendor-react';
               }
               return 'vendor';
             }
