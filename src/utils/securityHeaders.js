@@ -50,8 +50,8 @@ export const RECOMMENDED_HEADERS = {
 
 export const CORS_CONFIG = {
   allowedOrigins: [
-    'https://bantayog-alert-demo-36b27.web.app',
-    'https://bantayog-alert-demo-36b27.firebaseapp.com',
+    'https://bantayogalert.web.app',
+    'https://bantayogalert.firebaseapp.com',
   ],
   allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
