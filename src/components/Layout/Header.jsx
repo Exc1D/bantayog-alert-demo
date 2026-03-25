@@ -1,4 +1,10 @@
-import { useMemo, memo, useCallback } from 'react';\nimport { useAuthContext } from '../../contexts/AuthContext';\nimport { useReportsContext } from '../../contexts/ReportsContext';\nimport { useTheme } from '../../contexts/ThemeContext';\nimport ThemeToggle from './ThemeToggle';\n\nconst RoleBadge = memo(function RoleBadge({ role, color }) {
+import { useMemo, memo, useCallback } from 'react';
+import { useAuthContext } from '../../contexts/AuthContext';
+import { useReportsContext } from '../../contexts/ReportsContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import ThemeToggle from './ThemeToggle';
+
+const RoleBadge = memo(function RoleBadge({ role, color }) {
   return (
     <span
       className={`${color} hidden sm:inline text-[10px] font-bold px-2 py-1 rounded tracking-wide whitespace-nowrap`}
