@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
 import viteCompression from 'vite-plugin-compression';
+import path from 'path';
 
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
@@ -40,39 +41,29 @@ export default defineConfig(({ mode }) => {
           telemetry: false,
         }),
     ].filter(Boolean),
+    resolve: {
+      alias: {
+        // Force react and react-dom to always resolve to the same instance
+        // This prevents react-leaflet-markercluster's bundled React 17 from
+        // creating a separate React instance that breaks forwardRef/useState
+        react: path.resolve('./node_modules/react'),
+        'react-dom': path.resolve('./node_modules/react-dom'),
+      },
+    },
     server: {
       port: 5173,
       host: true,
     },
-    esbuild: isProduction || isStaging ? { drop: ['console', 'debugger'] } : {},
+    esbuild: isProduction || isStaging ? { drop: ['console', 'debugger'], legalComments: 'none' } : {},
     build: {
-      minify: isProduction ? 'terser' : false,
+      // Use esbuild instead of terser — terser's module/tolevel rewriting
+      // breaks dual-React scenarios where nested node_modules ship their own React
+      minify: isProduction ? 'esbuild' : false,
       outDir: 'dist',
       sourcemap: (isProduction || isStaging) && hasSentryToken,
       target: 'es2020',
       cssMinify: true,
       chunkSizeWarningLimit: isStaging ? 1500 : 1000,
-      terserOptions: isProduction
-        ? {
-            compress: {
-              drop_console: true,
-              drop_debugger: true,
-              pure_funcs: ['console.log', 'console.info', 'console.debug'],
-              passes: 2,
-              ecma: 2020,
-              module: true,
-              toplevel: true,
-            },
-            mangle: {
-              safari10: true,
-              properties: false,
-            },
-            format: {
-              comments: false,
-              ecma: 2020,
-            },
-          }
-        : {},
       rollupOptions: {
         output: {
           manualChunks: (id) => {
@@ -110,6 +101,7 @@ export default defineConfig(({ mode }) => {
     optimizeDeps: {
       include: ['react', 'react-dom', 'firebase/app', 'firebase/firestore'],
       exclude: ['@sentry/react'],
+      force: true,
     },
     test: {
       globals: true,
