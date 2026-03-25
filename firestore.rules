@@ -320,10 +320,10 @@ service cloud.firestore {
     }
 
     match /audit/{docId} {
-      // Audit logs - read by admins only, system write only via Firebase Admin SDK
+      // Audit logs - read by admins only.
+      // Write operations blocked for client SDKs (Firebase Admin SDK bypasses rules entirely).
+      // Note: Audit logging actually writes to users/{userId}/audit subcollection, not here.
       allow read: if isAdmin();
-      // System write only - Cloud Functions use Firebase Admin SDK which bypasses rules.
-      // Explicitly deny all write operations for regular authenticated users.
       allow create: if false;
       allow update: if false;
       allow delete: if false;

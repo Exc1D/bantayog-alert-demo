@@ -279,6 +279,14 @@ exports.sendPushNotification = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('invalid-argument', 'Title and body are required');
   }
 
+  // Validate announcementId references an existing document if provided
+  if (announcementId) {
+    const announcementSnap = await db.collection('announcements').doc(announcementId).get();
+    if (!announcementSnap.exists) {
+      throw new functions.https.HttpsError('not-found', 'Announcement not found');
+    }
+  }
+
   // Normalize topic name (replace spaces with underscores, lowercase)
   const normalizedTopic = topic.toLowerCase().replace(/\s+/g, '_');
 
