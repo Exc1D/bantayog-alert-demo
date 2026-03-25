@@ -202,13 +202,10 @@ export default function AdminDashboard() {
   const allReports = [...pendingReports, ...verifiedReports, ...archivedReports];
 
   const allSelected =
-    displayReports.length > 0 &&
-    displayReports.every((r) => selectedIds.includes(r.id));
+    displayReports.length > 0 && displayReports.every((r) => selectedIds.includes(r.id));
 
   const toggleSelect = (id) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
   };
 
   const toggleAll = () => {
@@ -260,9 +257,7 @@ export default function AdminDashboard() {
       r.resolution?.resolvedAt?.toDate?.().toISOString() || '',
     ]);
     const csv = [headers, ...rows]
-      .map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
-      )
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
       .join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);

@@ -29,7 +29,9 @@ export default function ReportHistoryCard({ report }) {
               <span className="font-bold text-xs uppercase tracking-wide dark:text-dark-text">
                 {disasterType?.label || report.disaster?.type}
               </span>
-              <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide ${style}`}>
+              <span
+                className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide ${style}`}
+              >
                 {dot} {status}
               </span>
             </div>

@@ -26,12 +26,7 @@ export default function MunicipalityChart({ reports = [] }) {
         <BarChart data={data} layout="vertical">
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10 }} />
-          <YAxis
-            dataKey="municipality"
-            type="category"
-            tick={{ fontSize: 9 }}
-            width={80}
-          />
+          <YAxis dataKey="municipality" type="category" tick={{ fontSize: 9 }} width={80} />
           <Tooltip />
           <Bar dataKey="count" fill="#1A2744" radius={[0, 4, 4, 0]} />
         </BarChart>

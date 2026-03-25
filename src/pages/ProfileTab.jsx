@@ -403,10 +403,7 @@ function UserProfile() {
             My Reports
           </h3>
           {/* NOTE: Feed tab does not yet support ?author=uid filtering */}
-          <a
-            href="#feed"
-            className="text-xs text-accent hover:underline font-medium"
-          >
+          <a href="#feed" className="text-xs text-accent hover:underline font-medium">
             View All
           </a>
         </div>

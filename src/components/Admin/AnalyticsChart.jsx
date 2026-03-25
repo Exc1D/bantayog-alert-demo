@@ -22,9 +22,7 @@ function groupByDate(reports, days) {
     buckets[d.toISOString().slice(0, 10)] = 0;
   }
   reports.forEach((r) => {
-    const ts = r.timestamp?.toMillis
-      ? r.timestamp.toMillis()
-      : new Date(r.timestamp).getTime();
+    const ts = r.timestamp?.toMillis ? r.timestamp.toMillis() : new Date(r.timestamp).getTime();
     if (ts >= cutoff) {
       const key = new Date(ts).toISOString().slice(0, 10);
       if (buckets[key] !== undefined) buckets[key]++;
@@ -65,7 +63,9 @@ export default function AnalyticsChart({ reports = [] }) {
             ? r.timestamp.toMillis()
             : new Date(r.timestamp).getTime();
           return sum + (resolvedAt - submitted);
-        }, 0) / resolvedReports.length / 3600000 // ms → hours
+        }, 0) /
+        resolvedReports.length /
+        3600000 // ms → hours
       : 0;
 
   const lineData = useMemo(() => groupByDate(reports, dayRange), [reports, dayRange]);
@@ -80,13 +80,8 @@ export default function AnalyticsChart({ reports = [] }) {
           { label: 'Verified', value: verified },
           { label: 'Avg Response', value: `${avgResponseMs.toFixed(1)}h` },
         ].map(({ label, value }) => (
-          <div
-            key={label}
-            className="text-center bg-stone-50 dark:bg-dark-card rounded-lg p-3"
-          >
-            <p className="text-xl font-bold text-accent dark:text-dark-accent">
-              {value}
-            </p>
+          <div key={label} className="text-center bg-stone-50 dark:bg-dark-card rounded-lg p-3">
+            <p className="text-xl font-bold text-accent dark:text-dark-accent">{value}</p>
             <p className="text-[10px] uppercase tracking-wider text-textLight dark:text-dark-textLight font-semibold">
               {label}
             </p>

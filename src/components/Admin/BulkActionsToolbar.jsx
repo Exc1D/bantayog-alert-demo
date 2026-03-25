@@ -59,12 +59,7 @@ export default function BulkActionsToolbar({
         >
           Bulk Resolve
         </Button>
-        <Button
-          size="sm"
-          variant="secondary"
-          disabled={csvDisabled}
-          onClick={onCsvExport}
-        >
+        <Button size="sm" variant="secondary" disabled={csvDisabled} onClick={onCsvExport}>
           CSV ↓
         </Button>
       </div>
