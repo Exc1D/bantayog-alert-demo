@@ -310,6 +310,11 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // User settings subcollection (e.g., notifications preferences)
+    match /users/{userId}/settings/{settingId} {
+      allow read, write: if request.auth.uid == userId;
+    }
+
     // ============================================
     // SYSTEM COLLECTIONS (for future use)
     // ============================================
