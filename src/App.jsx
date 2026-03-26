@@ -25,7 +25,6 @@ const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 const ReportModal = lazy(() => import('./components/Reports/ReportModal'));
 
 const VALID_TABS = ['map', 'feed', 'weather', 'alerts', 'profile', 'admin'];
-const noop = () => {};
 
 const TAB_TITLES = {
   map: 'Map - BANTAYOG ALERT',
