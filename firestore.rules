@@ -47,6 +47,8 @@ service cloud.firestore {
 
     function canCreateReports() {
       let role = userRole();
+      // role == '' allows unauthenticated/anonymous users to submit reports
+      // (request.auth.uid exists but no user document exists yet = new user)
       return role == 'user' || role == 'moderator' || isAdmin() || role == '';
     }
 
@@ -203,9 +205,11 @@ service cloud.firestore {
         // Weather context validation (can be empty map)
         && request.resource.data.weatherContext is map;
 
-      // Update: Moderators/admins can update any field
+      // Update: Moderators/admins can update specific fields only (not unrestricted)
       // Regular users can only update engagement (upvotes)
       allow update: if isModerator()
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['verification', 'disaster', 'engagement', 'location', 'media'])
         || (
           isSignedIn()
           // Only allow engagement updates
@@ -312,7 +316,14 @@ service cloud.firestore {
 
     // User settings subcollection (e.g., notifications preferences)
     match /users/{userId}/settings/{settingId} {
-      allow read, write: if request.auth.uid == userId;
+      allow read: if request.auth.uid == userId;
+      allow create: if request.auth.uid == userId
+        && request.resource.data.keys().hasAll(['pushEnabled', 'emailEnabled', 'mutedUntil'])
+        && request.resource.data.pushEnabled is bool
+        && request.resource.data.emailEnabled is bool
+        && (request.resource.data.mutedUntil is timestamp || request.resource.data.mutedUntil == null);
+      allow update: if request.auth.uid == userId
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['userId']);
     }
 
     // ============================================
@@ -382,10 +393,12 @@ service cloud.firestore {
       allow delete: if false;
 
       // Notifications subcollection - logs of sent push notifications
-      // Written by Cloud Functions after FCM sends, read by admins for audit
+      // Read by admins for audit trail
+      // Write operations blocked for client SDKs — Cloud Functions and Firebase Admin SDK
+      // (which bypasses rules entirely) handle writes server-side
       match /notifications/{notificationId} {
-        allow read: if isAdmin();  // Admin read for audit trail
-        allow create: if isAdmin(); // Only admins/Cloud Functions can create
+        allow read: if isAdmin();
+        allow create: if false;  // Cloud Functions/Admin SDK bypass rules — blocked for client SDK
         allow update, delete: if false;  // Immutable records
       }
     }
