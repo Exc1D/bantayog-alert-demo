@@ -505,10 +505,10 @@ textarea:focus-visible {
 
 /* ---- Dark mode scrollbar thumb ---- */
 .dark ::-webkit-scrollbar-thumb {
-  background: #2A3F55;
+  background: #2a3f55;
   border-radius: 3px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #3A5070;
+  background: #3a5070;
 }

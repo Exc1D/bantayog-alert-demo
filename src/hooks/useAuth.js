@@ -85,10 +85,10 @@ export function useAuth() {
   };
 
   const signUp = async (email, password, name, municipality) => {
-        const { authInstance, createUserWithEmailAndPassword, updateProfile } = await getFirebaseAuth();
+    const { authInstance, createUserWithEmailAndPassword, updateProfile } = await getFirebaseAuth();
     const credential = await createUserWithEmailAndPassword(authInstance, email, password);
-        await updateProfile(credential.user, { displayName: name });
-    
+    await updateProfile(credential.user, { displayName: name });
+
     let firestoreSuccess = false;
     try {
       await setDoc(doc(db, 'users', credential.user.uid), {
@@ -113,13 +113,13 @@ export function useAuth() {
         },
       });
       firestoreSuccess = true;
-          } catch (err) {
-            captureException(err, { tags: { component: 'useAuth', action: 'signUpFirestore' } });
+    } catch (err) {
+      captureException(err, { tags: { component: 'useAuth', action: 'signUpFirestore' } });
       throw new Error('Failed to create user profile. Please try again.');
     }
 
     if (!firestoreSuccess) {
-            throw new Error('Failed to create user profile. Please try again.');
+      throw new Error('Failed to create user profile. Please try again.');
     }
 
     try {
@@ -134,8 +134,7 @@ export function useAuth() {
           metadata: { action: 'account_created' },
         })
       );
-          } catch (auditErr) {
-          }
+    } catch (auditErr) {}
 
     return credential.user;
   };

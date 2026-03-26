@@ -87,11 +87,7 @@ export default function BottomSheet({ isOpen, onClose, children, title }) {
       onKeyDown={handleKeyDown}
     >
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
 
       {/* Sheet panel */}
       <div
@@ -124,9 +120,7 @@ export default function BottomSheet({ isOpen, onClose, children, title }) {
         )}
 
         {/* Scrollable content */}
-        <div className="overflow-y-auto px-5 pb-6 flex-1">
-          {children}
-        </div>
+        <div className="overflow-y-auto px-5 pb-6 flex-1">{children}</div>
       </div>
     </div>
   );
