@@ -10,7 +10,7 @@ export default memo(function Sidebar({ activeTab, onTabChange }) {
       style={{ width: SIDEBAR_WIDTH }}
     >
       <nav aria-label="Main navigation" className="flex flex-col py-4">
-        {TABS.filter(tab => !tab.adminOnly || isAdmin).map((tab) => {
+        {TABS.filter((tab) => !tab.adminOnly || isAdmin).map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button

@@ -23,12 +23,12 @@ function groupByDate(reports, days) {
   }
   reports.forEach((r) => {
     const ts = (() => {
-        const raw = r.timestamp;
-        if (raw?.toMillis) return raw.toMillis();
-        if (raw instanceof Date) return raw.getTime();
-        if (typeof raw === 'number') return raw;
-        return null;
-      })();
+      const raw = r.timestamp;
+      if (raw?.toMillis) return raw.toMillis();
+      if (raw instanceof Date) return raw.getTime();
+      if (typeof raw === 'number') return raw;
+      return null;
+    })();
     if (ts >= cutoff) {
       const key = new Date(ts).toISOString().slice(0, 10);
       if (buckets[key] !== undefined) buckets[key]++;

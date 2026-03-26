@@ -49,10 +49,7 @@ export const RECOMMENDED_HEADERS = {
 };
 
 export const CORS_CONFIG = {
-  allowedOrigins: [
-    'https://bantayogalert.web.app',
-    'https://bantayogalert.firebaseapp.com',
-  ],
+  allowedOrigins: ['https://bantayogalert.web.app', 'https://bantayogalert.firebaseapp.com'],
   allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   maxAge: 86400,

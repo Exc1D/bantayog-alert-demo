@@ -9,7 +9,7 @@ export default function TabNavigation({ activeTab, onTabChange }) {
       aria-label="Main navigation"
     >
       <div className="max-w-[1400px] mx-auto px-3 lg:px-6 flex" role="tablist">
-        {TABS.filter(tab => !tab.adminOnly || isAdmin).map((tab) => {
+        {TABS.filter((tab) => !tab.adminOnly || isAdmin).map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button
