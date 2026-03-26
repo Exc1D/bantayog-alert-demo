@@ -190,7 +190,7 @@ export default function AdminDashboard() {
         : archivedReports;
 
   return (
-    <div className="max-w-4xl mx-auto lg:max-w-5xl xl:max-w-7xl">
+    <div className="max-w-[800px] lg:max-w-[1000px] xl:max-w-[1200px] mx-auto">
       <FeatureFlag
         flag={FEATURE_FLAGS.ADMIN_ANALYTICS}
         fallback={
