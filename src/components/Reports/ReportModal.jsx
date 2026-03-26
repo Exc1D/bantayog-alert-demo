@@ -140,8 +140,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
   const handleBack = () => {
     if (step === 2) {
       setStep(1);
-      setReportType(null);
-      setEvidenceFiles([]);
+      // reportType and evidenceFiles are preserved — user can go forward without re-entering
     } else if (step === 3) {
       setStep(2);
     }
