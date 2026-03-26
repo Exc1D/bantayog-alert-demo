@@ -15,7 +15,7 @@ export default function AlertsTab() {
 
   if (error) {
     return (
-      <div className="max-w-[800px] mx-auto px-3 py-4">
+      <div className="max-w-[800px] mx-auto lg:max-w-5xl xl:max-w-7xl px-3 py-4">
         <EmptyState
           icon="info"
           title="Unable to load announcements"

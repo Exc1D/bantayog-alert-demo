@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bantayog-alert-v4';
+const CACHE_NAME = 'bantayog-alert-v5';
 const TILE_CACHE = 'bantayog-tiles-v2';
 const OFFLINE_QUEUE_DB = 'bantayog-offline-queue';
 const OFFLINE_QUEUE_DB_VERSION = 1;

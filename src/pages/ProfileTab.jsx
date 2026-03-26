@@ -452,7 +452,7 @@ export default function ProfileTab() {
 
   if (loading) {
     return (
-      <div className="max-w-[800px] mx-auto px-4 py-4">
+      <div className="max-w-[800px] mx-auto lg:max-w-5xl xl:max-w-7xl px-4 py-4">
         <div className="text-center py-12">
           <p className="text-textLight text-sm">Loading...</p>
         </div>
