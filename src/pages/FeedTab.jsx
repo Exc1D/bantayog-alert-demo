@@ -92,48 +92,50 @@ export default function FeedTab({ onViewMap, onRequireSignUp }) {
   );
 
   return (
-    <div className="max-w-[800px] mx-auto lg:max-w-none px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
-      <FeedFilters filters={filters} onFilterChange={updateFilters} />
-      <FeatureFlag
-        flag={FEATURE_FLAGS.COMMUNITY_ENGAGEMENT}
-        fallback={
-          <FeatureFlagDisabled flag={FEATURE_FLAGS.COMMUNITY_ENGAGEMENT}>
-            <div className="bg-white dark:bg-dark-card rounded-xl p-4 text-center shadow-card border border-stone-100 dark:border-dark-border mb-3">
-              <div className="w-10 h-10 mx-auto mb-2 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center">
-                <svg
-                  aria-hidden="true"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                </svg>
+    <div className="max-w-[800px] mx-auto xl:max-w-3xl px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
+      <div className="max-w-3xl mx-auto">
+        <FeedFilters filters={filters} onFilterChange={updateFilters} />
+        <FeatureFlag
+          flag={FEATURE_FLAGS.COMMUNITY_ENGAGEMENT}
+          fallback={
+            <FeatureFlagDisabled flag={FEATURE_FLAGS.COMMUNITY_ENGAGEMENT}>
+              <div className="bg-white dark:bg-dark-card rounded-xl p-4 text-center shadow-card border border-stone-100 dark:border-dark-border mb-3">
+                <div className="w-10 h-10 mx-auto mb-2 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center">
+                  <svg
+                    aria-hidden="true"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                  </svg>
+                </div>
+                <p className="font-semibold text-sm text-textLight dark:text-dark-textLight">
+                  Community features coming soon
+                </p>
+                <p className="text-xs text-textLight dark:text-dark-textLight mt-1">
+                  Upvotes and comments will be available soon
+                </p>
               </div>
-              <p className="font-semibold text-sm text-textLight dark:text-dark-textLight">
-                Community features coming soon
-              </p>
-              <p className="text-xs text-textLight dark:text-dark-textLight mt-1">
-                Upvotes and comments will be available soon
-              </p>
-            </div>
-          </FeatureFlagDisabled>
-        }
-      >
-        <FeedList
-          reports={feedReports}
-          loading={loading}
-          hasMore={hasMore}
-          loadMore={loadMore}
-          onViewMap={onViewMap}
-          onRequireSignUp={onRequireSignUp}
-          searchQuery={filters.search}
-        />
-      </FeatureFlag>
+            </FeatureFlagDisabled>
+          }
+        >
+          <FeedList
+            reports={feedReports}
+            loading={loading}
+            hasMore={hasMore}
+            loadMore={loadMore}
+            onViewMap={onViewMap}
+            onRequireSignUp={onRequireSignUp}
+            searchQuery={filters.search}
+          />
+        </FeatureFlag>
+      </div>
     </div>
   );
 }

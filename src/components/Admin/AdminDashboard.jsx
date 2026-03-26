@@ -4,10 +4,7 @@ import { db } from '../../utils/firebaseConfig';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { getDisasterType } from '../../data/disasterTypes';
 import { formatTimeAgo } from '../../utils/timeUtils';
-import { deleteReport, verifyReport, resolveReport } from '../../hooks/useReports';
-import AnalyticsChart from './AnalyticsChart';
-import MunicipalityChart from './MunicipalityChart';
-import BulkActionsToolbar from './BulkActionsToolbar';
+import { deleteReport } from '../../hooks/useReports';
 import { useToast } from '../Common/Toast';
 import { captureException } from '../../utils/sentry';
 import Modal from '../Common/Modal';
@@ -16,9 +13,6 @@ import ResolutionModal from './ResolutionModal';
 import LoadingSpinner from '../Common/LoadingSpinner';
 import { FEATURE_FLAGS } from '../../config/featureFlags';
 import FeatureFlag, { FeatureFlagDisabled } from '../Common/FeatureFlag';
-import DisasterIcon from '../Common/DisasterIcon';
-import AdminAlertsTab from './AdminAlertsTab';
-import CreateAnnouncementForm from './CreateAnnouncementForm';
 
 const FEED_RESOLVED_RETENTION_MS = 24 * 60 * 60 * 1000;
 
@@ -58,8 +52,6 @@ export default function AdminDashboard() {
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [activeTab, setActiveTab] = useState('pending');
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedIds, setSelectedIds] = useState([]);
 
   const { isAdmin, isSuperAdmin, userProfile } = useAuthContext();
   const { addToast } = useToast();
@@ -195,259 +187,251 @@ export default function AdminDashboard() {
       ? pendingReports
       : activeTab === 'verified'
         ? verifiedReports
-        : activeTab === 'archived'
-          ? archivedReports
-          : [];
-
-  const allReports = [...pendingReports, ...verifiedReports, ...archivedReports];
-
-  const allSelected =
-    displayReports.length > 0 && displayReports.every((r) => selectedIds.includes(r.id));
-
-  const toggleSelect = (id) => {
-    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
-  };
-
-  const toggleAll = () => {
-    if (allSelected) {
-      setSelectedIds((prev) => prev.filter((id) => !displayReports.find((r) => r.id === id)));
-    } else {
-      setSelectedIds((prev) => [
-        ...prev,
-        ...displayReports.filter((r) => !prev.includes(r.id)).map((r) => r.id),
-      ]);
-    }
-  };
-
-  const handleBulkVerify = async () => {
-    for (const id of selectedIds) {
-      await verifyReport(id);
-    }
-    addToast(`${selectedIds.length} report(s) verified`, 'success');
-    setSelectedIds([]);
-  };
-
-  const handleBulkResolve = async () => {
-    for (const id of selectedIds) {
-      await resolveReport(id);
-    }
-    addToast(`${selectedIds.length} report(s) resolved`, 'success');
-    setSelectedIds([]);
-  };
-
-  const handleCsvExport = () => {
-    const headers = [
-      'id',
-      'disaster_type',
-      'severity',
-      'municipality',
-      'description',
-      'status',
-      'timestamp',
-      'resolved_at',
-    ];
-    const rows = displayReports.map((r) => [
-      r.id,
-      r.disaster?.type || '',
-      r.disaster?.severity || '',
-      r.location?.municipality || '',
-      r.disaster?.description || '',
-      r.verification?.status || '',
-      r.timestamp?.toDate?.().toISOString() || '',
-      r.resolution?.resolvedAt?.toDate?.().toISOString() || '',
-    ]);
-    const csv = [headers, ...rows]
-      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `bantayog-reports-${activeTab}-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+        : archivedReports;
 
   return (
-    <FeatureFlag
-      flag={FEATURE_FLAGS.ADMIN_ANALYTICS}
-      fallback={
-        <FeatureFlagDisabled flag={FEATURE_FLAGS.ADMIN_ANALYTICS}>
-          <div className="bg-white dark:bg-dark-card rounded-xl p-6 text-center shadow-card border border-stone-100 dark:border-dark-border">
-            <div className="w-12 h-12 mx-auto mb-3 bg-stone-100 dark:bg-dark-elevated rounded-full flex items-center justify-center">
+    <div className="max-w-4xl mx-auto">
+      <FeatureFlag
+        flag={FEATURE_FLAGS.ADMIN_ANALYTICS}
+        fallback={
+          <FeatureFlagDisabled flag={FEATURE_FLAGS.ADMIN_ANALYTICS}>
+            <div className="bg-white dark:bg-dark-card rounded-xl p-6 text-center shadow-card border border-stone-100 dark:border-dark-border">
+              <div className="w-12 h-12 mx-auto mb-3 bg-stone-100 dark:bg-dark-elevated rounded-full flex items-center justify-center">
+                <svg
+                  aria-hidden="true"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-stone-500 dark:text-dark-textLight"
+                >
+                  <line x1="18" y1="20" x2="18" y2="10" />
+                  <line x1="12" y1="20" x2="12" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+              </div>
+              <p className="font-semibold text-sm text-textLight dark:text-dark-textLight">
+                Analytics Dashboard Coming Soon
+              </p>
+              <p className="text-xs text-textLight dark:text-dark-textLight mt-1">
+                Advanced analytics and reporting features are under development
+              </p>
+            </div>
+          </FeatureFlagDisabled>
+        }
+      >
+        <div>
+          {/* Admin Header */}
+          <div className="bg-white dark:bg-dark-elevated border border-border/60 dark:border-dark-border rounded-xl p-4 mb-3">
+            <div className="flex items-center gap-2">
               <svg
                 aria-hidden="true"
-                width="24"
-                height="24"
+                width="18"
+                height="18"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor"
+                stroke="#2ec4b6"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="text-stone-500 dark:text-dark-textLight"
               >
-                <line x1="18" y1="20" x2="18" y2="10" />
-                <line x1="12" y1="20" x2="12" y2="4" />
-                <line x1="6" y1="20" x2="6" y2="14" />
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
+              <h2 className="text-sm font-bold tracking-wide uppercase text-primary dark:text-dark-text">
+                {isSuperAdmin ? 'Provincial' : 'Municipal'} Dashboard
+              </h2>
             </div>
-            <p className="font-semibold text-sm text-textLight dark:text-dark-textLight">
-              Analytics Dashboard Coming Soon
-            </p>
-            <p className="text-xs text-textLight dark:text-dark-textLight mt-1">
-              Advanced analytics and reporting features are under development
-            </p>
+            <div className="flex items-center gap-3 mt-2 ml-[26px]">
+              <span className="text-xs text-amber-600 dark:text-amber-400 font-bold">
+                {pendingReports.length} pending
+              </span>
+              <span className="text-border dark:text-white/20">&bull;</span>
+              <span className="text-xs text-blue-600 dark:text-blue-400 font-bold">
+                {verifiedReports.length} awaiting resolution
+              </span>
+              <span className="text-border dark:text-white/20">&bull;</span>
+              <span className="text-xs text-emerald-600 dark:text-emerald-300 font-bold">
+                {archivedReports.length} archived
+              </span>
+            </div>
           </div>
-        </FeatureFlagDisabled>
-      }
-    >
-      <div>
-        {/* Analytics Charts */}
-        <AnalyticsChart reports={allReports} />
-        {isSuperAdmin && <MunicipalityChart reports={allReports} />}
 
-        {/* Bulk Actions Toolbar */}
-        {activeTab !== 'announcements' && (
-          <BulkActionsToolbar
-            selectedIds={selectedIds}
-            onToggleAll={toggleAll}
-            onBulkVerify={handleBulkVerify}
-            onBulkResolve={handleBulkResolve}
-            onCsvExport={handleCsvExport}
-            allSelected={allSelected}
-            activeTab={activeTab}
-            reports={displayReports}
-          />
-        )}
-
-        {/* Admin Header */}
-        <div className="bg-white dark:bg-dark-elevated border border-border/60 dark:border-dark-border rounded-xl p-4 mb-3">
-          <div className="flex items-center gap-2">
-            <svg
-              aria-hidden="true"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#2ec4b6"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          {/* Tabs */}
+          <div className="flex gap-2 mb-3">
+            <button
+              onClick={() => setActiveTab('pending')}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+                activeTab === 'pending'
+                  ? 'bg-warning text-white shadow-sm'
+                  : 'bg-white dark:bg-dark-elevated text-textLight dark:text-dark-textLight hover:bg-stone-50 dark:hover:bg-dark-border border border-stone-200 dark:border-dark-border'
+              }`}
             >
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            <h2 className="text-sm font-bold tracking-wide uppercase text-primary dark:text-dark-text">
-              {isSuperAdmin ? 'Provincial' : 'Municipal'} Dashboard
-            </h2>
+              Pending ({pendingReports.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('verified')}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+                activeTab === 'verified'
+                  ? 'bg-accent text-white shadow-sm'
+                  : 'bg-white dark:bg-dark-elevated text-textLight dark:text-dark-textLight hover:bg-stone-50 dark:hover:bg-dark-border border border-stone-200 dark:border-dark-border'
+              }`}
+            >
+              Needs Resolution ({verifiedReports.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('archived')}
+              className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+                activeTab === 'archived'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'bg-white dark:bg-dark-elevated text-textLight dark:text-dark-textLight hover:bg-stone-50 dark:hover:bg-dark-border border border-stone-200 dark:border-dark-border'
+              }`}
+            >
+              Archived ({archivedReports.length})
+            </button>
           </div>
-          <div className="flex items-center gap-3 mt-2 ml-[26px]">
-            <span className="text-xs text-amber-600 dark:text-amber-400 font-bold">
-              {pendingReports.length} pending
-            </span>
-            <span className="text-border dark:text-white/20">&bull;</span>
-            <span className="text-xs text-blue-600 dark:text-blue-400 font-bold">
-              {verifiedReports.length} awaiting resolution
-            </span>
-            <span className="text-border dark:text-white/20">&bull;</span>
-            <span className="text-xs text-emerald-600 dark:text-emerald-300 font-bold">
-              {archivedReports.length} archived
-            </span>
-          </div>
-        </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-3">
-          <button
-            onClick={() => setActiveTab('pending')}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'pending'
-                ? 'bg-warning text-white shadow-sm'
-                : 'bg-white dark:bg-dark-elevated text-textLight dark:text-dark-textLight hover:bg-stone-50 dark:hover:bg-dark-border border border-stone-200 dark:border-dark-border'
-            }`}
-          >
-            Pending ({pendingReports.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('verified')}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'verified'
-                ? 'bg-accent text-white shadow-sm'
-                : 'bg-white dark:bg-dark-elevated text-textLight dark:text-dark-textLight hover:bg-stone-50 dark:hover:bg-dark-border border border-stone-200 dark:border-dark-border'
-            }`}
-          >
-            Needs Resolution ({verifiedReports.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('archived')}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'archived'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'bg-white dark:bg-dark-elevated text-textLight dark:text-dark-textLight hover:bg-stone-50 dark:hover:bg-dark-border border border-stone-200 dark:border-dark-border'
-            }`}
-          >
-            Archived ({archivedReports.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('announcements')}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'announcements'
-                ? 'bg-purple-600 text-white shadow-sm'
-                : 'bg-white dark:bg-dark-elevated text-textLight dark:text-dark-textLight hover:bg-stone-50 dark:hover:bg-dark-border border border-stone-200 dark:border-dark-border'
-            }`}
-          >
-            Announcements
-          </button>
-        </div>
-
-        {/* Report List */}
-        {displayReports.length === 0 ? (
-          <div className="bg-white dark:bg-dark-card rounded-xl p-6 text-center shadow-card border border-stone-100 dark:border-dark-border">
-            <div className="w-10 h-10 mx-auto mb-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
-              <svg
-                aria-hidden="true"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#16a34a"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </div>
-            <p className="font-semibold text-sm dark:text-dark-text">
-              {activeTab === 'pending'
-                ? 'No pending reports'
-                : activeTab === 'verified'
-                  ? 'All reports resolved'
-                  : 'No archived reports'}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {displayReports.map((report) => {
-              const disasterType = getDisasterType(report.disaster?.type);
-              const sevStyle = SEV_STYLES[report.disaster?.severity] || SEV_STYLES.minor;
-
-              return (
-                <div
-                  key={report.id}
-                  className="bg-white dark:bg-dark-card rounded-xl p-3 shadow-card border border-stone-100 dark:border-dark-border hover:shadow-card-hover transition-shadow"
+          {/* Report List */}
+          {displayReports.length === 0 ? (
+            <div className="bg-white dark:bg-dark-card rounded-xl p-6 text-center shadow-card border border-stone-100 dark:border-dark-border">
+              <div className="w-10 h-10 mx-auto mb-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
+                <svg
+                  aria-hidden="true"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#16a34a"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.includes(report.id)}
-                      onChange={() => toggleSelect(report.id)}
-                      className="rounded border-stone-300 shrink-0"
-                      aria-label={`Select report ${report.id}`}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <div
-                      className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer active:scale-[0.99]"
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <p className="font-semibold text-sm dark:text-dark-text">
+                {activeTab === 'pending'
+                  ? 'No pending reports'
+                  : activeTab === 'verified'
+                    ? 'All reports resolved'
+                    : 'No archived reports'}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {displayReports.map((report) => {
+                const disasterType = getDisasterType(report.disaster?.type);
+                const sevStyle = SEV_STYLES[report.disaster?.severity] || SEV_STYLES.minor;
+
+                return (
+                  <div
+                    key={report.id}
+                    className="bg-white dark:bg-dark-card rounded-xl p-3 shadow-card border border-stone-100 dark:border-dark-border hover:shadow-card-hover transition-shadow"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div
+                        className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer active:scale-[0.99]"
+                        onClick={() => {
+                          setSelectedReport(report);
+                          if (activeTab === 'pending') {
+                            setShowVerifyModal(true);
+                          } else if (activeTab === 'verified') {
+                            setShowResolveModal(true);
+                          }
+                        }}
+                      >
+                        <span className="text-lg">{disasterType.icon}</span>
+                        <div className="min-w-0">
+                          <p className="font-bold text-xs uppercase tracking-wide dark:text-dark-text">
+                            {disasterType.label}
+                          </p>
+                          <p className="text-[10px] text-textLight dark:text-dark-textLight">
+                            {report.location?.municipality} &bull; {formatTimeAgo(report.timestamp)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span
+                          className={`${sevStyle} px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide`}
+                        >
+                          {report.disaster?.severity}
+                        </span>
+                        {/* Delete button */}
+                        {deleteConfirmId === report.id ? (
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleDeleteReport(report.id)}
+                              disabled={deleting}
+                              className="bg-red-600 text-white rounded-lg p-1.5 hover:bg-red-700 transition-colors disabled:opacity-40"
+                              aria-label="Confirm delete"
+                            >
+                              <svg
+                                aria-hidden="true"
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirmId(null)}
+                              className="bg-stone-200 dark:bg-dark-elevated text-stone-600 dark:text-dark-textLight rounded-lg p-1.5 hover:bg-stone-300 dark:hover:bg-dark-border transition-colors"
+                              aria-label="Cancel delete"
+                            >
+                              <svg
+                                aria-hidden="true"
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                              </svg>
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteConfirmId(report.id);
+                            }}
+                            className="text-stone-300 dark:text-dark-border hover:text-red-500 dark:hover:text-red-400 transition-colors p-1"
+                            aria-label="Delete report"
+                          >
+                            <svg
+                              aria-hidden="true"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <p
+                      className="text-[11px] text-textLight dark:text-dark-textLight mt-1.5 line-clamp-2 pl-[30px] cursor-pointer"
                       onClick={() => {
                         setSelectedReport(report);
                         if (activeTab === 'pending') {
@@ -457,179 +441,45 @@ export default function AdminDashboard() {
                         }
                       }}
                     >
-                      <DisasterIcon typeId={report.disaster?.type} size={24} className="text-lg" />
-                      <div className="min-w-0">
-                        <p className="font-bold text-xs uppercase tracking-wide dark:text-dark-text">
-                          {disasterType.label}
-                        </p>
-                        <p className="text-[10px] text-textLight dark:text-dark-textLight">
-                          {report.location?.municipality} &bull; {formatTimeAgo(report.timestamp)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span
-                        className={`${sevStyle} px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide`}
-                      >
-                        {report.disaster?.severity}
-                      </span>
-                      {/* Delete button */}
-                      {deleteConfirmId === report.id ? (
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => handleDeleteReport(report.id)}
-                            disabled={deleting}
-                            className="bg-red-600 text-white rounded-lg p-1.5 hover:bg-red-700 transition-colors disabled:opacity-40"
-                            aria-label="Confirm delete"
-                          >
-                            <svg
-                              aria-hidden="true"
-                              width="14"
-                              height="14"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => setDeleteConfirmId(null)}
-                            className="bg-stone-200 dark:bg-dark-elevated text-stone-600 dark:text-dark-textLight rounded-lg p-1.5 hover:bg-stone-300 dark:hover:bg-dark-border transition-colors"
-                            aria-label="Cancel delete"
-                          >
-                            <svg
-                              aria-hidden="true"
-                              width="14"
-                              height="14"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <line x1="18" y1="6" x2="6" y2="18" />
-                              <line x1="6" y1="6" x2="18" y2="18" />
-                            </svg>
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteConfirmId(report.id);
-                          }}
-                          className="text-stone-300 dark:text-dark-border hover:text-red-500 dark:hover:text-red-400 transition-colors p-1"
-                          aria-label="Delete report"
-                        >
-                          <svg
-                            aria-hidden="true"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <polyline points="3 6 5 6 21 6" />
-                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
+                      {report.disaster?.description}
+                    </p>
                   </div>
-                  <p
-                    className="text-[11px] text-textLight dark:text-dark-textLight mt-1.5 line-clamp-2 pl-[30px] cursor-pointer"
-                    onClick={() => {
-                      setSelectedReport(report);
-                      if (activeTab === 'pending') {
-                        setShowVerifyModal(true);
-                      } else if (activeTab === 'verified') {
-                        setShowResolveModal(true);
-                      }
-                    }}
-                  >
-                    {report.disaster?.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Verification Modal */}
-        <Modal
-          isOpen={showVerifyModal}
-          onClose={() => {
-            setShowVerifyModal(false);
-            setSelectedReport(null);
-          }}
-          title="VERIFY REPORT"
-        >
-          {selectedReport && (
-            <VerificationPanel
-              report={selectedReport}
-              onDone={() => {
-                setShowVerifyModal(false);
-                setSelectedReport(null);
-              }}
-            />
-          )}
-        </Modal>
-
-        {/* Resolution Modal */}
-        <ResolutionModal
-          isOpen={showResolveModal}
-          onClose={() => {
-            setShowResolveModal(false);
-            setSelectedReport(null);
-          }}
-          report={selectedReport}
-        />
-
-        {/* Announcements tab */}
-        {activeTab === 'announcements' && (
-          <div className="mt-3">
-            <div className="flex justify-end mb-3">
-              <button
-                onClick={() => setShowCreateForm(!showCreateForm)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-accent hover:bg-accent/90 text-white rounded-lg text-xs font-bold transition-colors"
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                {showCreateForm ? 'Cancel' : 'New Announcement'}
-              </button>
+                );
+              })}
             </div>
-            {showCreateForm && (
-              <div className="bg-white dark:bg-dark-card rounded-xl p-4 shadow-card border border-stone-100 dark:border-dark-border mb-3">
-                <h3 className="text-sm font-bold uppercase tracking-wide text-textLight dark:text-dark-textLight mb-3">
-                  Create Announcement
-                </h3>
-                <CreateAnnouncementForm onSuccess={() => setShowCreateForm(false)} />
-              </div>
+          )}
+
+          {/* Verification Modal */}
+          <Modal
+            isOpen={showVerifyModal}
+            onClose={() => {
+              setShowVerifyModal(false);
+              setSelectedReport(null);
+            }}
+            title="VERIFY REPORT"
+          >
+            {selectedReport && (
+              <VerificationPanel
+                report={selectedReport}
+                onDone={() => {
+                  setShowVerifyModal(false);
+                  setSelectedReport(null);
+                }}
+              />
             )}
-            <AdminAlertsTab />
-          </div>
-        )}
-      </div>
-    </FeatureFlag>
+          </Modal>
+
+          {/* Resolution Modal */}
+          <ResolutionModal
+            isOpen={showResolveModal}
+            onClose={() => {
+              setShowResolveModal(false);
+              setSelectedReport(null);
+            }}
+            report={selectedReport}
+          />
+        </div>
+      </FeatureFlag>
+    </div>
   );
 }

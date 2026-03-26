@@ -106,7 +106,7 @@ function AuthForm() {
     'block text-xs font-bold text-textLight dark:text-dark-textLight uppercase tracking-wider mb-1.5';
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md mx-auto lg:max-w-lg xl:max-w-md">
       <div className="bg-white rounded-xl p-5 shadow-card border border-stone-100 dark:bg-dark-card dark:border-dark-border">
         <div className="text-center mb-5">
           <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -461,7 +461,7 @@ export default function ProfileTab() {
   }
 
   return (
-    <div className="max-w-[800px] lg:max-w-[1000px] xl:max-w-[1200px] mx-auto px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
+    <div className="max-w-[800px] lg:max-w-[1000px] xl:max-w-4xl mx-auto px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
       {user ? <UserProfile /> : <AuthForm />}
     </div>
   );

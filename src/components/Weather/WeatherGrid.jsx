@@ -5,7 +5,7 @@ import Skeleton from '../Common/Skeleton';
 
 function WeatherSkeleton() {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2.5">
       {Array.from({ length: MUNICIPALITIES.length }).map((_, i) => (
         <Skeleton key={i} variant="weather" />
       ))}
@@ -53,7 +53,7 @@ export default function WeatherGrid({ weatherData, forecastData, loading }) {
 
   return (
     <div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2.5">
         {MUNICIPALITIES.map((municipality) => (
           <button
             key={municipality}
