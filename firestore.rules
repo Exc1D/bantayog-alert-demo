@@ -222,8 +222,8 @@ service cloud.firestore {
           && request.resource.data.engagement.upvotedBy is list
           // Ensure upvote removal only by the user who upvoted
           && (
-            request.resource.data.engagement.upvotes >= resource.data.engagement.upvotes
-            || request.auth.uid in resource.data.engagement.upvotedBy
+            request.resource.data.engagement.upvotes == resource.data.engagement.upvotes - 1
+            && request.auth.uid in resource.data.engagement.upvotedBy
           )
           // Validate no new fields added
           && request.resource.data.keys().hasAll(resource.data.keys())

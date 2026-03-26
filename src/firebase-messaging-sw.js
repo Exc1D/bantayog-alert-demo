@@ -63,7 +63,7 @@ self.addEventListener('notificationclick', (event) => {
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
       // Try to focus an existing window/tab with the same URL
       for (const client of windowClients) {
-        if (client.url.includes(clickAction) && 'focus' in client) {
+        if (client.url.endsWith(clickAction) && 'focus' in client) {
           return client.focus();
         }
       }
