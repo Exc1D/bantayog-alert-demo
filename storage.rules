@@ -52,6 +52,50 @@ service firebase.storage {
       return parts[parts.size() - 1];
     }
 
+    // Extract reportId from reports storage path (format: reports/{reportId}/{filename})
+    function reportIdFromReportsPath() {
+      let parts = request.resource.name.split('/');
+      return parts.size() >= 2 && parts[0] == 'reports' ? parts[1] : '';
+    }
+
+    // Extract reportId from evidence storage path (format: evidence/{reportId}/{filename})
+    function reportIdFromEvidencePath() {
+      let parts = request.resource.name.split('/');
+      return parts.size() >= 2 && parts[0] == 'evidence' ? parts[1] : '';
+    }
+
+    // Check if user is report owner (reporter.userId matches uploader) for /reports/ paths
+    function isReportOwner() {
+      let rid = reportIdFromReportsPath();
+      let hasValidReportId = rid != '';
+      let reportPath = /databases/$(database)/documents/reports/$(rid);
+      return hasValidReportId
+        && isSignedIn()
+        && exists(reportPath)
+        && get(reportPath).data.reporter.userId == request.auth.uid;
+    }
+
+    // Check if user is report owner for /evidence/ paths
+    function isEvidenceReportOwner() {
+      let rid = reportIdFromEvidencePath();
+      let hasValidReportId = rid != '';
+      let reportPath = /databases/$(database)/documents/reports/$(rid);
+      return hasValidReportId
+        && isSignedIn()
+        && exists(reportPath)
+        && get(reportPath).data.reporter.userId == request.auth.uid;
+    }
+
+    // Check if user is moderator or admin
+    function isModeratorOrAdmin() {
+      let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
+      return isSignedIn() && exists(userPath) ? (
+        get(userPath).data.role == 'superadmin_provincial' ||
+        get(userPath).data.role.matches('^admin_.*') ||
+        get(userPath).data.role == 'moderator'
+      ) : false;
+    }
+
     // ============================================
     // REPORTS MEDIA (photos, videos, thumbnails)
     // ============================================
@@ -60,10 +104,12 @@ service firebase.storage {
       // Public read access
       allow read: if true;
 
-      // Write: Authenticated users can upload evidence
+      // Write: Report owner or moderator/admin can upload
+      // Report owner uploads their own evidence
+      // Moderators/admins upload resolution evidence
       // Note: Malware scanning is handled by Firebase Cloud Functions
-      // Consider implementing: https://firebase.google.com/docs/storage/security/cloud-function-scanning
       allow write: if isSignedIn()
+        && (isReportOwner() || isModeratorOrAdmin())
         && (
           // Images: max 5MB
           (isAllowedImage() && isValidImageSize())
@@ -77,12 +123,14 @@ service firebase.storage {
     // EVIDENCE (resolution evidence photos)
     // ============================================
 
-    match /evidence/{allPaths=**} {
+    // Evidence subcollection under reports — path: evidence/{reportId}/{filename}
+    match /evidence/{reportId}/{fileName=**} {
       // Public read access
       allow read: if true;
 
-      // Write: Authenticated users can upload evidence
+      // Write: Report owner or moderator/admin can upload resolution evidence
       allow write: if isSignedIn()
+        && (isEvidenceReportOwner() || isModeratorOrAdmin())
         && isAllowedImage()
         && isValidImageSize()
         && isValidFileName(fileName());

@@ -60,9 +60,10 @@ export const fcmConfig = Object.freeze({
   vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
 });
 
+// Weather API calls go through weatherProxy Cloud Function (server-side)
+// API key is never exposed to client — see functions/weatherProxy.js
 export const apiConfig = Object.freeze({
-  openWeatherApiKey: import.meta.env.VITE_OPENWEATHER_API_KEY,
-  openWeatherBaseUrl: 'https://api.openweathermap.org/data/2.5',
+  weatherProxyUrl: 'https://asia-southeast1-bantayogalert.cloudfunctions.net/weatherProxy',
 });
 
 export const config = {
