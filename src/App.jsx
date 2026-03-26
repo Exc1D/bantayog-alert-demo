@@ -45,7 +45,7 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState(getTabFromHash);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showSignUpPrompt, setShowSignUpPrompt] = useState(false);
-  const [_isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [selectedPinReport, setSelectedPinReport] = useState(null);
 
   // Sync tab changes to URL hash + browser history
