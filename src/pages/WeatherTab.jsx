@@ -8,7 +8,7 @@ export default function WeatherTab() {
   const { weatherData, forecastData, loading } = useAllMunicipalitiesWeather();
 
   return (
-    <div className="max-w-[1200px] xl:max-w-[1400px] mx-auto px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6 space-y-3">
+    <div className="max-w-[800px] mx-auto lg:max-w-5xl xl:max-w-7xl px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6 space-y-3">
       {/* Province Header */}
       <div className="bg-white dark:bg-dark-elevated border border-border/60 dark:border-dark-border rounded-xl p-4">
         <div className="flex items-center gap-2">
