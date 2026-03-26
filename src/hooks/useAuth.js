@@ -134,7 +134,9 @@ export function useAuth() {
           metadata: { action: 'account_created' },
         })
       );
-    } catch (auditErr) {}
+    } catch {
+      // Audit log failure is non-critical; don't block the auth flow
+    }
 
     return credential.user;
   };

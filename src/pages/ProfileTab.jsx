@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState, useMemo, useEffect } from 'react';
 import { useAuthContext } from '../contexts/AuthContext';
 import { useReportsContext } from '../contexts/ReportsContext';
 import { MUNICIPALITIES } from '../utils/constants';
