@@ -35,9 +35,16 @@ function degreesToCardinal(degrees) {
  * Usage:
  *   GET /weatherProxy?lat=14.1&lng=122.9&endpoint=weather
  */
+const ALLOWED_ORIGINS = [
+  'https://bantayogalert.web.app',
+  'https://bantayogalert.firebaseapp.com',
+];
+
 exports.weatherProxy = functions.region(REGION).https.onRequest(async (req, res) => {
-  // CORS headers for client-side fetch
-  res.set('Access-Control-Allow-Origin', 'https://bantayogalert.web.app');
+  // CORS headers for client-side fetch — validate origin against allowlist
+  const origin = req.headers.origin || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  res.set('Access-Control-Allow-Origin', allowedOrigin);
   res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.set('Access-Control-Allow-Headers', 'Content-Type');
 
