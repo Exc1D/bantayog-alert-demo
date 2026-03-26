@@ -93,11 +93,11 @@ service cloud.firestore {
       return value is string 
         && value.size() <= maxLength
         && (minLength == null || value.size() >= minLength)
-        && !value.matches('.*<script.*')
-        && !value.matches('.*javascript:.*')
-        && !value.matches('.*on\\w+\\s*=.*')
-        && !value.matches('.*data:\\s*text/html.*')
-        && !value.matches('.*vbscript:.*');
+        && !value.matches('(?i).*<(script|iframe|object|embed|form|svg|math|style)[\\s/>].*')
+        && !value.matches('(?i).*javascript:')
+        && !value.matches('(?i).*data:\\s*text/html')
+        && !value.matches('(?i).*vbscript:')
+        && !value.matches('(?i).*expression\\s*\\(');
     }
 
     function isValidLatitude(lat) {
