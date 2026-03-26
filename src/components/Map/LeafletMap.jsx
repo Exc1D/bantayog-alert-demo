@@ -126,7 +126,7 @@ function MapResizeHandler() {
   return null;
 }
 
-export default function LeafletMap({ reports = [], onReportClick }) {
+export default function LeafletMap({ reports = [], onReportClick, selectedReport }) {
   const mapRef = useRef(null);
   const [currentTileIndex, setCurrentTileIndex] = useState(0);
   const [activeLayer, setActiveLayer] = useState('streets');
@@ -242,7 +242,12 @@ export default function LeafletMap({ reports = [], onReportClick }) {
           disableClusteringAtZoom={16}
         >
           {filteredReports.map((report) => (
-            <DisasterMarker key={report.id} report={report} onClick={handleMarkerClick} />
+            <DisasterMarker
+              key={report.id}
+              report={report}
+              onClick={handleMarkerClick}
+              isSelected={selectedReport?.id === report.id}
+            />
           ))}
         </MarkerClusterGroup>
 

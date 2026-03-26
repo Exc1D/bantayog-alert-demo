@@ -10,8 +10,8 @@ import DisasterIcon from '../Common/DisasterIcon';
 // Cache marker icons to avoid recreating DOM elements
 const iconCache = new Map();
 
-function getMarkerIcon(type, severity, status, reportType) {
-  const cacheKey = `${type}-${severity}-${status}-${reportType}`;
+function getMarkerIcon(type, severity, status, reportType, isSelected = false) {
+  const cacheKey = `${type}-${severity}-${status}-${reportType}-${isSelected}`;
   if (iconCache.has(cacheKey)) return iconCache.get(cacheKey);
 
   // Use report type icons for pending reports that have a reportType
@@ -28,11 +28,12 @@ function getMarkerIcon(type, severity, status, reportType) {
     icon = DISASTER_ICONS[type] || DISASTER_ICONS.other;
   }
 
+  const size = severity === 'critical' ? 44 : 38;
+  const scale = isSelected ? 1.2 : 1;
   const color = MARKER_COLORS[type] || MARKER_COLORS.other;
   const opacity = status === 'verified' || status === 'resolved' ? 1 : 0.7;
   const borderColor =
     status === 'resolved' ? '#16a34a' : severity === 'critical' ? '#dc2626' : '#ffffff';
-  const size = severity === 'critical' ? 44 : 38;
 
   const divIcon = L.divIcon({
     html: `
@@ -49,14 +50,15 @@ function getMarkerIcon(type, severity, status, reportType) {
         font-size: ${severity === 'critical' ? 22 : 18}px;
         opacity: ${opacity};
         transition: transform 0.2s;
+        transform: scale(${scale});
       ">
         ${icon}
       </div>
     `,
     className: 'custom-marker',
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-    popupAnchor: [0, -(size / 2)],
+    iconSize: [size * scale, size * scale],
+    iconAnchor: [(size * scale) / 2, (size * scale) / 2],
+    popupAnchor: [0, -(size * scale) / 2],
   });
 
   iconCache.set(cacheKey, divIcon);
@@ -76,7 +78,7 @@ const statusStyles = {
   resolved: 'bg-emerald-100 text-emerald-700',
 };
 
-export default memo(function DisasterMarker({ report, onClick }) {
+export default memo(function DisasterMarker({ report, onClick, isSelected }) {
   const disasterType = getDisasterType(report.disaster?.type);
   const icon = useMemo(
     () =>
@@ -84,13 +86,15 @@ export default memo(function DisasterMarker({ report, onClick }) {
         report.disaster?.type,
         report.disaster?.severity,
         report.verification?.status,
-        report.reportType
+        report.reportType,
+        isSelected
       ),
     [
       report.disaster?.type,
       report.disaster?.severity,
       report.verification?.status,
       report.reportType,
+      isSelected,
     ]
   );
 
