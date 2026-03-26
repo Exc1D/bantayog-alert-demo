@@ -233,7 +233,10 @@ exports.sendAlertToAll = functions.https.onCall(async (data, context) => {
     : 'all_users';
 
   const notification = {
-    notification: { title, body },
+    notification: {
+      title: sanitizeForNotification(title),
+      body: sanitizeForNotification(body),
+    },
     data: {
       type: 'admin_alert',
       url: '/#feed',
@@ -305,7 +308,10 @@ exports.sendPushNotification = functions.https.onCall(async (data, context) => {
   const normalizedTopic = topic.toLowerCase().replace(/\s+/g, '_');
 
   const notification = {
-    notification: { title, body },
+    notification: {
+      title: sanitizeForNotification(title),
+      body: sanitizeForNotification(body),
+    },
     data: {
       type: 'announcement',
       url: url || '/#feed',
