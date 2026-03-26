@@ -3,6 +3,20 @@ const admin = require('firebase-admin');
 
 const db = admin.firestore();
 
+// Sanitize user content for FCM notification payloads
+// Strips HTML tags and escapes special characters to prevent XSS in notifications
+function sanitizeForNotification(text) {
+  if (!text || typeof text !== 'string') return '';
+  return text
+    .replace(/<[^>]*>/g, '') // Strip HTML tags
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .substring(0, 200); // Limit length
+}
+
 exports.subscribeToTopic = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'Authentication required');
@@ -75,7 +89,7 @@ exports.sendReportNotification = functions.firestore
     const notification = {
       notification: {
         title: `New ${disasterType} Report in ${municipality}`,
-        body: `Severity: ${severity}. ${report.disaster?.description?.substring(0, 100) || 'Tap to view details.'}`,
+        body: `Severity: ${severity}. ${sanitizeForNotification(report.disaster?.description) || 'Tap to view details.'}`,
       },
       data: {
         reportId: reportId,
