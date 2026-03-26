@@ -15,7 +15,7 @@ export default function AlertsTab() {
 
   if (error) {
     return (
-      <div className="max-w-[800px] mx-auto lg:max-w-5xl xl:max-w-7xl px-3 py-4">
+      <div className="w-full max-w-[800px] mx-auto lg:max-w-5xl xl:w-[1280px] xl:max-w-[1280px] px-3 py-4">
         <EmptyState
           icon="info"
           title="Unable to load announcements"
@@ -26,7 +26,7 @@ export default function AlertsTab() {
   }
 
   return (
-    <div className="max-w-[800px] mx-auto lg:max-w-5xl xl:max-w-7xl px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
+    <div className="w-full max-w-[800px] mx-auto lg:max-w-5xl xl:w-[1280px] xl:max-w-[1280px] px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
       <div className="mb-4">
         <h1 className="text-base font-bold tracking-wide text-text dark:text-dark-text">
           Announcements
