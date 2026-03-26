@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState, useMemo, useEffect } from 'react';
 import { useAuthContext } from '../contexts/AuthContext';
 import { useReportsContext } from '../contexts/ReportsContext';
 import { MUNICIPALITIES } from '../utils/constants';
@@ -17,11 +17,20 @@ function AuthForm() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState([]);
   const [showResetPrompt, setShowResetPrompt] = useState(false);
   const [name, setName] = useState('');
   const [municipality, setMunicipality] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+
+  useEffect(() => {
+    const errors = [];
+    if (password.length > 0 && password.length < 6) {
+      errors.push('At least 6 characters required');
+    }
+    setPasswordErrors(errors);
+  }, [password]);
 
   const { signIn, signUp, signInAsGuest, requestPasswordReset } = useAuthContext();
   const { addToast } = useToast();
@@ -189,6 +198,11 @@ function AuthForm() {
               minLength={6}
               required
             />
+            {passwordErrors.length > 0 && (
+              <p className="text-xs text-red-500 mt-1" role="alert">
+                {passwordErrors.join(' • ')}
+              </p>
+            )}
           </div>
 
           {!isLogin && (
