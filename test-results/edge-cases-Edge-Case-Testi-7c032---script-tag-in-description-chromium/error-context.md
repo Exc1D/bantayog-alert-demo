@@ -21,7 +21,7 @@
         - button "Open profile" [ref=e27] [cursor=pointer]:
           - generic [ref=e28]: U
     - complementary [ref=e29]:
-      - navigation "Main navigation" [ref=e30]:
+      - navigation "Sidebar navigation" [ref=e30]:
         - button "Map" [pressed] [ref=e31] [cursor=pointer]:
           - img [ref=e32]
           - generic [ref=e34]: Map
@@ -82,5 +82,35 @@
     - button "Report a hazard" [ref=e88] [cursor=pointer]:
       - img [ref=e89]
       - generic [ref=e91]: REPORT
+    - dialog "REPORT INCIDENT" [active] [ref=e92]:
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - heading "REPORT INCIDENT" [level=2] [ref=e96]
+          - button "Close" [ref=e97] [cursor=pointer]:
+            - img [ref=e98]
+        - generic [ref=e101]:
+          - generic [ref=e103]:
+            - generic [ref=e105]:
+              - generic [ref=e106]: "1"
+              - generic [ref=e107]: Type
+            - generic [ref=e110]:
+              - generic [ref=e111]: "2"
+              - generic [ref=e112]: Evidence
+            - generic [ref=e115]:
+              - generic [ref=e116]: "3"
+              - generic [ref=e117]: Details
+          - generic [ref=e118]:
+            - paragraph [ref=e119]: What are you reporting?
+            - generic [ref=e120]:
+              - button "⚠️ Emergency Immediate danger to life or property. Requires urgent response." [ref=e121] [cursor=pointer]:
+                - generic [ref=e122]: ⚠️
+                - generic [ref=e123]:
+                  - paragraph [ref=e124]: Emergency
+                  - paragraph [ref=e125]: Immediate danger to life or property. Requires urgent response.
+              - button "ℹ Situation Something that needs attention but is not immediately life-threatening." [ref=e126] [cursor=pointer]:
+                - generic [ref=e127]: ℹ
+                - generic [ref=e128]:
+                  - paragraph [ref=e129]: Situation
+                  - paragraph [ref=e130]: Something that needs attention but is not immediately life-threatening.
   - status
 ```
