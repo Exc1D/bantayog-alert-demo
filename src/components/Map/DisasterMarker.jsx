@@ -5,6 +5,7 @@ import { getDisasterType } from '../../data/disasterTypes';
 import { MARKER_COLORS, DISASTER_ICONS } from '../../utils/constants';
 import { formatTimeAgo } from '../../utils/timeUtils';
 import { sanitizeMediaUrl } from '../../utils/mediaSafety';
+import { sanitizeText } from '../../utils/sanitization';
 import DisasterIcon from '../Common/DisasterIcon';
 
 // Cache marker icons to avoid recreating DOM elements
@@ -132,7 +133,7 @@ export default memo(function DisasterMarker({ report, onClick, isSelected }) {
           )}
 
           <p className="text-xs my-2 line-clamp-3 leading-relaxed">
-            {report.disaster?.description}
+            {sanitizeText(report.disaster?.description)}
           </p>
 
           {report.disaster?.waterLevel && (

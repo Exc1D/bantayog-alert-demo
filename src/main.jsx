@@ -58,6 +58,18 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 performance.mark('react-render-complete');
 
+// Expose Firebase config for service workers in public/ directory
+// (public/ files are served as-is and cannot use import.meta.env)
+window.__FIREBASE_CONFIG__ = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+};
+
 // Register service workers
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -67,12 +79,11 @@ if ('serviceWorker' in navigator) {
     });
 
     // Register Firebase messaging service worker for push notifications
-    navigator.serviceWorker
-      .register(new URL('./firebase-messaging-sw.js', import.meta.url), { type: 'module' })
-      .catch((error) => {
-        // Firebase messaging SW is optional - don't capture error as it may not be critical
-        console.warn('Firebase messaging service worker registration failed:', error.message);
-      });
+    // File is in public/ so it's served from root path
+    navigator.serviceWorker.register('/firebase-messaging-sw.js').catch((error) => {
+      // Firebase messaging SW is optional - don't capture error as it may not be critical
+      console.warn('Firebase messaging service worker registration failed:', error.message);
+    });
   });
 }
 

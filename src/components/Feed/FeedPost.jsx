@@ -225,7 +225,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
       {/* Content */}
       <div className="px-3.5 py-3">
         <p className="text-sm leading-relaxed dark:text-dark-text">
-          {report.disaster?.description}
+          {sanitizeText(report.disaster?.description)}
         </p>
 
         {/* Type-specific details */}

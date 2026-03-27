@@ -76,8 +76,12 @@ export function useGeolocation() {
     // Still attempt GPS even in in-app browsers — it works for a small
     // minority of devices.  The UI already shows the manual fallback so
     // the user isn't blocked waiting.
+    let cancelled = false;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     requestLocation(false);
+    return () => {
+      cancelled = true;
+    };
   }, [requestLocation]);
 
   const refresh = useCallback(() => {

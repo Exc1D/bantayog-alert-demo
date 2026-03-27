@@ -49,7 +49,7 @@ export function useRateLimit(actionType, options = {}) {
   }, [autoCleanup, cleanupInterval, updateStatus]);
 
   const performAction = useCallback(
-    (actionFn) => {
+    async (actionFn) => {
       const currentStatus = checkLimit(actionType);
 
       if (!currentStatus.allowed) {
@@ -75,7 +75,7 @@ export function useRateLimit(actionType, options = {}) {
       updateStatus();
 
       try {
-        const result = actionFn();
+        const result = await actionFn();
         return { success: true, result };
       } catch (error) {
         return { success: false, error: 'action_failed', message: error.message };

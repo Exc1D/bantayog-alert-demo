@@ -48,11 +48,17 @@ export function useReports(filters = {}) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
-    let q = query(collection(db, 'reports'), orderBy('timestamp', 'desc'), limit(FEED_PAGE_SIZE));
+    let q = query(
+      collection(db, 'reports'),
+      where('verification.status', '!=', 'resolved'),
+      orderBy('timestamp', 'desc'),
+      limit(FEED_PAGE_SIZE)
+    );
 
     if (filters.municipality && filters.municipality !== 'all') {
       q = query(
         collection(db, 'reports'),
+        where('verification.status', '!=', 'resolved'),
         where('location.municipality', '==', filters.municipality),
         orderBy('timestamp', 'desc'),
         limit(FEED_PAGE_SIZE)
@@ -84,6 +90,7 @@ export function useReports(filters = {}) {
     try {
       const constraints = [
         collection(db, 'reports'),
+        where('verification.status', '!=', 'resolved'),
         ...(filters.municipality && filters.municipality !== 'all'
           ? [where('location.municipality', '==', filters.municipality)]
           : []),
