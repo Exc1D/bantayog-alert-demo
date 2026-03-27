@@ -14,7 +14,7 @@ import { submitReport } from '../../hooks/useReports';
 import { resolveMunicipality } from '../../utils/geoFencing';
 import { MUNICIPALITY_COORDS } from '../../utils/constants';
 import { useRateLimit } from '../../hooks/useRateLimit';
-import { sanitizeText, truncateText, containsXSS } from '../../utils/sanitization';
+import { sanitizeText, truncateText } from '../../utils/sanitization';
 import { FEATURE_FLAGS } from '../../config/featureFlags';
 import FeatureFlag, { FeatureFlagDisabled } from '../Common/FeatureFlag';
 
@@ -153,14 +153,6 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
 
     if (!sanitizedDescription || sanitizedDescription.trim().length < 10) {
       addToast('What is happening? (at least 10 characters)', 'warning');
-      return;
-    }
-    if (
-      containsXSS(formData.description) ||
-      containsXSS(formData.barangay) ||
-      containsXSS(formData.street)
-    ) {
-      addToast('Invalid characters detected in input', 'warning');
       return;
     }
     if (!effectiveLocation) {

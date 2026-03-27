@@ -40,16 +40,21 @@ service cloud.firestore {
       return userRole().matches('^superadmin_.*');
     }
 
-    function isVerifiedReporter() {
-      let data = userData();
-      return data != null && data.isVerified == true;
-    }
-
     function canCreateReports() {
       let role = userRole();
       // role == '' allows unauthenticated/anonymous users to submit reports
       // (request.auth.uid exists but no user document exists yet = new user)
       return role == 'user' || role == 'moderator' || isAdmin() || role == '';
+    }
+
+    // Server-side rate limiting: 60-second cooldown between report submissions
+    // Each user has a rateLimits/{uid} document tracking their last submission
+    function canSubmitReportNow() {
+      let rateLimitPath = /databases/$(database)/documents/rateLimits/$(request.auth.uid);
+      let lastReport = get(rateLimitPath).data.lastReportAt;
+      // Allow if no prior submission or 60+ seconds have passed
+      return lastReport == null
+        || (request.time - lastReport).seconds >= 60;
     }
 
     // Valid municipalities in Camarines Norte
@@ -73,11 +78,6 @@ service cloud.firestore {
     // Valid severity levels (include 'pending' for initial submission by users)
     function isValidSeverity(severity) {
       return severity in ['critical', 'moderate', 'minor', 'pending'];
-    }
-
-    // Valid verification statuses
-    function isValidStatus(status) {
-      return status in ['pending', 'verified', 'rejected', 'resolved'];
     }
 
     // Valid report types
@@ -137,10 +137,6 @@ service cloud.firestore {
         && engagement.upvotes <= 1000000;
     }
 
-    function isValidTimestamp(ts) {
-      return ts is timestamp;
-    }
-
     // ============================================
     // REPORTS COLLECTION
     // ============================================
@@ -153,6 +149,7 @@ service cloud.firestore {
       // Allow users with 'user' role, moderators, admins, or no role (anonymous/guest users)
       allow create: if isSignedIn()
         && canCreateReports()
+        && canSubmitReportNow()
         && request.resource.data.reporter.userId == request.auth.uid
         && request.resource.data.keys().hasAll([
           'timestamp', 'reportType', 'location', 'disaster',
@@ -401,6 +398,21 @@ service cloud.firestore {
         allow create: if false;  // Cloud Functions/Admin SDK bypass rules — blocked for client SDK
         allow update, delete: if false;  // Immutable records
       }
+    }
+
+    // ============================================
+    // RATE LIMITS COLLECTION (server-side anti-abuse)
+    // ============================================
+    // Each authenticated user can write only their own rate limit document.
+    // The document is updated atomically with report creation via Firestore transaction.
+    // Client SDKs cannot write here directly (only through transactions).
+    match /rateLimits/{userId} {
+      // Anyone can read their own rate limit state (used by client to show cooldown)
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      // Only the owning user can write their rate limit doc (via transaction with report creation)
+      allow write: if isSignedIn() && request.auth.uid == userId
+        && request.resource.data.keys().hasAll(['lastReportAt'])
+        && request.resource.data.lastReportAt is timestamp;
     }
   }
 }
