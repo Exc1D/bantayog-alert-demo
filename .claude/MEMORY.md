@@ -199,3 +199,17 @@ Parallel subagent pattern: 4 phases x ~3 agents = 12 agents across 4 sessions, a
 - **Firestore Rules ternary/type-check**: Firestore rules type-checker eagerly evaluates all branches; short-circuit `||` does not prevent analyzer warnings on untaken branches
 # currentDate
 Today's date is 2026-03-27.
+
+## Next Session — Pre-Flight Verification
+
+Run the full test suite to verify all 22 fixes from today's session didn't break anything:
+
+```bash
+npm ci && npm run format:check && npm run test:run && npm run build
+```
+
+Key things to verify:
+- All vitest unit tests pass (especially `geoFencing.stress.test.js`)
+- Prettier formatting passes
+- Production build succeeds
+- CI passes on `main`
