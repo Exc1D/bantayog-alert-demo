@@ -9,7 +9,7 @@ export default memo(function Sidebar({ activeTab, onTabChange }) {
       className="hidden lg:flex flex-col bg-white dark:bg-dark-card dark:backdrop-blur-sm border-r border-border/60 dark:border-dark-border h-[calc(100vh-60px)] fixed top-[60px] left-0"
       style={{ width: SIDEBAR_WIDTH }}
     >
-      <nav aria-label="Main navigation" className="flex flex-col py-4">
+      <nav aria-label="Sidebar navigation" className="flex flex-col py-4">
         {TABS.filter((tab) => !tab.adminOnly || isAdmin).map((tab) => {
           const isActive = activeTab === tab.id;
           return (
