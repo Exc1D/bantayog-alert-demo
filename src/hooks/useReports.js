@@ -236,7 +236,7 @@ export async function submitReport(reportData, evidenceFiles, user) {
     },
     reporter: {
       userId: user.uid,
-      name: user.displayName || 'Anonymous',
+      name: user.isAnonymous ? 'Anonymous' : user.displayName || 'Anonymous',
       isAnonymous: user.isAnonymous ?? false,
       isVerifiedUser: false,
     },
