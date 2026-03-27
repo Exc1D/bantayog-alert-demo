@@ -3,6 +3,7 @@ import { getDisasterType } from '../../data/disasterTypes';
 import { formatTimeAgo } from '../../utils/timeUtils';
 import EngagementButtons from './EngagementButtons';
 import { getSafeMediaUrls } from '../../utils/mediaSafety';
+import { sanitizeText } from '../../utils/sanitization';
 import ShareButton from '../Common/ShareButton';
 import DisasterIcon from '../Common/DisasterIcon';
 
@@ -259,7 +260,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
                 key={tag}
                 className="bg-primary/5 dark:bg-dark-elevated/20 text-primary/70 dark:text-dark-textLight/70 text-[10px] px-2 py-0.5 rounded-full font-medium"
               >
-                #{tag}
+                #{sanitizeText(tag)}
               </span>
             ))}
           </div>
