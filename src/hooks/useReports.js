@@ -9,11 +9,10 @@ import {
   onSnapshot,
   where,
   getDocs,
+  getDoc,
   updateDoc,
   deleteDoc,
   doc,
-  arrayUnion,
-  arrayRemove,
   runTransaction,
   increment,
 } from 'firebase/firestore';
@@ -115,6 +114,174 @@ export function useReports(filters = {}) {
   return { reports, loading, error, loadMore, hasMore };
 }
 
+/**
+ * Uploads image and video files to Firebase Storage.
+ * Each file fails independently; failures are surfaced via uploadErrors.
+ *
+ * @param {File[]} imageFiles - Image files to upload
+ * @param {File[]} videoFiles - Video files to upload
+ * @param {object} storageInstance - Firebase storage instance
+ * @param {object} storageModule - Firebase storage module (imported)
+ * @returns {{ photoUrls: string[], thumbnailUrls: string[], videoUrls: string[], skippedFiles: number, uploadErrors: object[] }}
+ */
+export async function uploadMediaFiles(imageFiles, videoFiles, storageInstance, storageModule) {
+  const { ref, uploadBytes, getDownloadURL } = storageModule;
+
+  const imageResultsPromise = Promise.all(
+    imageFiles.map(async (photo) => {
+      try {
+        const [compressed, thumbnail] = await Promise.all([
+          compressImage(photo),
+          createThumbnail(photo),
+        ]);
+
+        const uniqueId = crypto.randomUUID();
+        const safeName = safeFileName(photo.name);
+        const photoRef = ref(storageInstance, `reports/${uniqueId}_${safeName}`);
+        const thumbRef = ref(storageInstance, `reports/thumbs/${uniqueId}_${safeName}`);
+
+        await Promise.all([uploadBytes(photoRef, compressed), uploadBytes(thumbRef, thumbnail)]);
+
+        const [photoUrl, thumbUrl] = await Promise.all([
+          getDownloadURL(photoRef),
+          getDownloadURL(thumbRef),
+        ]);
+
+        return { photoUrl, thumbUrl };
+      } catch (err) {
+        console.warn('Image upload failed, skipping:', photo.name, err);
+        return null;
+      }
+    })
+  );
+
+  const videoUrlsPromise = Promise.all(
+    videoFiles.map(async (video) => {
+      try {
+        const uniqueId = crypto.randomUUID();
+        const safeName = safeFileName(video.name);
+        const videoRef = ref(storageInstance, `reports/videos/${uniqueId}_${safeName}`);
+        await uploadBytes(videoRef, video);
+        return await getDownloadURL(videoRef);
+      } catch (err) {
+        console.warn('Video upload failed, skipping:', video.name, err);
+        return null;
+      }
+    })
+  );
+
+  const [imageResults, videoUrls] = await Promise.all([imageResultsPromise, videoUrlsPromise]);
+
+  const successfulImages = imageResults.filter(Boolean);
+  const photoUrls = successfulImages.map((r) => r.photoUrl);
+  const thumbnailUrls = successfulImages.map((r) => r.thumbUrl);
+  const successfulVideos = videoUrls.filter(Boolean);
+  const skippedFiles =
+    imageFiles.length - successfulImages.length + (videoFiles.length - successfulVideos.length);
+
+  const uploadErrors = [];
+  imageResults.forEach((result, index) => {
+    if (!result) {
+      uploadErrors.push({ filename: imageFiles[index]?.name, type: 'image', index });
+    }
+  });
+  videoUrls.forEach((result, index) => {
+    if (!result) {
+      uploadErrors.push({ filename: videoFiles[index]?.name, type: 'video', index });
+    }
+  });
+
+  return { photoUrls, thumbnailUrls, videoUrls: successfulVideos, skippedFiles, uploadErrors };
+}
+
+/**
+ * Fetches weather context for a given coordinate.
+ * Errors fall back to an empty object.
+ *
+ * @param {number} lat - Latitude
+ * @param {number} lng - Longitude
+ * @returns {Promise<object>} Weather context object
+ */
+export async function fetchWeatherContext(lat, lng) {
+  return fetchCurrentWeather(lat, lng).catch((e) => {
+    console.warn('Could not fetch weather context:', e);
+    return {};
+  });
+}
+
+/**
+ * Builds the Firestore report document shape.
+ *
+ * @param {object} reportData - Raw report form data
+ * @param {{ photoUrls: string[], thumbnailUrls: string[], videoUrls: string[] }} media - Uploaded media URLs
+ * @param {object} weatherContext - Weather context object
+ * @param {object} user - Authenticated user object
+ * @param {string} municipality - Resolved municipality name
+ * @param {string} municipalityDetectionMethod - How municipality was detected
+ * @returns {object} Firestore document shape
+ */
+export function buildReportDocument(
+  reportData,
+  { photoUrls, thumbnailUrls, videoUrls },
+  weatherContext,
+  user,
+  municipality,
+  municipalityDetectionMethod
+) {
+  return {
+    timestamp: serverTimestamp(),
+    reportType: reportData.reportType || 'situation',
+    location: {
+      lat: reportData.location.lat,
+      lng: reportData.location.lng,
+      municipality: municipality,
+      barangay: reportData.location.barangay || '',
+      street: reportData.location.street || '',
+      accuracy: reportData.location.accuracy || 0,
+      municipalityDetectionMethod,
+    },
+    disaster: {
+      type: reportData.disaster.type,
+      severity: reportData.disaster.severity,
+      description: reportData.disaster.description,
+      tags: reportData.disaster.tags || [],
+    },
+    media: {
+      photos: photoUrls,
+      videos: videoUrls,
+      thumbnails: thumbnailUrls,
+    },
+    reporter: {
+      userId: user.uid,
+      name: user.isAnonymous ? 'Anonymous' : user.displayName || 'Anonymous',
+      isAnonymous: user.isAnonymous ?? false,
+      isVerifiedUser: false,
+    },
+    verification: {
+      status: 'pending',
+      verifiedBy: null,
+      verifiedAt: null,
+      verifierRole: null,
+      notes: '',
+      resolution: {
+        resolvedBy: null,
+        resolvedAt: null,
+        evidencePhotos: [],
+        resolutionNotes: '',
+        actionsTaken: '',
+        resourcesUsed: '',
+      },
+    },
+    engagement: {
+      views: 0,
+      upvotes: 0,
+      commentCount: 0,
+      shares: 0,
+    },
+    weatherContext,
+  };
+}
+
 export async function submitReport(reportData, evidenceFiles, user) {
   if (!user?.uid) {
     throw new Error('Authentication required to submit reports. Please sign in and try again.');
@@ -148,142 +315,22 @@ export async function submitReport(reportData, evidenceFiles, user) {
     import('firebase/storage'),
     getStorageInstance(),
   ]);
-  const { ref, uploadBytes, getDownloadURL } = storageModule;
 
-  // Start all three groups in parallel; each file fails independently
-  const imageResultsPromise = Promise.all(
-    imageFiles.map(async (photo, _index) => {
-      try {
-        const [compressed, thumbnail] = await Promise.all([
-          compressImage(photo),
-          createThumbnail(photo),
-        ]);
-
-        const uniqueId = crypto.randomUUID();
-        const safeName = safeFileName(photo.name);
-        const photoRef = ref(storageInstance, `reports/${uniqueId}_${safeName}`);
-        const thumbRef = ref(storageInstance, `reports/thumbs/${uniqueId}_${safeName}`);
-
-        await Promise.all([uploadBytes(photoRef, compressed), uploadBytes(thumbRef, thumbnail)]);
-
-        const [photoUrl, thumbUrl] = await Promise.all([
-          getDownloadURL(photoRef),
-          getDownloadURL(thumbRef),
-        ]);
-
-        return { photoUrl, thumbUrl };
-      } catch (err) {
-        console.warn('Image upload failed, skipping:', photo.name, err);
-        return null;
-      }
-    })
-  );
-
-  const videoUrlsPromise = Promise.all(
-    videoFiles.map(async (video, _index) => {
-      try {
-        const uniqueId = crypto.randomUUID();
-        const safeName = safeFileName(video.name);
-        const videoRef = ref(storageInstance, `reports/videos/${uniqueId}_${safeName}`);
-        await uploadBytes(videoRef, video);
-        return await getDownloadURL(videoRef);
-      } catch (err) {
-        console.warn('Video upload failed, skipping:', video.name, err);
-        return null;
-      }
-    })
-  );
-
-  // Weather fetch runs in parallel with uploads; errors fall back to {}
-  const weatherContextPromise = fetchCurrentWeather(
-    reportData.location.lat,
-    reportData.location.lng
-  ).catch((e) => {
-    console.warn('Could not fetch weather context:', e);
-    return {};
-  });
-
-  const [imageResults, videoUrls, weatherContext] = await Promise.all([
-    imageResultsPromise,
-    videoUrlsPromise,
-    weatherContextPromise,
+  // Upload media and fetch weather context in parallel
+  const [mediaResult, weatherContext] = await Promise.all([
+    uploadMediaFiles(imageFiles, videoFiles, storageInstance, storageModule),
+    fetchWeatherContext(reportData.location.lat, reportData.location.lng),
   ]);
 
-  // Filter out failed uploads and surface a summary to the caller
-  const successfulImages = imageResults.filter(Boolean);
-  const photoUrls = successfulImages.map((r) => r.photoUrl);
-  const thumbnailUrls = successfulImages.map((r) => r.thumbUrl);
-  const successfulVideos = videoUrls.filter(Boolean);
-  const skippedFiles =
-    imageFiles.length - successfulImages.length + (videoFiles.length - successfulVideos.length);
-
-  // Collect per-file error details for failed uploads
-  const uploadErrors = [];
-  imageResults.forEach((result, index) => {
-    if (!result) {
-      uploadErrors.push({ filename: imageFiles[index]?.name, type: 'image', index });
-    }
-  });
-  videoUrls.forEach((result, index) => {
-    if (!result) {
-      uploadErrors.push({ filename: videoFiles[index]?.name, type: 'video', index });
-    }
-  });
-
-  // Build report document
-  const report = {
-    timestamp: serverTimestamp(),
-    reportType: reportData.reportType || 'situation',
-    location: {
-      lat: reportData.location.lat,
-      lng: reportData.location.lng,
-      municipality: municipality,
-      barangay: reportData.location.barangay || '',
-      street: reportData.location.street || '',
-      accuracy: reportData.location.accuracy || 0,
-      municipalityDetectionMethod,
-    },
-    disaster: {
-      type: reportData.disaster.type,
-      severity: reportData.disaster.severity,
-      description: reportData.disaster.description,
-      tags: reportData.disaster.tags || [],
-    },
-    media: {
-      photos: photoUrls,
-      videos: successfulVideos,
-      thumbnails: thumbnailUrls,
-    },
-    reporter: {
-      userId: user.uid,
-      name: user.isAnonymous ? 'Anonymous' : user.displayName || 'Anonymous',
-      isAnonymous: user.isAnonymous ?? false,
-      isVerifiedUser: false,
-    },
-    verification: {
-      status: 'pending',
-      verifiedBy: null,
-      verifiedAt: null,
-      verifierRole: null,
-      notes: '',
-      resolution: {
-        resolvedBy: null,
-        resolvedAt: null,
-        evidencePhotos: [],
-        resolutionNotes: '',
-        actionsTaken: '',
-        resourcesUsed: '',
-      },
-    },
-    engagement: {
-      views: 0,
-      upvotes: 0,
-      upvotedBy: [],
-      commentCount: 0,
-      shares: 0,
-    },
+  // Build report document using resolved municipality
+  const report = buildReportDocument(
+    reportData,
+    mediaResult,
     weatherContext,
-  };
+    user,
+    municipality,
+    municipalityDetectionMethod
+  );
 
   // Atomically update server-side rate limit and create the report.
   // Firestore rules enforce a 60-second cooldown — if the user submits
@@ -316,53 +363,62 @@ export async function submitReport(reportData, evidenceFiles, user) {
     })
   );
 
-  return { id: docRef.id, skippedFiles, uploadErrors };
+  return {
+    id: docRef.id,
+    skippedFiles: mediaResult.skippedFiles,
+    uploadErrors: mediaResult.uploadErrors,
+  };
 }
 export async function upvoteReport(reportId, userId) {
   if (!userId) throw new Error('Authentication required to upvote.');
 
-  // Write lastEngageAt for server-side 5s rate limit check
-  const rateLimitRef = doc(db, 'rateLimits', userId);
+  const upvoteRef = doc(db, 'reports', reportId, 'upvotes', userId);
   const reportRef = doc(db, 'reports', reportId);
+  const rateLimitRef = doc(db, 'rateLimits', userId);
+
   await runTransaction(db, async (transaction) => {
     transaction.set(rateLimitRef, { lastEngageAt: serverTimestamp() }, { merge: true });
+    // Check if already upvoted
+    const upvoteDoc = await transaction.get(upvoteRef);
+    if (upvoteDoc.exists()) return; // already upvoted
+
     const reportDoc = await transaction.get(reportRef);
     if (!reportDoc.exists()) throw new Error('Report not found.');
 
-    const engagement = reportDoc.data().engagement || {};
-    const upvotedBy = engagement.upvotedBy || [];
-
-    if (upvotedBy.includes(userId)) return;
-
-    // Use Firestore atomic increment to ensure server-side validation
-    transaction.update(reportRef, {
-      'engagement.upvotes': increment(1),
-      'engagement.upvotedBy': arrayUnion(userId),
-    });
+    // Create subcollection doc
+    transaction.set(upvoteRef, { votedAt: serverTimestamp() });
+    // Increment counter on parent
+    transaction.update(reportRef, { 'engagement.upvotes': increment(1) });
   });
 }
 
 export async function removeUpvote(reportId, userId) {
   if (!userId) throw new Error('Authentication required to remove upvote.');
 
-  // Write lastEngageAt for server-side 5s rate limit check
-  const rateLimitRef = doc(db, 'rateLimits', userId);
+  const upvoteRef = doc(db, 'reports', reportId, 'upvotes', userId);
   const reportRef = doc(db, 'reports', reportId);
+  const rateLimitRef = doc(db, 'rateLimits', userId);
+
   await runTransaction(db, async (transaction) => {
     transaction.set(rateLimitRef, { lastEngageAt: serverTimestamp() }, { merge: true });
+    const upvoteDoc = await transaction.get(upvoteRef);
+    if (!upvoteDoc.exists()) return; // not upvoted
+
     const reportDoc = await transaction.get(reportRef);
     if (!reportDoc.exists()) throw new Error('Report not found.');
 
-    const engagement = reportDoc.data().engagement || {};
-    const upvotedBy = engagement.upvotedBy || [];
-
-    if (!upvotedBy.includes(userId)) return;
-
-    transaction.update(reportRef, {
-      'engagement.upvotes': increment(-1),
-      'engagement.upvotedBy': arrayRemove(userId),
-    });
+    // Delete subcollection doc
+    transaction.delete(upvoteRef);
+    // Decrement counter on parent
+    transaction.update(reportRef, { 'engagement.upvotes': increment(-1) });
   });
+}
+
+export async function hasUpvoted(reportId, userId) {
+  if (!userId) return false;
+  const upvoteRef = doc(db, 'reports', reportId, 'upvotes', userId);
+  const snap = await getDoc(upvoteRef);
+  return snap.exists();
 }
 
 export async function verifyReport(

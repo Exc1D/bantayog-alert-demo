@@ -2,6 +2,12 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // ============================================
+    // RBAC CONFIGURATION
+    // Role definitions are documented in src/utils/rbacConfig.js
+    // IMPORTANT: Firestore Rules language does NOT support if/else — use ternary only
+    // See docs/rbac-divergence.md for the full RBAC divergence analysis.
+    // ============================================
+
     // HELPER FUNCTIONS
     // ============================================
     
@@ -132,6 +138,14 @@ service cloud.firestore {
         && !tag.matches('(?i).*on\\w+=.*');
     }
 
+    // Prevents impersonation of officials by blocking reserved words in reporter names
+    function isValidReporterName(name) {
+      return name is string
+        && name.size() >= 1
+        && name.size() <= 100
+        && !name.matches('(?i).*(admin|moderator|mayor|governor|official|superadmin).*');
+    }
+
     // Firestore Rules has no loops and no recursion, so we validate each
     // tag index explicitly (max 10 tags). isValidTag() is enforced at the
     // sanitization / client layer; this is defense-in-depth.
@@ -163,9 +177,8 @@ service cloud.firestore {
     function isValidEngagementData(data) {
       let engagement = data.engagement;
       return engagement is map
-        && engagement.keys().hasAll(['upvotes', 'upvotedBy'])
+        && engagement.keys().hasAll(['upvotes'])
         && (engagement.upvotes == 0 || engagement.upvotes is number)
-        && engagement.upvotedBy is list
         && engagement.upvotes >= 0
         && engagement.upvotes <= 1000000;
     }
@@ -221,8 +234,10 @@ service cloud.firestore {
         // Reporter validation
         && request.resource.data.reporter is map
         && request.resource.data.reporter.userId == request.auth.uid
-        && (request.resource.data.reporter.name == null 
-            || isValidString(request.resource.data.reporter.name, 100, 1))
+        && (request.resource.data.reporter.name == null
+            || request.resource.data.reporter.name == ''
+            || (isValidString(request.resource.data.reporter.name, 100, 1)
+                && isValidReporterName(request.resource.data.reporter.name)))
         // Verification initial state validation
         && request.resource.data.verification is map
         && request.resource.data.verification.status == 'pending'
@@ -230,7 +245,6 @@ service cloud.firestore {
         // Engagement initial state validation
         && isValidEngagementData(request.resource.data)
         && request.resource.data.engagement.upvotes == 0
-        && request.resource.data.engagement.upvotedBy == []
         // Weather context validation (can be empty map)
         && request.resource.data.weatherContext is map;
 
@@ -249,17 +263,6 @@ service cloud.firestore {
           && isValidEngagementData(request.resource.data)
           // Prevent upvote count from going below zero
           && request.resource.data.engagement.upvotes >= 0
-          // Ensure upvotedBy is a list
-          && request.resource.data.engagement.upvotedBy is list
-          // Ensure upvote increment is exactly ±1
-          // Adding upvote: user NOT in current upvotedBy, upvotes must be old + 1
-          // Removing upvote: user IS in current upvotedBy, upvotes must be old - 1
-          && (
-            (!(request.auth.uid in resource.data.engagement.upvotedBy)
-              && request.resource.data.engagement.upvotes == resource.data.engagement.upvotes + 1)
-            || (request.auth.uid in resource.data.engagement.upvotedBy
-              && request.resource.data.engagement.upvotes == resource.data.engagement.upvotes - 1)
-          )
           // Validate no new fields added
           && request.resource.data.keys().hasAll(resource.data.keys())
         )
@@ -313,6 +316,13 @@ service cloud.firestore {
 
       // Delete: Only admins can delete reports
       allow delete: if isAdmin();
+
+      // Upvotes subcollection: stores individual upvote documents
+      // Each user can only read/write their own upvote doc
+      match /upvotes/{upvoteId} {
+        allow read: if isSignedIn();
+        allow write: if isSignedIn() && request.auth.uid == upvoteId;
+      }
     }
 
     // ============================================

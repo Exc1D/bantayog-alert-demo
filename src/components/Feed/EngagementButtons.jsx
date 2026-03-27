@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuthContext } from '../../contexts/AuthContext';
-import { upvoteReport, removeUpvote } from '../../hooks/useReports';
+import { upvoteReport, removeUpvote, hasUpvoted } from '../../hooks/useReports';
 import { useToast } from '../Common/Toast';
 
 export default function EngagementButtons({
@@ -12,8 +12,6 @@ export default function EngagementButtons({
   const { user } = useAuthContext();
   const { addToast } = useToast();
   const [isUpvoting, setIsUpvoting] = useState(false);
-
-  const hasUpvoted = report.engagement?.upvotedBy?.includes(user?.uid) ?? false;
 
   const requireRegisteredUser = () => {
     if (!user || user.isAnonymous) {
@@ -33,7 +31,8 @@ export default function EngagementButtons({
     setIsUpvoting(true);
 
     try {
-      if (report.engagement?.upvotedBy?.includes(user?.uid)) {
+      const alreadyUpvoted = await hasUpvoted(report.id, user.uid);
+      if (alreadyUpvoted) {
         await removeUpvote(report.id, user.uid);
       } else {
         await upvoteReport(report.id, user.uid);
@@ -82,19 +81,15 @@ export default function EngagementButtons({
       <button
         onClick={handleUpvote}
         disabled={isUpvoting}
-        className={`${btnClass} ${
-          hasUpvoted
-            ? 'bg-accent/10 text-accent'
-            : 'hover:bg-surface dark:hover:bg-dark-elevated text-textLight dark:text-dark-textLight'
-        }`}
+        className={`${btnClass} hover:bg-surface dark:hover:bg-dark-elevated text-textLight dark:text-dark-textLight`}
       >
         <svg
           aria-hidden="true"
           width="16"
           height="16"
           viewBox="0 0 24 24"
-          fill={hasUpvoted ? '#C62828' : 'none'}
-          stroke={hasUpvoted ? '#C62828' : 'currentColor'}
+          fill="none"
+          stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"

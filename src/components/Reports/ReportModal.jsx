@@ -62,6 +62,7 @@ function clearDraft() {
 
 export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitted }) {
   const [step, setStep] = useState(1);
+  const [isLoadingDraft, setIsLoadingDraft] = useState(false);
   const [reportType, setReportType] = useState(null);
   const [evidenceFiles, setEvidenceFiles] = useState([]);
   const [formData, setFormData] = useState({});
@@ -107,6 +108,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
       const draft = loadDraft();
       if (draft && draft.step) {
         if (draft.formData?.description) {
+          setIsLoadingDraft(true);
           setFormData(draft.formData || {});
           setReportType(draft.reportType || null);
           setManualMunicipality(draft.manualMunicipality || '');
@@ -114,6 +116,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
             setStep(draft.step);
           }
           addToast('Resumed from saved draft', 'info');
+          setIsLoadingDraft(false);
         }
       }
     }
@@ -137,11 +140,12 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
 
   // Guard: reject manualMunicipality values not in our coordinate map
   useEffect(() => {
+    if (isLoadingDraft) return;
     if (manualMunicipality && !MUNICIPALITY_COORDS[manualMunicipality]) {
       addToast('Selected municipality is not supported. Please choose from the list.', 'error');
       setManualMunicipality(null);
     }
-  }, [manualMunicipality, addToast, setManualMunicipality]);
+  }, [manualMunicipality, addToast, setManualMunicipality, isLoadingDraft]);
 
   // Build an effective location from GPS or manual selection
   const effectiveLocation =
