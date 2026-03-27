@@ -111,7 +111,9 @@ export default memo(function DisasterMarker({ report, onClick, isSelected }) {
 
   return (
     <Marker
-      position={[report.location.lat, report.location.lng]}
+            // Defensive fallback: malformed Firestore docs may have null location.
+      // 0,0 is in the ocean and will be filtered by LeafletMap bounds check.
+      position={[report.location?.lat ?? 0, report.location?.lng ?? 0]}
       icon={icon}
       eventHandlers={eventHandlers}
     >
@@ -122,7 +124,7 @@ export default memo(function DisasterMarker({ report, onClick, isSelected }) {
             <span className="font-bold text-sm uppercase tracking-wide">{disasterType.label}</span>
           </div>
 
-          <p className="font-medium text-xs text-text">{report.location.municipality}</p>
+          <p className="font-medium text-xs text-text">{report.location?.municipality ?? 'Unknown'}</p>
           {report.location.street && (
             <p className="text-[11px] text-textLight">{report.location.street}</p>
           )}
