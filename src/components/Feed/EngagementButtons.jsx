@@ -13,7 +13,7 @@ export default function EngagementButtons({
   const { addToast } = useToast();
   const [isUpvoting, setIsUpvoting] = useState(false);
 
-  const hasUpvoted = report.engagement?.upvotedBy?.includes(user?.uid);
+  const hasUpvoted = report.engagement?.upvotedBy?.includes(user?.uid) ?? false;
 
   const requireRegisteredUser = () => {
     if (!user || user.isAnonymous) {
