@@ -168,21 +168,21 @@ describe('resolveMunicipality — fallback chain', () => {
       expect(result.municipality).toBe('Daet');
     } else {
       // Could be nearest_centroid if the point isn't exactly inside
-      expect(['polygon_match', 'nearest_centroid']).toContain(result.method);
+      expect(['polygon', 'nearest_centroid']).toContain(result.method);
     }
   });
 
   it('falls back to nearest_centroid for nearby-but-outside points', () => {
     // Slightly off the coast of CamNorte
     const result = resolveMunicipality(14.2, 123.2);
-    expect(['polygon_match', 'nearest_centroid']).toContain(result.method);
+    expect(['polygon', 'outside_province_centroid_fallback']).toContain(result.method);
   });
 
   it('uses fallback_input when coordinates are far and fallback is provided', () => {
     // Far away, no polygon match, but nearest may still work
     const result = resolveMunicipality(0, 0, 'Daet');
     expect(typeof result.municipality).toBe('string');
-    expect(['nearest_centroid', 'fallback_input']).toContain(result.method);
+    expect(['outside_province_centroid_fallback', 'fallback_input']).toContain(result.method);
   });
 
   it('returns unknown when no match and no fallback', () => {
