@@ -104,7 +104,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
                 <circle cx="12" cy="10" r="3" />
               </svg>
               <span className="truncate">
-                {report.location?.municipality}
+                {report.location?.municipality ?? 'Unknown Municipality'}
                 {report.location?.barangay && `, ${report.location.barangay}`}
               </span>
             </div>
