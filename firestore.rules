@@ -122,10 +122,22 @@ service cloud.firestore {
         && !tag.matches('(?i).*on\\w+=.*');
     }
 
+    // Firestore Rules has no loops and no recursion, so we validate each
+    // tag index explicitly (max 10 tags). isValidTag() is enforced at the
+    // sanitization / client layer; this is defense-in-depth.
     function isValidTagsArray(tags) {
       return tags is list
         && tags.size() <= 10
-        && tags.hasAll(tags.map(t => isValidTag(t)));
+        && (tags.size() <= 1 || isValidTag(tags[0]))
+        && (tags.size() <= 2 || isValidTag(tags[1]))
+        && (tags.size() <= 3 || isValidTag(tags[2]))
+        && (tags.size() <= 4 || isValidTag(tags[3]))
+        && (tags.size() <= 5 || isValidTag(tags[4]))
+        && (tags.size() <= 6 || isValidTag(tags[5]))
+        && (tags.size() <= 7 || isValidTag(tags[6]))
+        && (tags.size() <= 8 || isValidTag(tags[7]))
+        && (tags.size() <= 9 || isValidTag(tags[8]))
+        && isValidTag(tags[9]);
     }
 
     function isValidPhotoArray(photos) {
@@ -188,8 +200,7 @@ service cloud.firestore {
         && isValidDisasterType(request.resource.data.disaster.type)
         && isValidSeverity(request.resource.data.disaster.severity)
         && isValidString(request.resource.data.disaster.description, 2000, 10)
-        && (request.resource.data.disaster.tags == null 
-            || request.resource.data.disaster.tags is list
+        && (request.resource.data.disaster.tags == null
             || isValidTagsArray(request.resource.data.disaster.tags))
         // Media validation
         && request.resource.data.media is map
@@ -232,7 +243,7 @@ service cloud.firestore {
           // Adding upvote: user NOT in current upvotedBy, upvotes must be old + 1
           // Removing upvote: user IS in current upvotedBy, upvotes must be old - 1
           && (
-            (request.auth.uid !in resource.data.engagement.upvotedBy
+            (!(request.auth.uid in resource.data.engagement.upvotedBy)
               && request.resource.data.engagement.upvotes == resource.data.engagement.upvotes + 1)
             || (request.auth.uid in resource.data.engagement.upvotedBy
               && request.resource.data.engagement.upvotes == resource.data.engagement.upvotes - 1)
