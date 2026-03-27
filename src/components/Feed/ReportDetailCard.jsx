@@ -1,4 +1,5 @@
 import { formatTimeAgo } from '../../utils/timeUtils';
+import { sanitizeText } from '../../utils/sanitization';
 
 export default function ReportDetailCard({ report, onViewFull }) {
   const sevStyles = {
@@ -54,13 +55,13 @@ export default function ReportDetailCard({ report, onViewFull }) {
       )}
 
       {/* Reporter — hide if anonymous */}
-      {!report.user?.isAnonymous && report.user?.name && (
+      {!report.reporter?.isAnonymous && report.reporter?.name && (
         <div className="flex items-center gap-2 pt-2 border-t border-stone-100 dark:border-dark-border">
           <span className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
-            {report.user.name.charAt(0).toUpperCase()}
+            {sanitizeText(report.reporter.name).charAt(0).toUpperCase()}
           </span>
           <span className="text-sm font-medium text-text dark:text-dark-text">
-            {report.user.name}
+            {sanitizeText(report.reporter.name)}
           </span>
         </div>
       )}

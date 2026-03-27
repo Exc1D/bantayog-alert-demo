@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { upvoteReport, removeUpvote, hasUpvoted } from '../../hooks/useReports';
 import { useToast } from '../Common/Toast';
+import { captureException } from '@sentry/react';
 
 export default function EngagementButtons({
   report,
@@ -37,7 +38,8 @@ export default function EngagementButtons({
       } else {
         await upvoteReport(report.id, user.uid);
       }
-    } catch {
+    } catch (err) {
+      captureException(err, { tags: { component: 'EngagementButtons', action: 'handleUpvote' } });
       addToast('Failed to update vote', 'error');
     } finally {
       setIsUpvoting(false);
