@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { captureException } from '@sentry/react';
 import {
   collection,
   query,
@@ -68,7 +69,8 @@ export function useReports(filters = {}) {
         setLoading(false);
       },
       (err) => {
-        setError(err.message);
+        captureException(err, { tags: { component: 'useReports', action: 'onSnapshot' } });
+        setError('Unable to load reports. Please check your connection or sign in again.');
         setLoading(false);
       }
     );
