@@ -117,6 +117,7 @@ exports.sendPushNotification = notifications.sendPushNotification;
 
 exports.syncUserClaims = require('./syncUserClaims').syncUserClaims;
 exports.onAnonymousAuth = require('./onAnonymousAuth').onAnonymousAuth;
+exports.weatherProxy = require('./weatherProxy').weatherProxy;
 
 exports.cleanupOldRateLimits = functions.pubsub.schedule('0 * * * *').onRun(async () => {
   const cutoff = admin.firestore.Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
