@@ -14,6 +14,7 @@ import {
   arrayUnion,
   arrayRemove,
   runTransaction,
+  increment,
 } from 'firebase/firestore';
 import { db, getStorageInstance, serverTimestamp } from '../utils/firebaseConfig';
 import { compressImage, createThumbnail } from '../utils/imageCompression';
@@ -308,8 +309,9 @@ export async function upvoteReport(reportId, userId) {
 
     if (upvotedBy.includes(userId)) return;
 
+    // Use Firestore atomic increment to ensure server-side validation
     transaction.update(reportRef, {
-      'engagement.upvotes': (engagement.upvotes || 0) + 1,
+      'engagement.upvotes': increment(1),
       'engagement.upvotedBy': arrayUnion(userId),
     });
   });

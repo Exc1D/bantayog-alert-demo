@@ -41,9 +41,15 @@ service firebase.storage {
     function isValidFileName(name) {
       return name is string
         && name.size() <= 200
-        && !name.matches('.*\\.\\..*')  // No path traversal
+        && !name.contains('..')       // No path traversal sequences
         && !name.matches('.*[/\\\\].*')  // No directory separators
-        && !name.matches('^\\..*');  // No hidden files
+        && !name.matches('^\\..*');    // No hidden files
+    }
+
+    // Check full path for traversal sequences (used for rules where intermediate
+    // path components are not individually validated, e.g. reports/{allPaths=**})
+    function isPathTraversalSafe() {
+      return !request.resource.name.contains('..');
     }
 
     // Extract filename from path
@@ -116,6 +122,7 @@ service firebase.storage {
           // Videos: max 50MB
           || (isAllowedVideo() && isValidVideoSize())
         )
+        && isPathTraversalSafe()
         && isValidFileName(fileName());
     }
 
@@ -178,6 +185,8 @@ service firebase.storage {
 //    - Prevents DoS attacks via large file uploads
 //
 // 3. Path Validation:
+//    - Full resource path is checked for path traversal sequences (..) in the
+//      reports/{allPaths=**} rule to prevent attacks like reports/../../../etc/passwd
 //    - Filenames cannot contain path traversal sequences (..)
 //    - Filenames cannot contain directory separators
 //    - No hidden files allowed
