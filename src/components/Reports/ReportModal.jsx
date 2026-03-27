@@ -119,9 +119,21 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
     }
   }, [isOpen, addToast]);
 
-  const municipality = location
-    ? resolveMunicipality(location.lat, location.lng).municipality
+  const resolvedLocation = location ? resolveMunicipality(location.lat, location.lng) : null;
+  const municipality = resolvedLocation
+    ? resolvedLocation.municipality
     : manualMunicipality || null;
+
+  // Warn when report location falls outside Camarines Norte province boundaries
+  useEffect(() => {
+    if (resolvedLocation?.isOutsideProvince) {
+      addToast(
+        'Report location is outside Camarines Norte. Municipality was estimated using nearest centroid.',
+        'warning',
+        { duration: 6000 }
+      );
+    }
+  }, [resolvedLocation?.isOutsideProvince, addToast]);
 
   // Build an effective location from GPS or manual selection
   const effectiveLocation =
@@ -154,12 +166,20 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
   };
 
   const handleSubmit = async () => {
-    const sanitizedDescription = sanitizeText(formData.description);
+    const rawDescription = formData.description || '';
+    const sanitizedDescription = sanitizeText(rawDescription);
     const sanitizedBarangay = sanitizeText(formData.barangay);
     const sanitizedStreet = sanitizeText(formData.street);
 
-    if (!sanitizedDescription || sanitizedDescription.trim().length < 10) {
+    // Stage 1: Check raw input length
+    if (rawDescription.trim().length < 10) {
       addToast('What is happening? (at least 10 characters)', 'warning');
+      return;
+    }
+
+    // Stage 2: Check sanitized output length (catches inputs that were only XSS payloads)
+    if (!sanitizedDescription || sanitizedDescription.trim().length < 10) {
+      addToast('Description contains only unsafe characters and is too short.', 'warning');
       return;
     }
     if (!effectiveLocation) {
