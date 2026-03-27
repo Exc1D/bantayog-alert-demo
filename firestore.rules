@@ -97,7 +97,8 @@ service cloud.firestore {
         && !value.matches('(?i).*javascript:')
         && !value.matches('(?i).*data:\\s*text/html')
         && !value.matches('(?i).*vbscript:')
-        && !value.matches('(?i).*expression\\s*\\(');
+        && !value.matches('(?i).*expression\\s*\\(')
+        && !value.matches('(?i).*on\\w+=.*');
     }
 
     function isValidLatitude(lat) {
@@ -112,9 +113,19 @@ service cloud.firestore {
       return isValidLatitude(lat) && isValidLongitude(lng);
     }
 
+    function isValidTag(tag) {
+      return tag is string
+        && tag.size() >= 1
+        && tag.size() <= 50
+        && !tag.matches('(?i).*<(script|iframe|onerror|svg).*')
+        && !tag.matches('(?i).*javascript:.*')
+        && !tag.matches('(?i).*on\\w+=.*');
+    }
+
     function isValidTagsArray(tags) {
-      return tags is list 
-        && tags.size() <= 10;
+      return tags is list
+        && tags.size() <= 10
+        && tags.hasAll(tags.map(t => isValidTag(t)));
     }
 
     function isValidPhotoArray(photos) {
