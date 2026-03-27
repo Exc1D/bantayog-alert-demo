@@ -76,34 +76,39 @@ export function useAllMunicipalitiesWeather() {
       let fetchErrors = 0;
 
       const entries = Object.entries(MUNICIPALITY_COORDS);
-      const promises = entries.map(async ([name, coords]) => {
-        const cached = weatherCache.get(name);
-        if (cached && Date.now() - cached.timestamp < WEATHER_CACHE_DURATION) {
-          results[name] = cached.weather;
-          forecasts[name] = cached.forecast || [];
-          return;
-        }
+      const BATCH_SIZE = 4;
 
-        try {
-          const [weather, forecast] = await Promise.all([
-            fetchCurrentWeather(coords.lat, coords.lng),
-            fetchForecast(coords.lat, coords.lng),
-          ]);
-          results[name] = weather;
-          forecasts[name] = forecast || [];
-          weatherCache.set(name, {
-            weather,
-            forecast: forecast || [],
-            timestamp: Date.now(),
-          });
-        } catch {
-          results[name] = null;
-          forecasts[name] = [];
-          fetchErrors++;
-        }
-      });
+      for (let i = 0; i < entries.length; i += BATCH_SIZE) {
+        const batch = entries.slice(i, i + BATCH_SIZE);
+        const batchPromises = batch.map(async ([name, coords]) => {
+          const cached = weatherCache.get(name);
+          if (cached && Date.now() - cached.timestamp < WEATHER_CACHE_DURATION) {
+            results[name] = cached.weather;
+            forecasts[name] = cached.forecast || [];
+            return;
+          }
 
-      await Promise.all(promises);
+          try {
+            const [weather, forecast] = await Promise.all([
+              fetchCurrentWeather(coords.lat, coords.lng),
+              fetchForecast(coords.lat, coords.lng),
+            ]);
+            results[name] = weather;
+            forecasts[name] = forecast || [];
+            weatherCache.set(name, {
+              weather,
+              forecast: forecast || [],
+              timestamp: Date.now(),
+            });
+          } catch {
+            results[name] = null;
+            forecasts[name] = [];
+            fetchErrors++;
+          }
+        });
+
+        await Promise.all(batchPromises);
+      }
       setWeatherData(results);
       setForecastData(forecasts);
       if (fetchErrors > 0) {

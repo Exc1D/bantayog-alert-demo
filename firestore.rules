@@ -9,7 +9,15 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function isAnonymous() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == 'anonymous';
+    }
+
     function userRole() {
+      if (isAnonymous()) {
+        return 'anonymous';
+      }
       let userPath = /databases/$(database)/documents/users/$(request.auth.uid);
       return isSignedIn() && exists(userPath) ? get(userPath).data.role : '';
     }
@@ -42,9 +50,8 @@ service cloud.firestore {
 
     function canCreateReports() {
       let role = userRole();
-      // role == '' allows unauthenticated/anonymous users to submit reports
-      // (request.auth.uid exists but no user document exists yet = new user)
-      return role == 'user' || role == 'moderator' || isAdmin() || role == '';
+      // role == 'anonymous' allows anonymous/guest users to submit reports
+      return role == 'user' || role == 'moderator' || isAdmin() || role == 'anonymous';
     }
 
     // Server-side rate limiting: 60-second cooldown between report submissions
@@ -55,6 +62,13 @@ service cloud.firestore {
       // Using !exists as the first || operand short-circuits before the duration math.
       return !exists(rateLimitPath)
         || (request.time - get(rateLimitPath).data.lastReportAt).seconds >= 60;
+    }
+
+    // Server-side rate limiting: 5-second cooldown between upvote/engagement actions
+    function canEngageReportNow() {
+      let engagePath = /databases/$(database)/documents/rateLimits/$(request.auth.uid);
+      return !exists(engagePath)
+        || (request.time - get(engagePath).data.lastEngageAt).seconds >= 5;
     }
 
     // Valid municipalities in Camarines Norte
@@ -231,6 +245,7 @@ service cloud.firestore {
              .hasOnly(['verification', 'disaster', 'engagement', 'location', 'media'])
         || (
           isSignedIn()
+          && canEngageReportNow()
           // Only allow engagement updates
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['engagement'])
           // Validate engagement data
@@ -435,10 +450,11 @@ service cloud.firestore {
     match /rateLimits/{userId} {
       // Anyone can read their own rate limit state (used by client to show cooldown)
       allow read: if isSignedIn() && request.auth.uid == userId;
-      // Only the owning user can write their rate limit doc (via transaction with report creation)
+      // Only the owning user can write their rate limit doc (via transaction with report/engagement)
       allow write: if isSignedIn() && request.auth.uid == userId
         && request.resource.data.keys().hasAll(['lastReportAt'])
-        && request.resource.data.lastReportAt is timestamp;
+        && (request.resource.data.lastReportAt is timestamp
+            || (request.resource.data.keys().hasAll(['lastEngageAt']) && request.resource.data.lastEngageAt is timestamp));
     }
   }
 }

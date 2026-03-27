@@ -197,7 +197,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
         <div className="relative">
           <img
             src={photos[imageIndex]}
-            alt="Report"
+            alt={`${report.disaster?.type ?? 'Report'} photo ${imageIndex + 1} of ${photos.length} — ${report.location?.municipality ?? 'Unknown municipality'}`}
             className="w-full max-h-80 object-cover"
             loading="lazy"
           />
