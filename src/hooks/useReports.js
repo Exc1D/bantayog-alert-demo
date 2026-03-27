@@ -8,7 +8,6 @@ import {
   onSnapshot,
   where,
   getDocs,
-  addDoc,
   updateDoc,
   deleteDoc,
   doc,
@@ -263,7 +262,20 @@ export async function submitReport(reportData, evidenceFiles, user) {
     weatherContext,
   };
 
-  const docRef = await addDoc(collection(db, 'reports'), report);
+  // Atomically update server-side rate limit and create the report.
+  // Firestore rules enforce a 60-second cooldown — if the user submits
+  // within the window the transaction will be rejected by the server.
+  const reportsRef = collection(db, 'reports');
+  const rateLimitRef = doc(db, 'rateLimits', user.uid);
+
+  const docRef = await runTransaction(db, async (transaction) => {
+    // Update rate limit document with server timestamp (enforced by Firestore rules)
+    transaction.set(rateLimitRef, { lastReportAt: serverTimestamp() }, { merge: true });
+    // Create the new report and return its reference
+    const newDocRef = doc(reportsRef);
+    transaction.set(newDocRef, report);
+    return newDocRef;
+  });
 
   logAuditEvent(
     new AuditEvent({
@@ -283,7 +295,6 @@ export async function submitReport(reportData, evidenceFiles, user) {
 
   return { id: docRef.id, skippedFiles };
 }
-
 export async function upvoteReport(reportId, userId) {
   if (!userId) throw new Error('Authentication required to upvote.');
 

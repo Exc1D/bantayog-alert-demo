@@ -1,4 +1,5 @@
-import { containsXSS, truncateText } from '../../utils/sanitization';
+import { truncateText } from '../../utils/sanitization';
+import { useState } from 'react';
 
 // Sanitize text for XSS but don't trim (to allow spaces during typing)
 const DANGEROUS_PATTERNS = [
@@ -22,26 +23,32 @@ function sanitizeWithoutTrim(text) {
 }
 
 export default function ReportForm({ formData, onChange }) {
+  // Track raw (pre-sanitization) input per field to detect XSS removal
+  const [rawFields, setRawFields] = useState({});
+
   const handleFieldChange = (name, value) => {
     // Sanitize XSS content and truncate, but don't trim during typing to allow spaces
     const sanitizedValue = sanitizeWithoutTrim(value);
     const truncatedValue = truncateText(sanitizedValue, 2000);
+    // Record raw input to detect whether sanitization modified the value
+    setRawFields((prev) => ({ ...prev, [name]: value }));
     onChange({ ...formData, [name]: truncatedValue });
   };
 
-  // Check if original input contained XSS (for warning display)
-  const descriptionWarning =
-    formData.description && containsXSS(formData.description)
-      ? 'Potentially unsafe content was removed'
-      : null;
-  const barangayWarning =
-    formData.barangay && containsXSS(formData.barangay)
-      ? 'Potentially unsafe content was removed'
-      : null;
-  const streetWarning =
-    formData.street && containsXSS(formData.street)
-      ? 'Potentially unsafe content was removed'
-      : null;
+  // Show warning when raw input differs from sanitized output (XSS was stripped)
+  const hadXSSRemoved = (name) => {
+    const raw = rawFields[name] || '';
+    const sanitized = sanitizeWithoutTrim(raw);
+    return raw !== sanitized;
+  };
+
+  const descriptionWarning = hadXSSRemoved('description')
+    ? 'Potentially unsafe content was removed'
+    : null;
+  const barangayWarning = hadXSSRemoved('barangay')
+    ? 'Potentially unsafe content was removed'
+    : null;
+  const streetWarning = hadXSSRemoved('street') ? 'Potentially unsafe content was removed' : null;
 
   return (
     <div className="space-y-4">
