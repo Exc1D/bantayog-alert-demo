@@ -152,17 +152,17 @@ export async function submitReport(reportData, evidenceFiles, user) {
 
   // Start all three groups in parallel; each file fails independently
   const imageResultsPromise = Promise.all(
-    imageFiles.map(async (photo, index) => {
+    imageFiles.map(async (photo, _index) => {
       try {
         const [compressed, thumbnail] = await Promise.all([
           compressImage(photo),
           createThumbnail(photo),
         ]);
 
-        const ts = Date.now() + index;
+        const uniqueId = crypto.randomUUID();
         const safeName = safeFileName(photo.name);
-        const photoRef = ref(storageInstance, `reports/${ts}_${safeName}`);
-        const thumbRef = ref(storageInstance, `reports/thumbs/${ts}_${safeName}`);
+        const photoRef = ref(storageInstance, `reports/${uniqueId}_${safeName}`);
+        const thumbRef = ref(storageInstance, `reports/thumbs/${uniqueId}_${safeName}`);
 
         await Promise.all([uploadBytes(photoRef, compressed), uploadBytes(thumbRef, thumbnail)]);
 
@@ -180,11 +180,11 @@ export async function submitReport(reportData, evidenceFiles, user) {
   );
 
   const videoUrlsPromise = Promise.all(
-    videoFiles.map(async (video, index) => {
+    videoFiles.map(async (video, _index) => {
       try {
-        const ts = Date.now() + index;
+        const uniqueId = crypto.randomUUID();
         const safeName = safeFileName(video.name);
-        const videoRef = ref(storageInstance, `reports/videos/${ts}_${safeName}`);
+        const videoRef = ref(storageInstance, `reports/videos/${uniqueId}_${safeName}`);
         await uploadBytes(videoRef, video);
         return await getDownloadURL(videoRef);
       } catch (err) {
@@ -321,8 +321,11 @@ export async function submitReport(reportData, evidenceFiles, user) {
 export async function upvoteReport(reportId, userId) {
   if (!userId) throw new Error('Authentication required to upvote.');
 
+  // Write lastEngageAt for server-side 5s rate limit check
+  const rateLimitRef = doc(db, 'rateLimits', userId);
   const reportRef = doc(db, 'reports', reportId);
   await runTransaction(db, async (transaction) => {
+    transaction.set(rateLimitRef, { lastEngageAt: serverTimestamp() }, { merge: true });
     const reportDoc = await transaction.get(reportRef);
     if (!reportDoc.exists()) throw new Error('Report not found.');
 
@@ -342,8 +345,11 @@ export async function upvoteReport(reportId, userId) {
 export async function removeUpvote(reportId, userId) {
   if (!userId) throw new Error('Authentication required to remove upvote.');
 
+  // Write lastEngageAt for server-side 5s rate limit check
+  const rateLimitRef = doc(db, 'rateLimits', userId);
   const reportRef = doc(db, 'reports', reportId);
   await runTransaction(db, async (transaction) => {
+    transaction.set(rateLimitRef, { lastEngageAt: serverTimestamp() }, { merge: true });
     const reportDoc = await transaction.get(reportRef);
     if (!reportDoc.exists()) throw new Error('Report not found.');
 
@@ -427,10 +433,10 @@ export async function resolveReport(
 
   // Upload evidence photos in parallel
   const evidenceUrls = await Promise.all(
-    evidencePhotos.map(async (photo, index) => {
+    evidencePhotos.map(async (photo, _index) => {
       const compressed = await compressImage(photo);
       const safeName = safeFileName(photo.name);
-      const photoRef = storageMod.ref(storageInst, `evidence/${Date.now() + index}_${safeName}`);
+      const photoRef = storageMod.ref(storageInst, `evidence/${crypto.randomUUID()}_${safeName}`);
       await storageMod.uploadBytes(photoRef, compressed);
       return storageMod.getDownloadURL(photoRef);
     })

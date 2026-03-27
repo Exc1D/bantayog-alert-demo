@@ -33,7 +33,7 @@ export default function EngagementButtons({
     setIsUpvoting(true);
 
     try {
-      if (hasUpvoted) {
+      if (report.engagement?.upvotedBy?.includes(user?.uid)) {
         await removeUpvote(report.id, user.uid);
       } else {
         await upvoteReport(report.id, user.uid);

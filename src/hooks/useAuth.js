@@ -70,6 +70,14 @@ export function useAuth() {
     const { authInstance, signInWithEmailAndPassword } = await getFirebaseAuth();
     const credential = await signInWithEmailAndPassword(authInstance, email, password);
 
+    // Sync custom claims after sign-in
+    try {
+      const { syncUserClaims } = await import('../utils/firebaseFunctions');
+      await syncUserClaims();
+    } catch (e) {
+      console.warn('Could not sync user claims:', e);
+    }
+
     logAuditEvent(
       new AuditEvent({
         eventType: AuditEventType.LOGIN,
@@ -145,6 +153,14 @@ export function useAuth() {
     const { authInstance, signInAnonymously } = await getFirebaseAuth();
     const credential = await signInAnonymously(authInstance);
 
+    // Sync custom claims after sign-in (includes anonymous role)
+    try {
+      const { syncUserClaims } = await import('../utils/firebaseFunctions');
+      await syncUserClaims();
+    } catch (e) {
+      console.warn('Could not sync user claims:', e);
+    }
+
     logAuditEvent(
       new AuditEvent({
         eventType: AuditEventType.LOGIN,
@@ -217,7 +233,7 @@ export function useAuth() {
 
     const avatarRef = ref(
       storageInstance,
-      `avatars/${authInstance.currentUser.uid}/${Date.now()}-${file.name}`
+      `avatars/${authInstance.currentUser.uid}/${crypto.randomUUID()}-${file.name}`
     );
     await uploadBytes(avatarRef, file);
     const photoURL = await getDownloadURL(avatarRef);
