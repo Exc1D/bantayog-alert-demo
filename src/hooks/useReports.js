@@ -210,6 +210,19 @@ export async function submitReport(reportData, evidenceFiles, user) {
   const skippedFiles =
     imageFiles.length - successfulImages.length + (videoFiles.length - successfulVideos.length);
 
+  // Collect per-file error details for failed uploads
+  const uploadErrors = [];
+  imageResults.forEach((result, index) => {
+    if (!result) {
+      uploadErrors.push({ filename: imageFiles[index]?.name, type: 'image', index });
+    }
+  });
+  videoUrls.forEach((result, index) => {
+    if (!result) {
+      uploadErrors.push({ filename: videoFiles[index]?.name, type: 'video', index });
+    }
+  });
+
   // Build report document
   const report = {
     timestamp: serverTimestamp(),
@@ -296,7 +309,7 @@ export async function submitReport(reportData, evidenceFiles, user) {
     })
   );
 
-  return { id: docRef.id, skippedFiles };
+  return { id: docRef.id, skippedFiles, uploadErrors };
 }
 export async function upvoteReport(reportId, userId) {
   if (!userId) throw new Error('Authentication required to upvote.');
