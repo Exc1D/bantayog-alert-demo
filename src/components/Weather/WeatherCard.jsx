@@ -369,20 +369,20 @@ export default function WeatherCard({ municipality, weather, forecast, compact =
             Wind
           </p>
           <p className="font-bold text-xs mt-0.5">
-            {weather.windSpeed} kph {weather.windDirection}
+            {weather.windSpeed ?? 'N/A'} kph {weather.windDirection ?? ''}
           </p>
         </div>
         <div className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-2 text-center">
           <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Humidity
           </p>
-          <p className="font-bold text-xs mt-0.5">{weather.humidity}%</p>
+          <p className="font-bold text-xs mt-0.5">{weather.humidity ?? 0}%</p>
         </div>
         <div className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-2 text-center">
           <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Pressure
           </p>
-          <p className="font-bold text-xs mt-0.5">{weather.pressure} hPa</p>
+          <p className="font-bold text-xs mt-0.5">{weather.pressure ?? 0} hPa</p>
         </div>
         <div className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-2 text-center">
           <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">

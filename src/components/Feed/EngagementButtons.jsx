@@ -57,7 +57,7 @@ export default function EngagementButtons({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Bantayog Alert - ${report.disaster?.type}`,
+          title: `Bantayog Alert - ${report.disaster?.type ?? 'Report'}`,
           text: report.disaster?.description,
           url: window.location.href,
         });
