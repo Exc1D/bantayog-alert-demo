@@ -119,9 +119,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
     }
   }, [isOpen, addToast]);
 
-  const resolvedLocation = location
-    ? resolveMunicipality(location.lat, location.lng)
-    : null;
+  const resolvedLocation = location ? resolveMunicipality(location.lat, location.lng) : null;
   const municipality = resolvedLocation
     ? resolvedLocation.municipality
     : manualMunicipality || null;
