@@ -1,0 +1,86 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - link "Skip to main content" [ref=e4] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e5]:
+    - link "Skip to main content" [ref=e6] [cursor=pointer]:
+      - /url: "#main-content"
+    - banner [ref=e7]:
+      - generic [ref=e8]:
+        - img "Bantayog Alert" [ref=e9]
+        - generic [ref=e10]:
+          - heading "BANTAYOG ALERT" [level=1] [ref=e11]
+          - paragraph [ref=e12]: Camarines Norte
+      - generic [ref=e13]:
+        - button "Switch to dark mode" [ref=e14] [cursor=pointer]:
+          - img [ref=e17]
+          - img [ref=e28]
+        - generic [ref=e30]: GUEST
+        - button "Open profile" [ref=e31] [cursor=pointer]:
+          - generic [ref=e32]: U
+    - complementary [ref=e33]:
+      - navigation "Main navigation" [ref=e34]:
+        - button "Map" [pressed] [ref=e35] [cursor=pointer]:
+          - img [ref=e36]
+          - generic [ref=e40]: Map
+        - button "Feed" [ref=e42] [cursor=pointer]:
+          - img [ref=e43]
+          - generic [ref=e45]: Feed
+        - button "Weather" [ref=e46] [cursor=pointer]:
+          - img [ref=e47]
+          - generic [ref=e49]: Weather
+        - button "Alerts" [ref=e50] [cursor=pointer]:
+          - img [ref=e51]
+          - generic [ref=e53]: Alerts
+        - button "Profile" [ref=e54] [cursor=pointer]:
+          - img [ref=e55]
+          - generic [ref=e58]: Profile
+      - paragraph [ref=e60]: BANTAYOG ALERT v1.0
+    - main [ref=e62]:
+      - generic [ref=e64]:
+        - generic [ref=e66]:
+          - combobox "Filter by municipality" [ref=e67]:
+            - option "All Areas" [selected]
+            - option "Basud"
+            - option "Capalonga"
+            - option "Daet"
+            - option "Jose Panganiban"
+            - option "Labo"
+            - option "Mercedes"
+            - option "Paracale"
+            - option "San Lorenzo Ruiz"
+            - option "San Vicente"
+            - option "Santa Elena"
+            - option "Talisay"
+            - option "Vinzons"
+          - generic [ref=e68]:
+            - button "Switch to Streets view" [ref=e69] [cursor=pointer]: Streets
+            - button "Switch to Satellite view" [ref=e70] [cursor=pointer]: Satellite
+          - button "Toggle legend" [ref=e71] [cursor=pointer]:
+            - img [ref=e72]
+          - generic [ref=e78]: "0"
+        - button "My Location" [ref=e79] [cursor=pointer]:
+          - img [ref=e80]
+        - generic [ref=e83]:
+          - generic:
+            - generic [ref=e84]:
+              - button "Zoom in" [ref=e85] [cursor=pointer]:
+                - generic [ref=e86]: +
+              - button "Zoom out" [ref=e87] [cursor=pointer]:
+                - generic [ref=e88]: −
+            - generic [ref=e89]:
+              - link "Leaflet" [ref=e90] [cursor=pointer]:
+                - /url: https://leafletjs.com
+                - img [ref=e91]
+                - text: Leaflet
+              - text: "| ©"
+              - link "OpenStreetMap" [ref=e95] [cursor=pointer]:
+                - /url: https://www.openstreetmap.org/copyright
+              - text: contributors
+    - button "Report a hazard" [ref=e96] [cursor=pointer]:
+      - img [ref=e97]
+      - generic [ref=e101]: REPORT
+  - status
+```
