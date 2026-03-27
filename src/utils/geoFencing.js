@@ -16,7 +16,7 @@ function normalizeBarangay(value) {
 }
 
 export function detectMunicipality(lat, lng, options = {}) {
-  if (!lat || !lng) return null;
+  if (!hasValidCoordinates(lat, lng)) return null;
 
   // Turf uses [longitude, latitude] order
   const pt = point([lng, lat]);
@@ -89,18 +89,34 @@ export function getNearestMunicipality(lat, lng) {
 }
 
 export function resolveMunicipality(lat, lng, fallbackMunicipality = null) {
+  if (!hasValidCoordinates(lat, lng)) {
+    return {
+      municipality: fallbackMunicipality || 'Unknown',
+      method: fallbackMunicipality ? 'fallback_input' : 'unknown',
+      isOutsideProvince: false,
+    };
+  }
+
   const exactMatch = detectMunicipality(lat, lng);
   if (exactMatch) {
-    return { municipality: exactMatch, method: 'polygon_match' };
+    return { municipality: exactMatch, method: 'polygon', isOutsideProvince: false };
   }
 
   const nearest = getNearestMunicipality(lat, lng);
+  const detected = { lat, lng };
+  const outsideProvince = !isInCamarinesNorte(detected);
+
   if (nearest) {
-    return { municipality: nearest, method: 'nearest_centroid' };
+    return {
+      municipality: nearest,
+      method: outsideProvince ? 'outside_province_centroid_fallback' : 'nearest_centroid',
+      isOutsideProvince: outsideProvince,
+    };
   }
 
   return {
     municipality: fallbackMunicipality || 'Unknown',
     method: fallbackMunicipality ? 'fallback_input' : 'unknown',
+    isOutsideProvince: false,
   };
 }
