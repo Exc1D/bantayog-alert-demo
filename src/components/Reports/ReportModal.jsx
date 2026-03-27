@@ -160,6 +160,10 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
   };
 
   const handleEvidenceContinue = () => {
+    if (evidenceFiles.length === 0) {
+      addToast('Please add at least one photo or video before continuing', 'warning');
+      return;
+    }
     setStep(3);
   };
 

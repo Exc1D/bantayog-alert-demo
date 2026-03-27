@@ -2,8 +2,14 @@ import { memo } from 'react';
 import { getDisasterType } from '../../data/disasterTypes';
 
 /**
- * Reusable component for rendering disaster type icons as inline SVG
- * Avoids dangerouslySetInnerHTML by using a controlled parsing approach
+ * Reusable component for rendering disaster type icons as inline SVG.
+ *
+ * SECURITY NOTE: This component uses dangerouslySetInnerHTML to render SVG icons.
+ * The icon content is sourced exclusively from hardcoded strings in disasterTypes.js —
+ * NOT from user input or external data. This approach is necessary because React SVG
+ * components cannot dynamically render SVG markup passed via props. If icons are ever
+ * sourced from user input, external APIs, or any dynamic data source, this pattern
+ * MUST be refactored to use a sanitization library (e.g., DOMPurify) to prevent XSS.
  */
 const DisasterIcon = memo(function DisasterIcon({ typeId, className = 'w-5 h-5', size = 24 }) {
   const disasterType = getDisasterType(typeId);
