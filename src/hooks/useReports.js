@@ -331,7 +331,7 @@ export async function removeUpvote(reportId, userId) {
     if (!upvotedBy.includes(userId)) return;
 
     transaction.update(reportRef, {
-      'engagement.upvotes': Math.max((engagement.upvotes || 0) - 1, 0),
+      'engagement.upvotes': increment(-1),
       'engagement.upvotedBy': arrayRemove(userId),
     });
   });
