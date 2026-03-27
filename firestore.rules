@@ -51,10 +51,10 @@ service cloud.firestore {
     // Each user has a rateLimits/{uid} document tracking their last submission
     function canSubmitReportNow() {
       let rateLimitPath = /databases/$(database)/documents/rateLimits/$(request.auth.uid);
-      let lastReport = get(rateLimitPath).data.lastReportAt;
-      // Allow if no prior submission or 60+ seconds have passed
-      return lastReport == null
-        || (request.time - lastReport).seconds >= 60;
+      // Allow if no prior submission; otherwise require 60+ seconds to have passed.
+      // Using !exists as the first || operand short-circuits before the duration math.
+      return !exists(rateLimitPath)
+        || (request.time - get(rateLimitPath).data.lastReportAt).seconds >= 60;
     }
 
     // Valid municipalities in Camarines Norte
