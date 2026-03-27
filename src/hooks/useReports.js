@@ -152,7 +152,7 @@ export async function submitReport(reportData, evidenceFiles, user) {
 
   // Start all three groups in parallel; each file fails independently
   const imageResultsPromise = Promise.all(
-    imageFiles.map(async (photo, index) => {
+    imageFiles.map(async (photo, _index) => {
       try {
         const [compressed, thumbnail] = await Promise.all([
           compressImage(photo),
@@ -180,7 +180,7 @@ export async function submitReport(reportData, evidenceFiles, user) {
   );
 
   const videoUrlsPromise = Promise.all(
-    videoFiles.map(async (video, index) => {
+    videoFiles.map(async (video, _index) => {
       try {
         const uniqueId = crypto.randomUUID();
         const safeName = safeFileName(video.name);
@@ -433,7 +433,7 @@ export async function resolveReport(
 
   // Upload evidence photos in parallel
   const evidenceUrls = await Promise.all(
-    evidencePhotos.map(async (photo, index) => {
+    evidencePhotos.map(async (photo, _index) => {
       const compressed = await compressImage(photo);
       const safeName = safeFileName(photo.name);
       const photoRef = storageMod.ref(storageInst, `evidence/${crypto.randomUUID()}_${safeName}`);
