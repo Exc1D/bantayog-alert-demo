@@ -111,7 +111,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
             <div className="text-[11px] text-textMuted dark:text-dark-textMuted mt-0.5 flex items-center gap-1.5">
               <span>{formatTimeAgo(report.timestamp)}</span>
               <span className="text-border">&bull;</span>
-              <span>{report.reporter?.name || 'Anonymous'}</span>
+              <span>{sanitizeText(report.reporter?.name) || 'Anonymous'}</span>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 shrink-0">

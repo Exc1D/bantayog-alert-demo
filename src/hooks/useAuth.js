@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { doc, setDoc, getDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { db, getAuthInstance, getStorageInstance } from '../utils/firebaseConfig';
 import { captureException, addBreadcrumb } from '../utils/sentry';
@@ -312,9 +312,14 @@ export function useAuth() {
     return true;
   };
 
-  const isAdmin =
-    userProfile?.role?.startsWith('admin_') || userProfile?.role === 'superadmin_provincial';
-  const isSuperAdmin = userProfile?.role === 'superadmin_provincial';
+  const isAdmin = useMemo(
+    () => userProfile?.role?.startsWith('admin_') || userProfile?.role === 'superadmin_provincial',
+    [userProfile?.role]
+  );
+  const isSuperAdmin = useMemo(
+    () => userProfile?.role === 'superadmin_provincial',
+    [userProfile?.role]
+  );
 
   return {
     user,
