@@ -321,8 +321,11 @@ export async function submitReport(reportData, evidenceFiles, user) {
 export async function upvoteReport(reportId, userId) {
   if (!userId) throw new Error('Authentication required to upvote.');
 
+  // Write lastEngageAt for server-side 5s rate limit check
+  const rateLimitRef = doc(db, 'rateLimits', userId);
   const reportRef = doc(db, 'reports', reportId);
   await runTransaction(db, async (transaction) => {
+    transaction.set(rateLimitRef, { lastEngageAt: serverTimestamp() }, { merge: true });
     const reportDoc = await transaction.get(reportRef);
     if (!reportDoc.exists()) throw new Error('Report not found.');
 
@@ -342,8 +345,11 @@ export async function upvoteReport(reportId, userId) {
 export async function removeUpvote(reportId, userId) {
   if (!userId) throw new Error('Authentication required to remove upvote.');
 
+  // Write lastEngageAt for server-side 5s rate limit check
+  const rateLimitRef = doc(db, 'rateLimits', userId);
   const reportRef = doc(db, 'reports', reportId);
   await runTransaction(db, async (transaction) => {
+    transaction.set(rateLimitRef, { lastEngageAt: serverTimestamp() }, { merge: true });
     const reportDoc = await transaction.get(reportRef);
     if (!reportDoc.exists()) throw new Error('Report not found.');
 

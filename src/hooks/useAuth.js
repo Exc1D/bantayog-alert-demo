@@ -233,7 +233,7 @@ export function useAuth() {
 
     const avatarRef = ref(
       storageInstance,
-      `avatars/${authInstance.currentUser.uid}/${Date.now()}-${file.name}`
+      `avatars/${authInstance.currentUser.uid}/${crypto.randomUUID()}-${file.name}`
     );
     await uploadBytes(avatarRef, file);
     const photoURL = await getDownloadURL(avatarRef);

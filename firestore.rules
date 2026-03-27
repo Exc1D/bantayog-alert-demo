@@ -241,6 +241,7 @@ service cloud.firestore {
       // Update: Moderators/admins can update specific fields only (not unrestricted)
       // Regular users can only update engagement (upvotes)
       allow update: if isModerator()
+        && canEngageReportNow()
         && request.resource.data.diff(resource.data).affectedKeys()
              .hasOnly(['verification', 'disaster', 'engagement', 'location', 'media'])
         || (

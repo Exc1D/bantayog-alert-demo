@@ -101,6 +101,20 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "anonymousAccounts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "fingerprint",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "linked",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
