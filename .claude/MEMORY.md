@@ -156,6 +156,70 @@ Ran 4 parallel review agents (security audit, code quality, edge case QA, senior
 ### Key Lessons Learned
 Parallel subagent pattern: 4 phases x ~3 agents = 12 agents across 4 sessions, all merged cleanly. Key challenge was coordinating pushes to the same branch -- resolved by having all agents target the same named branch from main. Prettier was the consistent CI failure mode: every phase had a formatting error from slightly non-standard agent output.
 
+## Recent Work (2026-03-27 - Session 2)
+
+### Pre-Flight Verification ✅
+All 509 tests pass, Prettier clean, build succeeds (3.52s). Ready to deploy.
+
+### Firestore Rules Compile Error — Fixed Immediately
+Three bugs from yesterday's session were caught on deploy:
+1. `tags.map(t => isValidTag(t))` — `.map()` + arrow functions not valid in Firestore Rules
+2. `!in` → `!(x in list)` syntax error at line 243
+3. OR-chain `is list || isValidTagsArray(...)` short-circuited tag validation
+Fix: explicit index-based validation (Firestore Rules disallows recursion). Committed `1423541`.
+
+### 4-Review-Agent Pass — 24 Issues Found
+Ran qa-security-reviewer, qa-edge-hunter, feature-dev:code-reviewer, exxeed in parallel.
+
+#### Critical (C1-C5) — Fix Immediately
+| ID | Issue | File | Fix |
+|----|-------|------|-----|
+| C1 | XSS: description rendered without sanitizeText() | FeedPost.jsx:228, DisasterMarker.jsx:135 | Apply sanitizeText() |
+| C2 | firebase-messaging-sw.js missing | public/ (file doesn't exist) | Create service worker |
+| C3 | Map loads ALL reports client-side | useReports.js, LeafletMap.jsx | Add where('verification.status','!=','resolved') query + composite index |
+| C4 | useGeolocation effect loop — requestLocation not in useCallback | useGeolocation.js:75-81 | Wrap requestLocation in useCallback, restructure effect |
+| C5 | useRateLimit async not awaited — try/catch misses Promise rejections | useRateLimit.js:78 | Make performAction async, await actionFn() |
+
+#### High Priority (H1-H9)
+| ID | Issue | Fix |
+|----|-------|-----|
+| H1 | userRole() get() per request — expensive at scale | Custom Claims via Cloud Function |
+| H2 | No Firestore emulator tests | Add tests/emulator/rules.test.js + CI job |
+| H3 | No authenticated E2E flows | Add 4 Playwright specs |
+| H4 | Weather 24 parallel API calls — OpenWeather quota risk | Batch client-side now, Cloud Function long-term |
+| H5 | EngagementButtons upvote race — stale closure | Re-read report.engagement.upvotedBy from prop |
+| H6 | Alt text "Report" — WCAG violation | Descriptive alt with type+index+municipality |
+| H7 | No upvote rate limiting | Add 5s cooldown in Firestore rules |
+| H8 | Anonymous account proliferation | Device fingerprint + Cloud Function linking |
+| H9 | safeFileName Date.now() collision | Replace with crypto.randomUUID() |
+
+#### Medium Priority (M1-M9)
+| ID | Issue | Fix |
+|----|-------|-----|
+| M1 | submitReport 200+ lines | Extract uploadMediaFiles, fetchWeatherContext, buildReportDocument |
+| M2 | upvotedBy array unbounded — 1MB Firestore limit | Migrate to reports/{id}/upvotes/{userId} subcollection |
+| M3 | RBAC in firestore.rules AND rbac.js — drift risk | Canonical rbacConfig.js + CI check |
+| M4 | ReportDetailCard in App.jsx (340 lines) | Extract to src/components/Feed/ReportDetailCard.jsx |
+| M5 | CI uses npm install not npm ci | Change to npm ci in ci.yml |
+| M6 | Reporter name user-controlled — impersonation risk | Force user.displayName, isValidReporterName() rules |
+| M7 | useAuth isAdmin/isSuperAdmin not memoized | Wrap in useMemo |
+| M8 | Draft loading clears manualMunicipality silently | Add isLoadingDraft flag, skip guard during load |
+| M9 | Anonymous role='' bypass in rules | Add isAnonymous() function, return 'anonymous' explicitly |
+
+### Execution Plan
+Plan saved: `.planning/review-fixes-plan-2026-03-27.md`
+- Phase 1: C1-C5 (Critical) — 5 issues, client-side only
+- Phase 2: H1-H9 (High) — 9 issues, includes Cloud Functions (H1, H4, H8)
+- Phase 3: M1-M9 (Medium) — 9 issues
+
+Cloud Functions needed (functions/ dir has: index.js, notifications.js, weatherProxy.js, cleanupDemoData.mjs):
+- `syncUserClaims` — set Custom Claims at login (H1)
+- `getAllMunicipalitiesWeather` — batch weather API (H4 long-term)
+- `onAnonymousAuth` — fingerprint linking for anonymous accounts (H8)
+
+### Firestore Rules Fix Commit
+`1423541` — fix(firestore.rules): compile errors from invalid syntax
+
 ## Recent Work (2026-03-27)
 
 ### QA Fixes — PR #103 + PR #104
@@ -200,16 +264,37 @@ Parallel subagent pattern: 4 phases x ~3 agents = 12 agents across 4 sessions, a
 # currentDate
 Today's date is 2026-03-27.
 
-## Next Session — Pre-Flight Verification
+## Next Session — Execute Review Fixes Plan
 
-Run the full test suite to verify all 22 fixes from today's session didn't break anything:
-
+### Pre-Flight
 ```bash
-npm ci && npm run format:check && npm run test:run && npm run build
+git checkout main && git pull origin main && npm ci && npm run format:check && npm run test:run && npm run build
 ```
 
-Key things to verify:
-- All vitest unit tests pass (especially `geoFencing.stress.test.js`)
-- Prettier formatting passes
-- Production build succeeds
-- CI passes on `main`
+### Phase 1 — Critical (C1-C5)
+Execute C1-C5 from `.planning/review-fixes-plan-2026-03-27.md`
+
+1. **C1 (XSS)**: `sanitizeText()` on description in FeedPost.jsx + DisasterMarker.jsx
+2. **C2 (FCM SW)**: Create `public/firebase-messaging-sw.js`
+3. **C3 (Map)**: Add `where('verification.status','!=','resolved')` to useReports; remove client filter; add composite index
+4. **C4 (Geolocation)**: `useCallback` for `requestLocation` + restructure effect deps
+5. **C5 (async)**: `async`/`await` in `performAction` in useRateLimit.js
+
+Post-Phase1: `npm run format:check && npm run test:run && npm run build && firebase deploy --only hosting,firestore`
+
+### Phase 2 — High (H1-H9) — After Phase 1
+Client-side (parallel): H3, H4 batching, H5, H6, H7, H9
+Cloud Functions (separate): H1 (syncUserClaims), H4 long-term, H8 (onAnonymousAuth)
+
+### Phase 3 — Medium (M1-M9) — After Phase 2
+All client-side. Execute after Phase 2 complete.
+
+### Key Files for Phase 1
+- `src/components/Feed/FeedPost.jsx` (C1, H6, M6)
+- `src/components/Map/DisasterMarker.jsx` (C1)
+- `public/firebase-messaging-sw.js` (C2 — CREATE)
+- `src/hooks/useReports.js` (C3, H7, H9, M1, M2, M6)
+- `src/hooks/useGeolocation.js` (C4)
+- `src/hooks/useRateLimit.js` (C5)
+- `firestore.rules` (C3 index, H7, M6, M9)
+- `firebase.json` (C3 composite index)
