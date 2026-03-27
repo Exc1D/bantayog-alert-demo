@@ -87,9 +87,16 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
   }, []);
 
   // Auto-save draft when form data changes
+  // NOTE: Only save description (not barangay/street) to exclude sensitive location data from localStorage
   useEffect(() => {
-    if (isOpen && (formData.description || formData.barangay || formData.street)) {
-      const draftData = { reportType, formData, manualMunicipality, step };
+    if (isOpen && formData.description) {
+      const draftData = {
+        reportType,
+        // Only persist description - exclude barangay/street which are specific location identifiers
+        formData: { description: formData.description },
+        manualMunicipality,
+        step,
+      };
       saveDraft(draftData);
     }
   }, [formData, reportType, manualMunicipality, step, isOpen]);
