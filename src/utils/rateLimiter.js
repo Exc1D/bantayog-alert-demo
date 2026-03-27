@@ -35,11 +35,10 @@ function setHistory(history) {
   }
 }
 
-function cleanExpiredEntries(actionType) {
-  const history = getHistory();
+function cleanExpiredEntries(history, actionType) {
   const config = RATE_LIMIT_CONFIG[actionType];
 
-  if (!config || !history[actionType]) return;
+  if (!config || !history[actionType]) return history;
 
   if (!Array.isArray(history[actionType])) {
     console.error(
@@ -49,7 +48,7 @@ function cleanExpiredEntries(actionType) {
     );
     delete history[actionType];
     setHistory(history);
-    return;
+    return history;
   }
 
   const now = Date.now();
@@ -58,6 +57,7 @@ function cleanExpiredEntries(actionType) {
   history[actionType] = history[actionType].filter((timestamp) => timestamp > windowStart);
 
   setHistory(history);
+  return history;
 }
 
 export function checkLimit(actionType) {
@@ -68,9 +68,7 @@ export function checkLimit(actionType) {
     return { allowed: true, remaining: Infinity, resetTime: 0 };
   }
 
-  cleanExpiredEntries(actionType);
-
-  const history = getHistory();
+  const history = cleanExpiredEntries(getHistory(), actionType);
   const attempts = history[actionType] || [];
   const remaining = Math.max(0, config.maxAttempts - attempts.length);
 
