@@ -6,7 +6,7 @@ export default function TabNavigation({ activeTab, onTabChange }) {
   return (
     <nav
       className="sticky top-[60px] z-40 bg-white dark:bg-dark-card dark:backdrop-blur-sm border-b border-border/60 dark:border-dark-border"
-      aria-label="Main navigation"
+      aria-label="Tab navigation"
     >
       <div className="max-w-[1400px] mx-auto px-3 lg:px-6 flex" role="tablist">
         {TABS.filter((tab) => !tab.adminOnly || isAdmin).map((tab) => {
