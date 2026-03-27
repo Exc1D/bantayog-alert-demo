@@ -161,6 +161,8 @@ export default function LeafletMap({ reports = [], onReportClick, selectedReport
 
   const filteredReports = useMemo(() => {
     return reports.filter((report) => {
+      // Prevent null/invalid locations from reaching DisasterMarker and crashing the map
+      if (!report.location?.lat || !report.location?.lng) return false;
       if (filters.municipality !== 'all' && report.location?.municipality !== filters.municipality)
         return false;
       return true;
