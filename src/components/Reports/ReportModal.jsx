@@ -119,9 +119,23 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
     }
   }, [isOpen, addToast]);
 
-  const municipality = location
-    ? resolveMunicipality(location.lat, location.lng).municipality
+  const resolvedLocation = location
+    ? resolveMunicipality(location.lat, location.lng)
+    : null;
+  const municipality = resolvedLocation
+    ? resolvedLocation.municipality
     : manualMunicipality || null;
+
+  // Warn when report location falls outside Camarines Norte province boundaries
+  useEffect(() => {
+    if (resolvedLocation?.isOutsideProvince) {
+      addToast(
+        'Report location is outside Camarines Norte. Municipality was estimated using nearest centroid.',
+        'warning',
+        { duration: 6000 }
+      );
+    }
+  }, [resolvedLocation?.isOutsideProvince, addToast]);
 
   // Build an effective location from GPS or manual selection
   const effectiveLocation =
