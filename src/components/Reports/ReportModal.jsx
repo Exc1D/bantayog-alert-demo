@@ -135,6 +135,14 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
     }
   }, [resolvedLocation?.isOutsideProvince, addToast]);
 
+  // Guard: reject manualMunicipality values not in our coordinate map
+  useEffect(() => {
+    if (manualMunicipality && !MUNICIPALITY_COORDS[manualMunicipality]) {
+      addToast('Selected municipality is not supported. Please choose from the list.', 'error');
+      setManualMunicipality(null);
+    }
+  }, [manualMunicipality, addToast, setManualMunicipality]);
+
   // Build an effective location from GPS or manual selection
   const effectiveLocation =
     location ||
@@ -152,7 +160,6 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
   };
 
   const handleEvidenceContinue = () => {
-    setFormData((prev) => ({ ...prev, description: '' }));
     setStep(3);
   };
 
@@ -393,6 +400,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
                 disabled={
                   isSubmitting ||
                   !formData.description ||
+                  formData.description.trim().length < 10 ||
                   !effectiveLocation ||
                   !rateLimit.isAllowed
                 }
