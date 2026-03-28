@@ -368,7 +368,7 @@ export default function WeatherCard({ municipality, weather, forecast, compact =
           <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Wind
           </p>
-          <p className="font-bold text-xs mt-0.5">
+          <p className="font-bold text-xs mt-0.5 dark:text-white">
             {weather.windSpeed ?? 'N/A'} kph {weather.windDirection ?? ''}
           </p>
         </div>
@@ -376,19 +376,19 @@ export default function WeatherCard({ municipality, weather, forecast, compact =
           <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Humidity
           </p>
-          <p className="font-bold text-xs mt-0.5">{weather.humidity ?? 0}%</p>
+          <p className="font-bold text-xs mt-0.5 dark:text-white">{weather.humidity ?? 0}%</p>
         </div>
         <div className="bg-stone-50 dark:bg-dark-elevated rounded-lg p-2 text-center">
           <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Pressure
           </p>
-          <p className="font-bold text-xs mt-0.5">{weather.pressure ?? 0} hPa</p>
+          <p className="font-bold text-xs mt-0.5 dark:text-white">{weather.pressure ?? 0} hPa</p>
         </div>
         <div className="bg-stone-50 dark:bg-dark-elevated rounded-lg p-2 text-center">
           <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Visibility
           </p>
-          <p className="font-bold text-xs mt-0.5">
+          <p className="font-bold text-xs mt-0.5 dark:text-white">
             {weather.visibility ? `${(weather.visibility / 1000).toFixed(1)} km` : 'N/A'}
           </p>
         </div>
