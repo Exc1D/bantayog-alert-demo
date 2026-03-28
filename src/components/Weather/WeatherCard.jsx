@@ -324,7 +324,7 @@ export default function WeatherCard({ municipality, weather, forecast, compact =
       <div className="bg-white dark:bg-dark-card rounded-xl p-3 shadow-card border border-borderLight dark:border-dark-border hover:shadow-card-hover transition-shadow">
         <div className="flex items-center justify-between gap-2">
           <h3 className="font-bold text-xs truncate dark:text-white min-w-0">{municipality}</h3>
-          <span className="text-xl flex-shrink-0 dark:text-blue-400">{weatherIcon}</span>
+          <span className="w-8 h-8 flex-shrink-0 dark:text-blue-400">{weatherIcon}</span>
         </div>
         <div className="flex items-baseline gap-0.5 mt-1">
           <span className="text-xl font-bold dark:text-white">{weather.temperature}</span>
@@ -349,7 +349,7 @@ export default function WeatherCard({ municipality, weather, forecast, compact =
               {weather.description || weather.condition}
             </p>
           </div>
-          <span className="text-2xl w-12 h-12 flex-shrink-0 dark:text-blue-400">{weatherIcon}</span>
+          <span className="w-10 h-10 flex-shrink-0 dark:text-blue-400">{weatherIcon}</span>
         </div>
         <div className="flex items-baseline gap-0.5 mt-2">
           <span className="text-3xl font-display dark:text-white">{weather.temperature}</span>
