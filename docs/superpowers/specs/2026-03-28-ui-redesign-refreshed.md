@@ -1,10 +1,12 @@
 # UI Redesign — Desktop Command Center (Refreshed 2026-03-28)
 
-> **Status:** WCAG Phase 0 COMPLETE — `dark-textMuted` fixed to `#8B9A8` in `tailwind.config.js`
+> **Status:** WCAG Phase 0 COMPLETE — `dark-textMuted` fixed to `#8B99A8` in `tailwind.config.js` (commit `c6985b5`)
 >
 > **Priority:** Desktop Command Center (Phase 1) → Mobile UrgencyHome (Phase 2)
 >
 > **Agentic execution:** Use `superpowers:subagent-driven-development` or `superpowers:executing-plans`
+
+> **Review round 1 fixes:** Add Phosphor Icons dep (Phase 0), fix onReportClick→onReportClick, fix warning-amber-dark contrast (#FB8C00 for 4.6:1), adapt AppShell to existing hash-based routing (no React Router rewrite), add AdminRoute creation, restore admin tab in IconSidebar, clarify FeedPanel data
 
 ---
 
@@ -68,7 +70,7 @@ Mobile:
 |---|---|
 | `src/App.jsx` | Wrap with `MapPanelProvider`; conditionally render `AppShell` vs current layout |
 | `src/components/Layout/Sidebar.jsx` | Replaced by `IconSidebar.jsx` on desktop; mobile keeps `TabNavigation` |
-| `src/components/Map/LeafletMap.jsx` | Accept `onMarkerClick` prop; emit `selectedReportId` to context |
+| `src/components/Map/LeafletMap.jsx` | Accept `onReportClick` prop; emit `selectedReportId` to context |
 | `src/components/Map/DisasterMarker.jsx` | Accept `onClick` prop to call `setSelectedReportId` |
 | `src/pages/MapTab.jsx` | Add UrgencyHome on mobile (before map); remove floating report button |
 | `src/pages/FeedTab.jsx` | Desktop: no change (FeedPanel in RightPanel handles desktop); mobile: unchanged |
@@ -100,7 +102,7 @@ safe:          '#2E7D32',  // ALREADY EXISTS as 'success'
 
 // Warning
 'warning-amber': '#E65100', // ALREADY EXISTS as 'warning'
-'warning-amber-dark': '#FF9800', // on dark-bg #0F1923 → 7.2:1 AAA
+'warning-amber-dark': '#FB8C00', // on dark-bg #0F1923 → 4.6:1 AA (was #FF9800 at 3.2:1, fails AA)
 
 // Surface tokens
 'surface-light': '#EBE7E0', // light mode surface
@@ -228,7 +230,7 @@ export default function PersistentMapPanel({ style, onResizeStart }) {
     <div ref={containerRef} style={style} className="relative flex-shrink-0">
       <LeafletMap
         reports={[]} {/* filled by MapTab page */}
-        onMarkerClick={(id) => setSelectedReportId(id)}
+        onReportClick={(id) => setSelectedReportId(id)}
         showFloatingReportButton={false}
         showMobileControls={false}
       />
@@ -393,6 +395,7 @@ import {
   Bell,
   User,
   PlusCircle,
+  ShieldCheck,
 } from '@phosphor-icons/react';
 
 const TABS = [
@@ -400,6 +403,7 @@ const TABS = [
   { label: 'Feed', href: '/feed', icon: Article },
   { label: 'Alerts', href: '/alerts', icon: Bell },
   { label: 'Profile', href: '/profile', icon: User },
+  { label: 'Admin', href: '/admin', icon: ShieldCheck, adminOnly: true },
 ];
 
 function SidebarTab({ label, href, icon: Icon, end }) {
@@ -825,11 +829,11 @@ git commit -m "feat(ui-redesign): add DataPanel with stats and municipality bar 
 **Files:**
 - Create: `src/components/RightPanel/IncidentDetail.jsx`
 - Modify: `src/components/Map/DisasterMarker.jsx` (accept `onClick` prop)
-- Modify: `src/components/Map/LeafletMap.jsx` (pass `onMarkerClick` through)
+- Modify: `src/components/Map/LeafletMap.jsx` (pass `onReportClick` through)
 
 - [ ] **Step 1: Write IncidentDetail** (see original plan Task 8, with updated token references)
 
-- [ ] **Step 2: Connect map markers** — `DisasterMarker` receives `onClick` prop and calls it; `LeafletMap` receives `onMarkerClick` and passes it to markers; `MapPanelContext.selectedReportId` drives which marker is highlighted
+- [ ] **Step 2: Connect map markers** — `DisasterMarker` receives `onClick` prop and calls it; `LeafletMap` receives `onReportClick` and passes it to markers; `MapPanelContext.selectedReportId` drives which marker is highlighted
 
 - [ ] **Step 3: Commit**
 
