@@ -34,7 +34,7 @@ export default {
           border: '#2A3F55',
           text: '#E1E4E8',
           textLight: '#8B99A8',
-          textMuted: '#5A6978',
+          textMuted: '#8B99A8',
           accent: '#EF5350',
         },
       },

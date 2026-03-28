@@ -269,14 +269,14 @@ function MiniForecast({ forecast }) {
       <div className="flex justify-between gap-1">
         {displayForecast.map((day) => (
           <div key={day.date} className="flex flex-col items-center">
-            <span className="text-[9px] font-medium text-textLight dark:text-dark-textMuted">
+            <span className="text-[9px] font-medium text-textLight dark:text-dark-textLight">
               {getDayName(day.date)}
             </span>
             <span className="text-base my-0.5 dark:text-blue-400">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>
             <span className="text-[10px] font-bold text-text dark:text-white">
               {day.tempMax}&deg;
             </span>
-            <span className="text-[9px] text-textLight dark:text-dark-textMuted">
+            <span className="text-[9px] text-textLight dark:text-dark-textLight">
               {day.tempMin}&deg;
             </span>
           </div>
