@@ -269,14 +269,14 @@ function MiniForecast({ forecast }) {
       <div className="flex justify-between gap-1">
         {displayForecast.map((day) => (
           <div key={day.date} className="flex flex-col items-center">
-            <span className="text-[9px] font-medium text-textLight dark:text-dark-textLight">
+            <span className="text-[9px] font-medium text-textLight dark:text-dark-textMuted">
               {getDayName(day.date)}
             </span>
-            <span className="text-base my-0.5">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>
-            <span className="text-[10px] font-bold text-text dark:text-dark-text">
+            <span className="text-base my-0.5 dark:text-blue-400">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>
+            <span className="text-[10px] font-bold text-text dark:text-white">
               {day.tempMax}&deg;
             </span>
-            <span className="text-[9px] text-textLight dark:text-dark-textLight">
+            <span className="text-[9px] text-textLight dark:text-dark-textMuted">
               {day.tempMin}&deg;
             </span>
           </div>
@@ -298,7 +298,7 @@ function CompactForecast({ forecast }) {
           <span className="text-[8px] text-textLight dark:text-dark-textLight">
             {getDayName(day.date)}
           </span>
-          <span className="text-xs">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>
+          <span className="text-xs dark:text-blue-400">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>
         </div>
       ))}
     </div>
