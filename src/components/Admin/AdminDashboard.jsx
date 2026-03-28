@@ -13,14 +13,9 @@ import ResolutionModal from './ResolutionModal';
 import LoadingSpinner from '../Common/LoadingSpinner';
 import { FEATURE_FLAGS } from '../../config/featureFlags';
 import FeatureFlag, { FeatureFlagDisabled } from '../Common/FeatureFlag';
+import { SEV_STYLES } from './sevStyles';
 
 const FEED_RESOLVED_RETENTION_MS = 24 * 60 * 60 * 1000;
-
-const SEV_STYLES = {
-  critical: 'bg-red-600 text-white',
-  moderate: 'bg-amber-500 text-white',
-  minor: 'bg-emerald-600 text-white',
-};
 
 // Sort client-side by timestamp descending (avoids composite index requirement)
 function getTimestampValue(doc) {

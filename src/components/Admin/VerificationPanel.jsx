@@ -10,12 +10,7 @@ import RequirePermission, { AccessDenied } from '../Common/RequirePermission';
 import { PERMISSIONS } from '../../utils/rbac';
 import { SEVERITY_OPTIONS } from '../../utils/constants';
 import DisasterIcon from '../Common/DisasterIcon';
-
-const SEV_STYLES = {
-  critical: 'bg-red-600 text-white',
-  moderate: 'bg-amber-500 text-white',
-  minor: 'bg-emerald-600 text-white',
-};
+import { SEV_STYLES } from './sevStyles';
 
 // Disaster types available for classification (exclude 'pending')
 const CLASSIFIABLE_TYPES = DISASTER_TYPES.filter((t) => t.id !== 'pending');

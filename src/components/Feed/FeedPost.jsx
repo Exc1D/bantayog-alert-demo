@@ -70,7 +70,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
       <div className="p-3.5">
         <div className="flex justify-between items-start gap-2">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-primary dark:text-blue-400">
               <DisasterIcon typeId={report.disaster?.type} size={24} className="text-lg" />
               <span className="font-bold text-sm uppercase tracking-wide truncate dark:text-dark-text">
                 {disasterType.label}
@@ -81,7 +81,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
                   width="14"
                   height="14"
                   viewBox="0 0 24 24"
-                  fill="#1B2A41"
+                  fill="currentColor"
                   stroke="white"
                   strokeWidth="2"
                 >

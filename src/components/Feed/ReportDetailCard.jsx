@@ -3,9 +3,9 @@ import { sanitizeText } from '../../utils/sanitization';
 
 export default function ReportDetailCard({ report, onViewFull }) {
   const sevStyles = {
-    critical: 'bg-red-600 text-white',
-    moderate: 'bg-amber-500 text-white',
-    minor: 'bg-emerald-600 text-white',
+    critical: 'bg-red-600 dark:bg-red-900 text-white dark:text-red-200',
+    moderate: 'bg-amber-500 dark:bg-amber-700 text-white dark:text-amber-100',
+    minor: 'bg-emerald-600 dark:bg-emerald-900 text-white dark:text-emerald-200',
   };
   const statusStyles = {
     pending: 'bg-stone-200 text-stone-700',
