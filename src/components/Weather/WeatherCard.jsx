@@ -272,7 +272,7 @@ function MiniForecast({ forecast }) {
             <span className="text-[9px] font-medium text-textLight dark:text-dark-textLight">
               {getDayName(day.date)}
             </span>
-            <span className="text-lg my-1">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>
+            <span className="text-base my-0.5">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>
             <span className="text-[10px] font-bold text-text dark:text-dark-text">
               {day.tempMax}&deg;
             </span>
@@ -322,12 +322,12 @@ export default function WeatherCard({ municipality, weather, forecast, compact =
   if (compact) {
     return (
       <div className="bg-white dark:bg-dark-card rounded-xl p-3 shadow-card border border-borderLight dark:border-dark-border hover:shadow-card-hover transition-shadow">
-        <div className="flex items-center justify-between">
-          <h3 className="font-bold text-xs truncate dark:text-dark-text">{municipality}</h3>
-          <span className="text-xl">{weatherIcon}</span>
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="font-bold text-xs truncate dark:text-white min-w-0">{municipality}</h3>
+          <span className="text-xl flex-shrink-0">{weatherIcon}</span>
         </div>
         <div className="flex items-baseline gap-0.5 mt-1">
-          <span className="text-xl font-bold dark:text-dark-text">{weather.temperature}</span>
+          <span className="text-xl font-bold dark:text-white">{weather.temperature}</span>
           <span className="text-xs text-textLight dark:text-dark-textLight">&deg;C</span>
         </div>
         <p className="text-[10px] text-textMuted dark:text-dark-textMuted capitalize truncate">
@@ -342,21 +342,21 @@ export default function WeatherCard({ municipality, weather, forecast, compact =
     <div className="bg-white dark:bg-dark-card rounded-xl shadow-card border border-borderLight dark:border-dark-border overflow-hidden hover:shadow-card-hover transition-shadow">
       {/* Header */}
       <div className="bg-gradient-to-r from-primary to-secondary text-white p-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <div>
-            <h3 className="font-display text-base">{municipality}</h3>
-            <p className="text-xs text-white/50 capitalize dark:text-dark-textLight">
+            <h3 className="font-display text-base dark:text-white">{municipality}</h3>
+            <p className="text-xs text-white/50 dark:text-white/50 capitalize">
               {weather.description || weather.condition}
             </p>
           </div>
-          <span className="text-3xl">{weatherIcon}</span>
+          <span className="text-2xl w-12 h-12 flex-shrink-0">{weatherIcon}</span>
         </div>
         <div className="flex items-baseline gap-0.5 mt-2">
-          <span className="text-3xl font-display">{weather.temperature}</span>
-          <span className="text-sm text-white/60 dark:text-dark-textLight">&deg;C</span>
+          <span className="text-3xl font-display dark:text-white">{weather.temperature}</span>
+          <span className="text-sm text-white/60 dark:text-white/60">&deg;C</span>
         </div>
         {weather.feelsLike && (
-          <p className="text-[10px] text-white/40 mt-0.5 dark:text-dark-textMuted">
+          <p className="text-[10px] text-white/40 mt-0.5 dark:text-white/40">
             Feels like {weather.feelsLike}&deg;C
           </p>
         )}
@@ -364,7 +364,7 @@ export default function WeatherCard({ municipality, weather, forecast, compact =
 
       {/* Details */}
       <div className="p-3 grid grid-cols-2 gap-2">
-        <div className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-2 text-center">
+        <div className="bg-stone-50 dark:bg-dark-elevated rounded-lg p-2 text-center">
           <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Wind
           </p>
@@ -372,19 +372,19 @@ export default function WeatherCard({ municipality, weather, forecast, compact =
             {weather.windSpeed ?? 'N/A'} kph {weather.windDirection ?? ''}
           </p>
         </div>
-        <div className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-2 text-center">
+        <div className="bg-stone-50 dark:bg-dark-elevated rounded-lg p-2 text-center">
           <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Humidity
           </p>
           <p className="font-bold text-xs mt-0.5">{weather.humidity ?? 0}%</p>
         </div>
-        <div className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-2 text-center">
+        <div className="bg-stone-50 dark:bg-dark-elevated rounded-lg p-2 text-center">
           <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Pressure
           </p>
           <p className="font-bold text-xs mt-0.5">{weather.pressure ?? 0} hPa</p>
         </div>
-        <div className="bg-stone-50 dark:bg-stone-800/50 rounded-lg p-2 text-center">
+        <div className="bg-stone-50 dark:bg-dark-elevated rounded-lg p-2 text-center">
           <p className="text-[10px] text-textMuted dark:text-dark-textMuted uppercase tracking-wider font-semibold">
             Visibility
           </p>

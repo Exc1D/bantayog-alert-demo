@@ -22,7 +22,7 @@ export default {
         borderLight: '#E8E3DA',
         text: '#1B2A41',
         textLight: '#5D6B7E',
-        textMuted: '#9CA8B7',
+        textMuted: '#6B7280',
         surface: '#EBE7E0',
         alertRed: '#C62828',
         alertAmber: '#E65100',

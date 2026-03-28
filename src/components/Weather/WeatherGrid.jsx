@@ -58,7 +58,7 @@ export default function WeatherGrid({ weatherData, forecastData, loading }) {
           <button
             key={municipality}
             onClick={() => setSelectedMunicipality(municipality)}
-            className="text-left"
+            className="text-left focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-1 rounded-xl"
           >
             <WeatherCard
               municipality={municipality}

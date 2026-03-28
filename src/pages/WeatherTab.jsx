@@ -18,10 +18,11 @@ export default function WeatherTab() {
             height="22"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#2ec4b6"
+            stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            className="text-primary dark:text-teal-400"
           >
             <path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z" />
           </svg>

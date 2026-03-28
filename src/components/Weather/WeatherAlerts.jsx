@@ -17,26 +17,28 @@ const ALERT_COLORS = {
 export default function WeatherAlerts({ alerts = [] }) {
   if (alerts.length === 0) {
     return (
-      <div className="bg-green-50 border border-success rounded-xl p-3">
+      <div className="bg-green-50 dark:bg-green-900/30 border border-success rounded-xl p-3">
         <div className="flex items-center gap-2">
-          <svg
-            aria-hidden="true"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#2E7D32"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
+          <span className="text-success dark:text-green-400">
+            <svg
+              aria-hidden="true"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </span>
           <div>
-            <p className="font-bold text-success text-xs uppercase tracking-wider">
+            <p className="font-bold text-success dark:text-green-400 text-xs uppercase tracking-wider">
               No Active Weather Alerts
             </p>
-            <p className="text-[10px] text-green-700 mt-0.5">
+            <p className="text-[10px] text-green-700 dark:text-green-400 mt-0.5">
               Conditions are normal across the province
             </p>
           </div>
@@ -52,7 +54,7 @@ export default function WeatherAlerts({ alerts = [] }) {
         return (
           <div key={index} className={`${colors.bg} border-l-4 ${colors.border} rounded-r-xl p-3`}>
             <div className="flex items-start gap-2">
-              <span className="text-sm">{colors.icon}</span>
+              <span className="text-sm flex-shrink-0">{colors.icon}</span>
               <div>
                 <p className={`font-bold text-xs ${colors.text} uppercase tracking-wide`}>
                   {alert.type?.replace('-', ' ')} {alert.severity}
