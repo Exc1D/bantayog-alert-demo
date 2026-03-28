@@ -6,7 +6,7 @@ export default function Footer({ className = '' }) {
       <p className="font-display">
         BANTAYOG ALERT &copy; {new Date().getFullYear()} &mdash; Camarines Norte PIO
       </p>
-      <p className="mt-0.5 text-textMuted dark:text-dark-textMuted">
+      <p className="mt-0.5 text-textLight dark:text-dark-textLight">
         All-Hazard Disaster Reporting System
       </p>
     </footer>

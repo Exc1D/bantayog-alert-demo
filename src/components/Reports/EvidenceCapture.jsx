@@ -140,6 +140,7 @@ export default function EvidenceCapture({ files, onFilesChange }) {
               <button
                 type="button"
                 onClick={() => handleRemove(i)}
+                aria-label="Remove evidence"
                 className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity"
               >
                 &times;

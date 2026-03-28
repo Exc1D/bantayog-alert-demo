@@ -108,7 +108,7 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
                 {report.location?.barangay && `, ${report.location.barangay}`}
               </span>
             </div>
-            <div className="text-[11px] text-textMuted dark:text-dark-textMuted mt-0.5 flex items-center gap-1.5">
+            <div className="text-[11px] text-textLight dark:text-dark-textLight mt-0.5 flex items-center gap-1.5">
               <span>{formatTimeAgo(report.timestamp)}</span>
               <span className="text-border">&bull;</span>
               <span>{sanitizeText(report.reporter?.name) || 'Anonymous'}</span>
@@ -212,6 +212,8 @@ export default memo(function FeedPost({ report, onViewMap, onRequireSignUp }) {
                 <button
                   key={i}
                   onClick={() => setImageIndex(i)}
+                  aria-label={`View photo ${i + 1} of ${photos.length}`}
+                  aria-pressed={i === imageIndex}
                   className={`w-1.5 h-1.5 rounded-full transition-colors ${
                     i === imageIndex ? 'bg-white' : 'bg-white/40'
                   }`}

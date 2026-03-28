@@ -332,8 +332,8 @@ export default function AdminDashboard() {
                     className="bg-white dark:bg-dark-card rounded-xl p-3 shadow-card border border-stone-100 dark:border-dark-border hover:shadow-card-hover transition-shadow"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <div
-                        className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer active:scale-[0.99]"
+                      <button
+                        type="button"
                         onClick={() => {
                           setSelectedReport(report);
                           if (activeTab === 'pending') {
@@ -342,6 +342,7 @@ export default function AdminDashboard() {
                             setShowResolveModal(true);
                           }
                         }}
+                        className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer active:scale-[0.99] w-full text-left"
                       >
                         <span className="text-lg">{disasterType.icon}</span>
                         <div className="min-w-0">
@@ -352,7 +353,7 @@ export default function AdminDashboard() {
                             {report.location?.municipality} &bull; {formatTimeAgo(report.timestamp)}
                           </p>
                         </div>
-                      </div>
+                      </button>
                       <div className="flex items-center gap-2 shrink-0">
                         <span
                           className={`${sevStyle} px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide`}

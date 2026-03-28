@@ -83,6 +83,7 @@ export default function EngagementButtons({
       <button
         onClick={handleUpvote}
         disabled={isUpvoting}
+        aria-label={`Upvote report${report.engagement?.upvotes ? `, currently ${report.engagement.upvotes} upvotes` : ''}`}
         className={`${btnClass} hover:bg-surface dark:hover:bg-dark-elevated text-textLight dark:text-dark-textLight`}
       >
         <svg
@@ -98,11 +99,12 @@ export default function EngagementButtons({
         >
           <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3" />
         </svg>
-        {report.engagement?.upvotes || 0}
+        <span>{report.engagement?.upvotes || 0}</span>
       </button>
 
       <button
         onClick={handleComments}
+        aria-label={`View comments${report.engagement?.commentCount ? `, ${report.engagement.commentCount} comments` : ''}`}
         className={`${btnClass} hover:bg-surface dark:hover:bg-dark-elevated text-textLight dark:text-dark-textLight`}
       >
         <svg
@@ -118,7 +120,7 @@ export default function EngagementButtons({
         >
           <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
         </svg>
-        {report.engagement?.commentCount || 0}
+        <span>{report.engagement?.commentCount || 0}</span>
       </button>
 
       <button

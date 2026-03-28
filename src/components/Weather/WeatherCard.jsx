@@ -276,7 +276,7 @@ function MiniForecast({ forecast }) {
             <span className="text-[10px] font-bold text-text dark:text-dark-text">
               {day.tempMax}&deg;
             </span>
-            <span className="text-[9px] text-textMuted dark:text-dark-textMuted">
+            <span className="text-[9px] text-textLight dark:text-dark-textLight">
               {day.tempMin}&deg;
             </span>
           </div>
@@ -295,7 +295,7 @@ function CompactForecast({ forecast }) {
     <div className="flex gap-1 mt-1">
       {displayForecast.map((day) => (
         <div key={day.date} className="flex flex-col items-center">
-          <span className="text-[8px] text-textMuted dark:text-dark-textMuted">
+          <span className="text-[8px] text-textLight dark:text-dark-textLight">
             {getDayName(day.date)}
           </span>
           <span className="text-xs">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>

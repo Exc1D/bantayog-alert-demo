@@ -9,7 +9,7 @@ importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-comp
 const firebaseConfig = window.__FIREBASE_CONFIG__ || {};
 
 if (!firebaseConfig.apiKey) {
-  console.warn('Firebase config not available in service worker - push notifications disabled');
+  // Push notifications disabled - no config available
 } else {
   firebase.initializeApp(firebaseConfig);
 
@@ -18,7 +18,6 @@ if (!firebaseConfig.apiKey) {
   // Handle background push messages
   messaging.onBackgroundMessage((payload) => {
     const { notification, data } = payload;
-    console.log('Firebase background message received:', payload);
 
     if (!notification) {
       return;

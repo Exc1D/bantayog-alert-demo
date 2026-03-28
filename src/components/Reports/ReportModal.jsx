@@ -304,7 +304,7 @@ export default function ReportModal({ isOpen, onClose, onAnonymousReportSubmitte
                     s.num
                   )}
                 </div>
-                <span className="text-[10px] mt-1 font-medium text-textLight dark:text-dark-textLight">
+                <span className="text-[10px] mt-1 font-medium text-text dark:text-dark-textLight">
                   {s.label}
                 </span>
               </div>

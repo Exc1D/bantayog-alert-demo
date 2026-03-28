@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bantayog-alert.web.app/sitemap.xml
+# Sitemap: https://bantayogalert.web.app/sitemap.xml

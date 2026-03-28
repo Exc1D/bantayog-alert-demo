@@ -36,7 +36,7 @@ export default memo(function Sidebar({ activeTab, onTabChange }) {
       </nav>
 
       <div className="mt-auto p-4 border-t border-border/60 dark:border-dark-border">
-        <p className="text-[10px] text-textLight/60 text-center">BANTAYOG ALERT v1.0</p>
+        <p className="text-[10px] text-textLight text-center">BANTAYOG ALERT v1.0</p>
       </div>
     </aside>
   );

@@ -57,6 +57,10 @@ export default function NotificationPrefs() {
         </div>
         <button
           onClick={() => setEditing(!editing)}
+          aria-label={
+            editing ? 'Done editing notification preferences' : 'Edit notification preferences'
+          }
+          aria-pressed={editing}
           className="text-xs text-accent hover:underline font-medium"
         >
           {editing ? 'Done' : 'Edit'}

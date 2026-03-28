@@ -87,7 +87,7 @@ export default memo(function Header({ onProfileClick }) {
           <h1 className="text-[16px] font-display tracking-wide text-primary dark:text-dark-text">
             BANTAYOG ALERT
           </h1>
-          <p className="text-[9px] font-medium text-textMuted dark:text-dark-textMuted tracking-widest uppercase">
+          <p className="text-[9px] font-medium text-textLight dark:text-dark-textLight tracking-widest uppercase">
             Camarines Norte
           </p>
         </div>

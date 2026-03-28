@@ -213,12 +213,14 @@ export default function AdminAlertsTab() {
                         <button
                           onClick={() => handleDeactivate(announcement.id)}
                           disabled={deactivatingId === announcement.id}
+                          aria-label={`Confirm deactivating ${typeLabel} announcement`}
                           className="bg-red-600 text-white rounded-lg px-2 py-1.5 text-xs font-bold hover:bg-red-700 transition-colors disabled:opacity-40"
                         >
                           {deactivatingId === announcement.id ? '...' : 'Confirm'}
                         </button>
                         <button
                           onClick={() => setConfirmDeactivateId(null)}
+                          aria-label="Cancel deactivation"
                           className="bg-stone-200 dark:bg-dark-elevated text-stone-600 dark:text-dark-textLight rounded-lg px-2 py-1.5 text-xs font-bold hover:bg-stone-300 dark:hover:bg-dark-border transition-colors"
                         >
                           Cancel

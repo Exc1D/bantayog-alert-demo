@@ -21,7 +21,7 @@ export default function TabNavigation({ activeTab, onTabChange }) {
               className={`flex-1 flex flex-col items-center justify-center gap-1 py-4 text-xs transition-all relative ${
                 isActive
                   ? 'text-primary dark:text-dark-text font-bold'
-                  : 'text-textLight hover:text-text dark:text-dark-textLight dark:hover:text-dark-text font-semibold'
+                  : 'text-text hover:text-primary dark:text-dark-textLight dark:hover:text-dark-text font-semibold'
               }`}
             >
               {tab.icon()}
