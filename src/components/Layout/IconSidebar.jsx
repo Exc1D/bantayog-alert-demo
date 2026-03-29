@@ -23,7 +23,6 @@ export default function IconSidebar({ activeTab, onTabChange }) {
   const { isAdmin } = useAuthContext();
 
   function handleClick(tabId) {
-    window.location.hash = tabId === 'map' ? '' : tabId;
     onTabChange(tabId);
   }
 
