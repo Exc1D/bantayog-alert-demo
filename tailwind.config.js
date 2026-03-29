@@ -36,6 +36,9 @@ export default {
           textLight: '#8B99A8',
           textMuted: '#8B99A8',
           accent: '#EF5350',
+          'emergency-dark': '#EF5350',
+          'safe-dark': '#4CAF50',
+          'warning-amber-dark': '#FB8C00',
         },
       },
       fontFamily: {
