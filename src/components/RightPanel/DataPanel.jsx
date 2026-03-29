@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collection, query, getDocs } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { db } from '../../utils/firebaseConfig';
 
 function MunicipalityBar({ municipality, count, maxCount }) {
   const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;

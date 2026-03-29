@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { db } from '../../utils/firebaseConfig';
 import { useMapPanel } from '../../contexts/MapPanelContext';
 import { Drop, Fire, Car, Users, Warning, Question, Bell } from '@phosphor-icons/react';
 

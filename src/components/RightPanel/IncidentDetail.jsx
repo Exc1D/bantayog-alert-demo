@@ -1,7 +1,7 @@
 import { useMapPanel } from '../../contexts/MapPanelContext';
 import {
-  X, MapPin, Clock, AlertTriangle, CheckCircle,
-  Drop, Fire, Car, Users, Warning, Question,
+  X, MapPin, Clock, Warning, CheckCircle,
+  Drop, Fire, Car, Users, Question,
 } from '@phosphor-icons/react';
 
 const DISASTER_ICONS = {
@@ -72,7 +72,7 @@ export default function IncidentDetail({ className = '' }) {
             </>
           ) : (
             <>
-              <AlertTriangle size={16} className="text-alertRed" aria-hidden="true" />
+              <Warning size={16} className="text-alertRed" aria-hidden="true" />
               <span className="text-xs font-medium text-alertRed capitalize">{report.verification?.status ?? 'Active'}</span>
             </>
           )}
