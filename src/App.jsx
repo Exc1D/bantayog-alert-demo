@@ -10,6 +10,7 @@ import ReportFormErrorBoundary from './components/Reports/ReportFormErrorBoundar
 import OfflineIndicator from './components/Common/OfflineIndicator';
 import { AuthProvider } from './contexts/AuthContext';
 import { ReportsProvider } from './contexts/ReportsContext';
+import { MapPanelProvider } from './contexts/MapPanelContext';
 import { ToastProvider } from './components/Common/Toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import SignUpPromptModal from './components/Common/SignUpPromptModal';
@@ -238,7 +239,9 @@ export default function App() {
         <ToastProvider>
           <AuthProvider>
             <ReportsProvider>
-              <AppContent />
+              <MapPanelProvider>
+                <AppContent />
+              </MapPanelProvider>
             </ReportsProvider>
           </AuthProvider>
         </ToastProvider>
