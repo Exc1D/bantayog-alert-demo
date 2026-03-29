@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, lazy, Suspense, useTransition } from 'react';
 import Header from './components/Layout/Header';
-import Sidebar from './components/Layout/Sidebar';
+import AppShell from './components/Layout/AppShell';
 import TabNavigation from './components/Layout/TabNavigation';
 import Footer from './components/Layout/Footer';
 import LoadingSpinner from './components/Common/LoadingSpinner';
@@ -145,16 +145,7 @@ function AppContent() {
       <OfflineIndicator />
       <Header onProfileClick={handleOpenProfileTab} />
 
-      {/* Desktop Sidebar - Sidebar handles its own responsive visibility */}
-      <Sidebar activeTab={activeTab} onTabChange={changeTab} />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-0 lg:ml-56" id="main-content">
-        {/* Mobile Tab Navigation - hidden on desktop */}
-        <div className="lg:hidden">
-          <TabNavigation activeTab={activeTab} onTabChange={changeTab} />
-        </div>
-
+      <AppShell activeTab={activeTab} onTabChange={changeTab}>
         <main id={`tabpanel-${activeTab}`} className="flex-1 flex flex-col min-h-0">
           <Suspense
             fallback={
@@ -166,7 +157,7 @@ function AppContent() {
             {renderTab()}
           </Suspense>
         </main>
-      </div>
+      </AppShell>
 
       {activeTab !== 'profile' && <Footer className="lg:hidden" />}
 
