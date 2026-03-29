@@ -26,6 +26,7 @@
     "docker:dev": "docker compose -f docker-compose.dev.yml up"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@sentry/react": "^10.45.0",
     "@sentry/vite-plugin": "^5.1.1",
     "@turf/boolean-point-in-polygon": "^7.3.4",

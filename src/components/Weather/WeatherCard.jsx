@@ -272,7 +272,9 @@ function MiniForecast({ forecast }) {
             <span className="text-[9px] font-medium text-textLight dark:text-dark-textLight">
               {getDayName(day.date)}
             </span>
-            <span className="text-base my-0.5 dark:text-blue-400">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>
+            <span className="text-base my-0.5 dark:text-blue-400">
+              {WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}
+            </span>
             <span className="text-[10px] font-bold text-text dark:text-white">
               {day.tempMax}&deg;
             </span>
@@ -298,7 +300,9 @@ function CompactForecast({ forecast }) {
           <span className="text-[8px] text-textLight dark:text-dark-textLight">
             {getDayName(day.date)}
           </span>
-          <span className="text-xs dark:text-blue-400">{WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}</span>
+          <span className="text-xs dark:text-blue-400">
+            {WEATHER_ICONS[day.icon] || '\u2601\uFE0F'}
+          </span>
         </div>
       ))}
     </div>

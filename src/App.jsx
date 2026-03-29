@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, lazy, Suspense, useTransition } from 'react';
 import Header from './components/Layout/Header';
-import Sidebar from './components/Layout/Sidebar';
-import TabNavigation from './components/Layout/TabNavigation';
+import AppShell from './components/Layout/AppShell';
 import Footer from './components/Layout/Footer';
 import LoadingSpinner from './components/Common/LoadingSpinner';
 import ErrorBoundary from './components/Common/ErrorBoundary';
@@ -10,6 +9,7 @@ import ReportFormErrorBoundary from './components/Reports/ReportFormErrorBoundar
 import OfflineIndicator from './components/Common/OfflineIndicator';
 import { AuthProvider } from './contexts/AuthContext';
 import { ReportsProvider } from './contexts/ReportsContext';
+import { MapPanelProvider } from './contexts/MapPanelContext';
 import { ToastProvider } from './components/Common/Toast';
 import { ThemeProvider } from './contexts/ThemeContext';
 import SignUpPromptModal from './components/Common/SignUpPromptModal';
@@ -73,6 +73,13 @@ function AppContent() {
     if (!window.location.hash) {
       window.history.replaceState(null, '', '#map');
     }
+  }, []);
+
+  // Listen for open-report-modal event from IconSidebar (desktop Command Center)
+  useEffect(() => {
+    const handler = () => setShowReportModal(true);
+    window.addEventListener('open-report-modal', handler);
+    return () => window.removeEventListener('open-report-modal', handler);
   }, []);
 
   // Update document title on tab change
@@ -144,16 +151,7 @@ function AppContent() {
       <OfflineIndicator />
       <Header onProfileClick={handleOpenProfileTab} />
 
-      {/* Desktop Sidebar - Sidebar handles its own responsive visibility */}
-      <Sidebar activeTab={activeTab} onTabChange={changeTab} />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-0 lg:ml-56" id="main-content">
-        {/* Mobile Tab Navigation - hidden on desktop */}
-        <div className="lg:hidden">
-          <TabNavigation activeTab={activeTab} onTabChange={changeTab} />
-        </div>
-
+      <AppShell activeTab={activeTab} onTabChange={changeTab}>
         <main id={`tabpanel-${activeTab}`} className="flex-1 flex flex-col min-h-0">
           <Suspense
             fallback={
@@ -165,7 +163,7 @@ function AppContent() {
             {renderTab()}
           </Suspense>
         </main>
-      </div>
+      </AppShell>
 
       {activeTab !== 'profile' && <Footer className="lg:hidden" />}
 
@@ -238,7 +236,9 @@ export default function App() {
         <ToastProvider>
           <AuthProvider>
             <ReportsProvider>
-              <AppContent />
+              <MapPanelProvider>
+                <AppContent />
+              </MapPanelProvider>
             </ReportsProvider>
           </AuthProvider>
         </ToastProvider>
