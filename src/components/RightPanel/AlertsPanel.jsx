@@ -15,11 +15,11 @@ const DISASTER_ICONS = {
 
 function distanceKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon / 2) ** 2;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
@@ -86,32 +86,40 @@ export default function AlertsPanel() {
     const q = query(
       collection(db, 'reports'),
       where('verification.status', 'in', ['pending', 'verified']),
-      orderBy('timestamp', 'desc'),
+      orderBy('timestamp', 'desc')
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      let docs = snapshot.docs.map((d) => ({ ...d.data(), id: d.id }));
-      if (userLocation) {
-        docs.sort((a, b) => {
-          const distA = distanceKm(
-            userLocation.lat, userLocation.lng,
-            a.location?.lat ?? 0, a.location?.lng ?? 0
-          );
-          const distB = distanceKm(
-            userLocation.lat, userLocation.lng,
-            b.location?.lat ?? 0, b.location?.lng ?? 0
-          );
-          return distA - distB;
-        });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        let docs = snapshot.docs.map((d) => ({ ...d.data(), id: d.id }));
+        if (userLocation) {
+          docs.sort((a, b) => {
+            const distA = distanceKm(
+              userLocation.lat,
+              userLocation.lng,
+              a.location?.lat ?? 0,
+              a.location?.lng ?? 0
+            );
+            const distB = distanceKm(
+              userLocation.lat,
+              userLocation.lng,
+              b.location?.lat ?? 0,
+              b.location?.lng ?? 0
+            );
+            return distA - distB;
+          });
+        }
+        setAlerts(docs);
+        setLoading(false);
+        setError(null);
+      },
+      (err) => {
+        console.error('AlertsPanel Firestore error:', err);
+        setError('Failed to load alerts. Check your connection.');
+        setLoading(false);
       }
-      setAlerts(docs);
-      setLoading(false);
-      setError(null);
-    }, (err) => {
-      console.error('AlertsPanel Firestore error:', err);
-      setError('Failed to load alerts. Check your connection.');
-      setLoading(false);
-    });
+    );
 
     return () => unsubscribe();
   }, [userLocation]);

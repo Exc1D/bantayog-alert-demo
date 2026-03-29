@@ -11,12 +11,12 @@ import {
 import { useAuthContext } from '../../contexts/AuthContext';
 
 const TABS = [
-  { id: 'map',     label: 'Map',     icon: MapTrifold },
-  { id: 'feed',    label: 'Feed',    icon: Article },
-  { id: 'alerts',  label: 'Alerts',  icon: Bell },
+  { id: 'map', label: 'Map', icon: MapTrifold },
+  { id: 'feed', label: 'Feed', icon: Article },
+  { id: 'alerts', label: 'Alerts', icon: Bell },
   { id: 'weather', label: 'Weather', icon: ChartBar },
   { id: 'profile', label: 'Profile', icon: User },
-  { id: 'admin',   label: 'Admin',   icon: ShieldCheck, adminOnly: true },
+  { id: 'admin', label: 'Admin', icon: ShieldCheck, adminOnly: true },
 ];
 
 export default function IconSidebar({ activeTab, onTabChange }) {
@@ -57,9 +57,10 @@ export default function IconSidebar({ activeTab, onTabChange }) {
           aria-label={tab.label}
           aria-pressed={activeTab === tab.id}
           className={`group relative w-9 h-9 rounded-lg flex items-center justify-center transition-colors
-                     ${activeTab === tab.id
-                       ? 'bg-primary/10 text-primary dark:bg-dark-accent/20 dark:text-dark-accent'
-                       : 'text-textLight dark:text-dark-textLight hover:bg-stone-100 dark:hover:bg-dark-elevated hover:text-text dark:hover:text-white'
+                     ${
+                       activeTab === tab.id
+                         ? 'bg-primary/10 text-primary dark:bg-dark-accent/20 dark:text-dark-accent'
+                         : 'text-textLight dark:text-dark-textLight hover:bg-stone-100 dark:hover:bg-dark-elevated hover:text-text dark:hover:text-white'
                      }`}
         >
           <tab.icon
@@ -68,9 +69,11 @@ export default function IconSidebar({ activeTab, onTabChange }) {
             aria-hidden="true"
           />
           {/* Hover tooltip */}
-          <span className="absolute left-full ml-3 px-2 py-1 bg-dark-bg text-white text-xs
+          <span
+            className="absolute left-full ml-3 px-2 py-1 bg-dark-bg text-white text-xs
                            rounded opacity-0 group-hover:opacity-100 pointer-events-none
-                           whitespace-nowrap z-50 transition-opacity duration-150 shadow-lg">
+                           whitespace-nowrap z-50 transition-opacity duration-150 shadow-lg"
+          >
             {tab.label}
           </span>
         </button>

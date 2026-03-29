@@ -6,14 +6,18 @@ function MunicipalityBar({ municipality, count, maxCount }) {
   const pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-textLight dark:text-dark-textLight w-24 truncate">{municipality}</span>
+      <span className="text-xs text-textLight dark:text-dark-textLight w-24 truncate">
+        {municipality}
+      </span>
       <div className="flex-1 h-2 bg-surface dark:bg-dark-elevated rounded-full overflow-hidden">
         <div
           className="h-full bg-primary dark:bg-dark-accent rounded-full transition-all duration-500"
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-xs font-medium text-text dark:text-dark-text w-6 text-right">{count}</span>
+      <span className="text-xs font-medium text-text dark:text-dark-text w-6 text-right">
+        {count}
+      </span>
     </div>
   );
 }

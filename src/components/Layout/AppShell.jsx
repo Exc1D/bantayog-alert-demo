@@ -35,23 +35,26 @@ export default function AppShell({ children, activeTab, onTabChange }) {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [activeTab, onTabChange]);
 
-  const handleMouseDown = useCallback((e) => {
-    e.preventDefault();
-    setIsResizing(true);
-    const startX = e.clientX;
-    const startWidth = mapWidth;
-    function onMove(e) {
-      const delta = e.clientX - startX;
-      setMapWidth(Math.max(200, Math.min(window.innerWidth - 480, startWidth + delta)));
-    }
-    function onUp() {
-      setIsResizing(false);
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-    }
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  }, [mapWidth]);
+  const handleMouseDown = useCallback(
+    (e) => {
+      e.preventDefault();
+      setIsResizing(true);
+      const startX = e.clientX;
+      const startWidth = mapWidth;
+      function onMove(e) {
+        const delta = e.clientX - startX;
+        setMapWidth(Math.max(200, Math.min(window.innerWidth - 480, startWidth + delta)));
+      }
+      function onUp() {
+        setIsResizing(false);
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    },
+    [mapWidth]
+  );
 
   // Desktop layout: IconSidebar | [MapPanel | ResizeHandle] | RightPanel
   if (isDesktop) {
@@ -75,9 +78,7 @@ export default function AppShell({ children, activeTab, onTabChange }) {
   // Mobile layout: TabNavigation + page content (children = renderTab() output)
   return (
     <div className="flex flex-col h-dvh bg-bg dark:bg-dark-bg overflow-hidden">
-      <main className="flex-1 overflow-hidden flex flex-col">
-        {children}
-      </main>
+      <main className="flex-1 overflow-hidden flex flex-col">{children}</main>
       <TabNavigation activeTab={activeTab} onTabChange={onTabChange} />
     </div>
   );

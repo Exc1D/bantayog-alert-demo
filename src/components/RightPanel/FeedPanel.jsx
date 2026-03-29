@@ -3,8 +3,15 @@ import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestor
 import { db } from '../../utils/firebaseConfig';
 import { useMapPanel } from '../../contexts/MapPanelContext';
 import {
-  Drop, Fire, Car, Users, Warning, Question,
-  CheckCircle, Clock, Article,
+  Drop,
+  Fire,
+  Car,
+  Users,
+  Warning,
+  Question,
+  CheckCircle,
+  Clock,
+  Article,
 } from '@phosphor-icons/react';
 
 const DISASTER_ICONS = {
@@ -44,8 +51,10 @@ function FeedItem({ report, onExpand }) {
       onClick={() => onExpand(report)}
       role="article"
     >
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
-                      ${isResolved ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'}`}>
+      <div
+        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                      ${isResolved ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent'}`}
+      >
         <Icon size={16} weight="fill" aria-hidden="true" />
       </div>
       <div className="flex-1 min-w-0">
@@ -54,7 +63,9 @@ function FeedItem({ report, onExpand }) {
             {report.disaster?.type ?? 'Unknown'}
           </span>
           <span className={`w-1.5 h-1.5 rounded-full ${severityDot(report.disaster?.severity)}`} />
-          <span className="text-xs text-textLight dark:text-dark-textLight">{report.location?.municipality}</span>
+          <span className="text-xs text-textLight dark:text-dark-textLight">
+            {report.location?.municipality}
+          </span>
         </div>
         <div className="flex items-center gap-1 mt-0.5 text-xs text-textLight dark:text-dark-textLight">
           <Clock size={12} aria-hidden="true" />
@@ -88,8 +99,12 @@ function ResolvedItem({ report }) {
         <span className="text-xs text-textLight dark:text-dark-textLight flex-1 text-left capitalize">
           {report.disaster?.type}
         </span>
-        <span className="text-xs text-textLight dark:text-dark-textLight">{report.location?.municipality}</span>
-        <span className="text-xs text-textLight dark:text-dark-textLight">{timeAgo(report.timestamp)}</span>
+        <span className="text-xs text-textLight dark:text-dark-textLight">
+          {report.location?.municipality}
+        </span>
+        <span className="text-xs text-textLight dark:text-dark-textLight">
+          {timeAgo(report.timestamp)}
+        </span>
       </button>
       {expanded && report.verification?.resolution?.resolutionNotes && (
         <div className="px-3 pb-3 pl-9 border-l-2 border-success/30">
@@ -109,22 +124,22 @@ export default function FeedPanel() {
   const { setSelectedReportId, setIncidentDetailReport } = useMapPanel();
 
   useEffect(() => {
-    const q = query(
-      collection(db, 'reports'),
-      orderBy('timestamp', 'desc'),
-      limit(50)
-    );
+    const q = query(collection(db, 'reports'), orderBy('timestamp', 'desc'), limit(50));
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map((d) => ({ ...d.data(), id: d.id }));
-      setReports(docs);
-      setLoading(false);
-      setError(null);
-    }, (err) => {
-      console.error('FeedPanel Firestore error:', err);
-      setError('Failed to load reports. Check your connection.');
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const docs = snapshot.docs.map((d) => ({ ...d.data(), id: d.id }));
+        setReports(docs);
+        setLoading(false);
+        setError(null);
+      },
+      (err) => {
+        console.error('FeedPanel Firestore error:', err);
+        setError('Failed to load reports. Check your connection.');
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
   }, []);
@@ -182,9 +197,8 @@ export default function FeedPanel() {
           >
             Show resolved ({resolvedReports.length})
           </button>
-          {showResolved && resolvedReports.map((report) => (
-            <ResolvedItem key={report.id} report={report} />
-          ))}
+          {showResolved &&
+            resolvedReports.map((report) => <ResolvedItem key={report.id} report={report} />)}
         </div>
       )}
     </div>

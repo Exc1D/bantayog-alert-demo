@@ -10,12 +10,14 @@ export function MapPanelProvider({ children }) {
   const setIncidentDetailReport = useCallback((r) => setIncidentDetailReportRaw(r), []);
 
   return (
-    <MapPanelContext.Provider value={{
-      selectedReportId,
-      setSelectedReportId,
-      incidentDetailReport,
-      setIncidentDetailReport,
-    }}>
+    <MapPanelContext.Provider
+      value={{
+        selectedReportId,
+        setSelectedReportId,
+        incidentDetailReport,
+        setIncidentDetailReport,
+      }}
+    >
       {children}
     </MapPanelContext.Provider>
   );
