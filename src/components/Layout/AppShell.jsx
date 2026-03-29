@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import IconSidebar from './IconSidebar';
 import PersistentMapPanel from './PersistentMapPanel';
-import RightPanel from '../Layout/RightPanel/RightPanel';
+import RightPanel from '../RightPanel/RightPanel';
 import TabNavigation from './TabNavigation';
 import { useMapPanel } from '../../contexts/MapPanelContext';
 
