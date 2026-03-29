@@ -1,5 +1,4 @@
-// src/components/RightPanel/RightPanel.jsx
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Article,
   Bell,
@@ -17,21 +16,16 @@ const TABS = [
   { id: 'weather', label: 'Weather', icon: ChartBar },
 ];
 
-export default function RightPanel({ activeTab, onTabChange, className = '' }) {
+function deriveInitialTab(activeTab) {
+  if (activeTab === 'alerts') return 'alerts';
+  if (activeTab === 'feed') return 'feed';
+  if (activeTab === 'weather') return 'weather';
+  return 'feed';
+}
+
+export default function RightPanel({ activeTab, className = '' }) {
   const { incidentDetailReport } = useMapPanel();
-
-  const getInitialTab = () => {
-    if (activeTab === 'alerts') return 'alerts';
-    if (activeTab === 'feed') return 'feed';
-    if (activeTab === 'weather') return 'weather';
-    return 'feed';
-  };
-
-  const [activePanelTab, setActivePanelTab] = useState(getInitialTab);
-
-  useEffect(() => {
-    setActivePanelTab(getInitialTab());
-  }, [activeTab]);
+  const [activePanelTab, setActivePanelTab] = useState(() => deriveInitialTab(activeTab));
 
   if (incidentDetailReport) {
     return <IncidentDetail className={className} />;

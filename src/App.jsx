@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, lazy, Suspense, useTransition } from 'react';
 import Header from './components/Layout/Header';
 import AppShell from './components/Layout/AppShell';
-import TabNavigation from './components/Layout/TabNavigation';
 import Footer from './components/Layout/Footer';
 import LoadingSpinner from './components/Common/LoadingSpinner';
 import ErrorBoundary from './components/Common/ErrorBoundary';

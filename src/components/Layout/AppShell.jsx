@@ -19,11 +19,10 @@ function useIsDesktop() {
 }
 
 export default function AppShell({ children, activeTab, onTabChange }) {
-  const { selectedReportId } = useMapPanel();
+  useMapPanel(); // Ensure context is initialized
   const isDesktop = useIsDesktop();
   const [mapWidth, setMapWidth] = useState(() => Math.floor(window.innerWidth * 0.38));
   const [isResizing, setIsResizing] = useState(false);
-  const [showMap, setShowMap] = useState(true);
 
   // Sync hash changes back to parent
   useEffect(() => {
@@ -59,18 +58,16 @@ export default function AppShell({ children, activeTab, onTabChange }) {
     return (
       <div className="flex h-dvh bg-bg dark:bg-dark-bg overflow-hidden">
         <IconSidebar activeTab={activeTab} onTabChange={onTabChange} />
-        {showMap && (
-          <>
-            <PersistentMapPanel style={{ width: mapWidth }} />
-            <div
-              className={`w-1 flex-shrink-0 cursor-col-resize bg-border dark:bg-dark-border ${isResizing ? 'bg-accent/50' : ''}`}
-              onMouseDown={handleMouseDown}
-              role="separator"
-              aria-orientation="vertical"
-            />
-          </>
-        )}
-        <RightPanel activeTab={activeTab} onTabChange={onTabChange} className="flex-1" />
+        <>
+          <PersistentMapPanel style={{ width: mapWidth }} />
+          <div
+            className={`w-1 flex-shrink-0 cursor-col-resize bg-border dark:bg-dark-border ${isResizing ? 'bg-accent/50' : ''}`}
+            onMouseDown={handleMouseDown}
+            role="separator"
+            aria-orientation="vertical"
+          />
+        </>
+        <RightPanel className="flex-1" />
       </div>
     );
   }

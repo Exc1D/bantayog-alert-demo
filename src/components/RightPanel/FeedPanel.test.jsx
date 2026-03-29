@@ -1,11 +1,3 @@
-import { render, screen } from '@testing-library/react';
-import FeedPanel from './FeedPanel';
-import { MapPanelProvider } from '../../contexts/MapPanelContext';
-
-function renderWithProviders(ui) {
-  return render(<MapPanelProvider>{ui}</MapPanelProvider>);
-}
-
 describe('FeedPanel', () => {
   it('renders loading state', () => {});
   it('renders empty state', () => {});
