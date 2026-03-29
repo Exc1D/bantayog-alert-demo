@@ -27,6 +27,7 @@ export default function DataPanel() {
     maxCount: 1,
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function loadStats() {
@@ -49,8 +50,10 @@ export default function DataPanel() {
         const maxCount = byMunicipality[0]?.[1] ?? 1;
 
         setStats({ total, active, resolved, byMunicipality, maxCount });
+        setError(null);
       } catch (e) {
-        console.warn('Could not load stats:', e);
+        console.error('DataPanel failed to load stats:', e);
+        setError('Failed to load statistics.');
       } finally {
         setLoading(false);
       }
@@ -62,6 +65,14 @@ export default function DataPanel() {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-2 text-textLight dark:text-dark-textLight px-4 text-center">
+        <p className="text-sm font-medium text-text dark:text-dark-text">{error}</p>
       </div>
     );
   }

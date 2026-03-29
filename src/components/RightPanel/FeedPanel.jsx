@@ -105,6 +105,7 @@ function ResolvedItem({ report }) {
 export default function FeedPanel() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { setSelectedReportId, setIncidentDetailReport } = useMapPanel();
 
   useEffect(() => {
@@ -118,7 +119,10 @@ export default function FeedPanel() {
       const docs = snapshot.docs.map((d) => ({ ...d.data(), id: d.id }));
       setReports(docs);
       setLoading(false);
-    }, () => {
+      setError(null);
+    }, (err) => {
+      console.error('FeedPanel Firestore error:', err);
+      setError('Failed to load reports. Check your connection.');
       setLoading(false);
     });
 
@@ -141,6 +145,15 @@ export default function FeedPanel() {
           <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin" />
           <span className="text-xs">Loading...</span>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-2 text-textLight dark:text-dark-textLight px-4 text-center">
+        <Article size={32} aria-hidden="true" />
+        <p className="text-sm font-medium text-text dark:text-dark-text">{error}</p>
       </div>
     );
   }

@@ -70,13 +70,14 @@ export default function AlertsPanel() {
   const [alerts, setAlerts] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { selectedReportId, setSelectedReportId, setIncidentDetailReport } = useMapPanel();
 
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => {}
+        () => {} // Location denied — sorting by distance silently skipped
       );
     }
   }, []);
@@ -105,7 +106,12 @@ export default function AlertsPanel() {
       }
       setAlerts(docs);
       setLoading(false);
-    }, () => setLoading(false));
+      setError(null);
+    }, (err) => {
+      console.error('AlertsPanel Firestore error:', err);
+      setError('Failed to load alerts. Check your connection.');
+      setLoading(false);
+    });
 
     return () => unsubscribe();
   }, [userLocation]);
@@ -122,6 +128,15 @@ export default function AlertsPanel() {
           <div className="w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin" />
           <span className="text-xs">Loading...</span>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-2 text-textLight dark:text-dark-textLight px-4 text-center">
+        <Bell size={32} aria-hidden="true" />
+        <p className="text-sm font-medium text-text dark:text-dark-text">{error}</p>
       </div>
     );
   }
