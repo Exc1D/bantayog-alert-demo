@@ -27,7 +27,7 @@ export default function IconSidebar({ activeTab, onTabChange }) {
   }
 
   function handleReportClick() {
-    window.location.hash = 'report';
+    window.dispatchEvent(new CustomEvent('open-report-modal'));
   }
 
   return (

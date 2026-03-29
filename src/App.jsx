@@ -76,6 +76,13 @@ function AppContent() {
     }
   }, []);
 
+  // Listen for open-report-modal event from IconSidebar (desktop Command Center)
+  useEffect(() => {
+    const handler = () => setShowReportModal(true);
+    window.addEventListener('open-report-modal', handler);
+    return () => window.removeEventListener('open-report-modal', handler);
+  }, []);
+
   // Update document title on tab change
   useEffect(() => {
     document.title = TAB_TITLES[activeTab] || 'BANTAYOG ALERT';
