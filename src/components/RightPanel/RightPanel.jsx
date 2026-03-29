@@ -7,7 +7,7 @@ import {
 } from '@phosphor-icons/react';
 import FeedPanel from './FeedPanel';
 import AlertsPanel from './AlertsPanel';
-import DataPanel from './DataPanel';
+import WeatherTab from '../../pages/WeatherTab';
 import IncidentDetail from './IncidentDetail';
 import { useMapPanel } from '../../contexts/MapPanelContext';
 
@@ -62,7 +62,7 @@ export default function RightPanel({ activeTab, onTabChange, className = '' }) {
       <div className="flex-1 overflow-hidden">
         {activePanelTab === 'feed' && <FeedPanel />}
         {activePanelTab === 'alerts' && <AlertsPanel />}
-        {activePanelTab === 'weather' && <DataPanel />}
+        {activePanelTab === 'weather' && <WeatherTab />}
       </div>
     </div>
   );
