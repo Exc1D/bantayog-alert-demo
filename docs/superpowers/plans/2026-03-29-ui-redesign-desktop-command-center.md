@@ -356,7 +356,7 @@ git commit -m "feat(ui-redesign): add AppShell with responsive desktop/mobile la
 
 ```jsx
 // src/components/Layout/IconSidebar.jsx
-import { NavLink } from 'react-router-dom';
+// NOTE: react-router-dom is NOT installed. Use buttons + window.location.hash only.
 import {
   MapTrifold,
   Article,
@@ -369,46 +369,13 @@ import {
 import { useAuthContext } from '../../contexts/AuthContext';
 
 const TABS = [
-  { id: 'map',     label: 'Map',     href: '/',           icon: MapTrifold,  end: true },
-  { id: 'feed',    label: 'Feed',    href: '/#/feed',     icon: Article },
-  { id: 'alerts',  label: 'Alerts',  href: '/#/alerts',  icon: Bell },
-  { id: 'weather', label: 'Weather', href: '/#/weather',  icon: ChartBar },
-  { id: 'profile', label: 'Profile', href: '/#/profile', icon: User },
-  { id: 'admin',   label: 'Admin',   href: '/#/admin',    icon: ShieldCheck, adminOnly: true },
+  { id: 'map',     label: 'Map',     icon: MapTrifold },
+  { id: 'feed',    label: 'Feed',    icon: Article },
+  { id: 'alerts',  label: 'Alerts',  icon: Bell },
+  { id: 'weather', label: 'Weather', icon: ChartBar },
+  { id: 'profile', label: 'Profile', icon: User },
+  { id: 'admin',   label: 'Admin',   icon: ShieldCheck, adminOnly: true },
 ];
-
-function SidebarTab({ id, label, href, icon: Icon, end }) {
-  return (
-    <NavLink
-      to={href}
-      end={end}
-      aria-label={label}
-      className={({ isActive }) =>
-        `group relative w-9 h-9 rounded-lg flex items-center justify-center transition-colors
-         ${isActive
-           ? 'bg-primary/10 text-primary dark:bg-dark-accent/20 dark:text-dark-accent'
-           : 'text-textLight dark:text-dark-textLight hover:bg-stone-100 dark:hover:bg-dark-elevated hover:text-text dark:hover:text-white'
-         }`
-      }
-    >
-      {({ isActive }) => (
-        <>
-          <Icon
-            size={22}
-            weight={isActive ? 'fill' : 'regular'}
-            aria-hidden="true"
-          />
-          {/* Hover tooltip */}
-          <span className="absolute left-full ml-3 px-2 py-1 bg-dark-bg text-white text-xs
-                           rounded opacity-0 group-hover:opacity-100 pointer-events-none
-                           whitespace-nowrap z-50 transition-opacity duration-150 shadow-lg">
-            {label}
-          </span>
-        </>
-      )}
-    </NavLink>
-  );
-}
 
 export default function IconSidebar({ activeTab, onTabChange }) {
   const { isAdmin } = useAuthContext();
@@ -418,6 +385,10 @@ export default function IconSidebar({ activeTab, onTabChange }) {
     onTabChange(tabId);
   }
 
+  function handleReportClick() {
+    window.location.hash = 'report';
+  }
+
   return (
     <nav
       aria-label="Main navigation"
@@ -425,14 +396,15 @@ export default function IconSidebar({ activeTab, onTabChange }) {
                  flex flex-col items-center py-3 gap-1 flex-shrink-0"
     >
       {/* Report shortcut */}
-      <NavLink
-        to="/#/report"
+      <button
+        type="button"
+        onClick={handleReportClick}
         aria-label="New report"
         className="w-9 h-9 rounded-lg flex items-center justify-center
                    text-accent hover:bg-accent/10 transition-colors"
       >
         <PlusCircle size={22} weight="fill" aria-hidden="true" />
-      </NavLink>
+      </button>
 
       <div className="w-6 h-px bg-border/40 dark:bg-dark-border/40 my-1" aria-hidden="true" />
 
